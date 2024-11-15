@@ -22,3 +22,4 @@ abbr_subcommand repo minor "version bump minor"
 abbr_subcommand repo patch "version bump patch"
 
 abbr_subcommand repo p "publish"
+abbr -a "pp" "repo publish"

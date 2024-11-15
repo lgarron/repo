@@ -10,7 +10,6 @@ use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
 use crate::commands::version::VersionArgs;
 
-/// repo — a tool for repo management
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 #[clap(name = "repo")]

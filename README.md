@@ -3,7 +3,7 @@
 ## `repo`
 
 ````cli-help
-A tool for repo management.
+An opinionated tool for repo management.
 
 Usage: repo <COMMAND>
 

@@ -29,7 +29,7 @@ struct CISetupArgs {
 
 #[derive(Debug, Clone, ValueEnum)]
 enum CISetupFollowup {
-    Open,
+    Edit,
     Reveal,
     None,
 }
@@ -87,7 +87,7 @@ pub(crate) fn ci_command(ci_args: CIArgs) {
             create_dir_all(CI_YAML_DIR).expect("Unable to write CI template");
             write(CI_YAML_PATH, CI_YAML_TEMPLATE).expect("Unable to write CI template");
             match ci_setup_args.followup {
-                Some(CISetupFollowup::Open) => open_ci_template_for_editing(),
+                Some(CISetupFollowup::Edit) => open_ci_template_for_editing(),
                 Some(CISetupFollowup::Reveal) => {
                     reveal(CI_YAML_PATH).expect("Unable to reveal CI template")
                 }

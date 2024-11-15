@@ -20,3 +20,11 @@ readme-cli-check:
 
 .PHONY: lint
 lint: readme-cli-check
+
+.PHONY: install
+install:
+	cargo install --path .
+
+.PHONY: uninstall
+uninstall:
+	cargo uninstall --path .

@@ -7,7 +7,7 @@ use clap::{Args, Subcommand};
 use cargo_metadata::MetadataCommand;
 use serde::Deserialize;
 
-use crate::ecosystem::{Ecosystem, EcosystemArgs};
+use crate::common::ecosystem::{Ecosystem, EcosystemArgs};
 
 #[derive(Args, Debug)]
 pub(crate) struct VersionArgs {

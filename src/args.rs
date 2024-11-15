@@ -5,10 +5,10 @@ use clap::{Args, CommandFactory, Parser, Subcommand};
 use clap_complete::generator::generate;
 use clap_complete::{Generator, Shell};
 
-use crate::ci::CIArgs;
-use crate::publish::PublishArgs;
-use crate::setup::SetupArgs;
-use crate::version::VersionArgs;
+use crate::commands::ci::CIArgs;
+use crate::commands::publish::PublishArgs;
+use crate::commands::setup::SetupArgs;
+use crate::commands::version::VersionArgs;
 
 /// repo — a tool for repo management
 #[derive(Parser, Debug)]

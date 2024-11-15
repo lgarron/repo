@@ -2,7 +2,7 @@ use std::process::Command;
 
 use clap::Args;
 
-use crate::ecosystem::{Ecosystem, EcosystemArgs};
+use crate::common::ecosystem::{Ecosystem, EcosystemArgs};
 
 #[derive(Args, Debug)]
 pub(crate) struct PublishArgs {

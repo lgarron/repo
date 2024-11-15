@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use clap::{Args, ValueEnum};
 
-use crate::version::npm_get_version;
+use crate::commands::version::npm_get_version;
 
 #[derive(Args, Debug)]
 pub(crate) struct EcosystemArgs {

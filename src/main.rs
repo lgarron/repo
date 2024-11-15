@@ -1,15 +1,12 @@
-use args::get_args;
-use ci::ci_command;
-use publish::publish_command;
-use setup::setup_command;
-use version::version_command;
-
 mod args;
-mod ci;
-mod ecosystem;
-mod publish;
-mod setup;
-mod version;
+mod commands;
+mod common;
+
+use args::get_args;
+use commands::ci::ci_command;
+use commands::publish::publish_command;
+use commands::setup::setup_command;
+use commands::version::version_command;
 
 fn main() {
     let args = get_args();

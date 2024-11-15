@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand};
 
-use crate::ci::{setup_ci, CISetupArgs};
+use crate::commands::ci::{setup_ci, CISetupArgs};
 
 #[derive(Args, Debug)]
 pub(crate) struct SetupArgs {

@@ -21,10 +21,10 @@ pub(crate) struct RepoArgs {
 pub(crate) enum RepoCommand {
     /// Perform operations on the repo version.
     Version(VersionArgs),
-    /// Print completions for the given shell.
-    Completions(CompletionsArgs),
     /// Manage CI (continuous integration) at `.github/workflows/CI.yaml`
     CI(CIArgs),
+    /// Print completions for the given shell.
+    Completions(CompletionsArgs),
 }
 
 #[derive(Args, Debug)]

@@ -33,6 +33,9 @@ readme-cli-check:
 .PHONY: lint
 lint: readme-cli-check
 
+.PHONY: format
+format: readme-cli-update
+
 .PHONY: install
 install:
 	cargo install --path .

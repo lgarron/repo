@@ -9,8 +9,8 @@ Usage: repo <COMMAND>
 
 Commands:
   version      Perform operations on the repo version
+  ci           Manage CI (continuous integration) at `.github/workflows/CI.yaml`
   completions  Print completions for the given shell
-  ci           Manage CI (continuous integration)
   help         Print this message or the help of the given subcommand(s)
 
 Options:
@@ -23,7 +23,7 @@ Options:
 ````cli-help-version
 Perform operations on the repo version
 
-Usage: repo version <COMMAND>
+Usage: repo version [OPTIONS] <COMMAND>
 
 Commands:
   get   Get the current version
@@ -31,18 +31,20 @@ Commands:
   help  Print this message or the help of the given subcommand(s)
 
 Options:
-  -h, --help  Print help
+      --ecosystem <ECOSYSTEM>  [default: auto] [possible values: auto, npm, cargo]
+  -h, --help                   Print help
 ````
 
 ## `repo ci`
 
 ````cli-help-ci
-Manage CI (continuous integration)
+Manage CI (continuous integration) at `.github/workflows/CI.yaml`
 
 Usage: repo ci <COMMAND>
 
 Commands:
   setup  Set up a CI template for GitHub and open for editing
+  edit   Open the CI file
   help   Print this message or the help of the given subcommand(s)
 
 Options:

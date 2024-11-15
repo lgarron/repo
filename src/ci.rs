@@ -15,7 +15,7 @@ pub(crate) struct CIArgs {
 
 #[derive(Debug, Subcommand)]
 enum CICommand {
-    /// Set up a CI template for GitHub and open for editing.
+    /// Alias for `repo setup ci`
     Setup(CISetupArgs),
     // TODO: support `Open` as a version of `Edit` that doesn't wait.
     /// Open the CI file.
@@ -23,7 +23,7 @@ enum CICommand {
 }
 
 #[derive(Args, Debug)]
-struct CISetupArgs {
+pub(crate) struct CISetupArgs {
     #[clap(long)]
     followup: Option<CISetupFollowup>,
     #[clap(long)]
@@ -77,7 +77,7 @@ fn open_ci_template_for_editing() {
     edit_file(CI_YAML_PATH).expect("Could not open CI file for editing.");
 }
 
-fn setup(ci_setup_args: CISetupArgs) {
+pub(crate) fn setup_ci(ci_setup_args: CISetupArgs) {
     if exists(CI_YAML_PATH).expect("Could not access file system.") {
         if ci_setup_args.overwrite {
             eprintln!("Overwriting CI file due to `--overwrite` flag.");
@@ -105,6 +105,6 @@ pub(crate) fn ci_command(ci_args: CIArgs) {
         CICommand::Edit => {
             open_ci_template_for_editing();
         }
-        CICommand::Setup(ci_setup_args) => setup(ci_setup_args),
+        CICommand::Setup(ci_setup_args) => setup_ci(ci_setup_args),
     }
 }

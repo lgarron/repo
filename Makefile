@@ -1,3 +1,7 @@
+.PHONY: setup
+setup:
+	bun install --no-save
+
 .PHONY: publish
 publish:
 	cargo publish

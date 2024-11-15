@@ -8,12 +8,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      #   with:
-      #       lfs: 'true'
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # - uses: oven-sh/setup-bun@v1
-      # - uses: Swatinem/rust-cache@v2
-      # - run: make setup
+      - uses: oven-sh/setup-bun@v1
+      - uses: Swatinem/rust-cache@v2
+      - run: make setup
       - run: make lint

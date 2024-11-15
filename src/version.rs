@@ -14,9 +14,16 @@ pub(crate) struct VersionArgs {
 #[derive(Debug, Subcommand)]
 pub(crate) enum VersionCommand {
     /// Get the current version
-    Get,
+    Get(VersionGetArgs),
     /// Bump the current version
     Bump(VersionBumpArgs),
+}
+
+#[derive(Args, Debug)]
+pub(crate) struct VersionGetArgs {
+    /// Do not print the `v` prefix (e.g. print `0.1.3` instead of `v0.1.3`)
+    #[clap(long)]
+    pub no_prefix: bool,
 }
 
 #[derive(Args, Debug)]
@@ -48,9 +55,11 @@ impl Display for VersionBumpCommand {
 
 pub(crate) fn version_command(version_args: VersionArgs) {
     match version_args.command {
-        VersionCommand::Get => {
+        VersionCommand::Get(version_get_args) => {
+            let prefix = if version_get_args.no_prefix { "" } else { "v" };
             println!(
-                "{}",
+                "{}{}",
+                prefix,
                 MetadataCommand::new()
                     .manifest_path("./Cargo.toml")
                     .current_dir(".")

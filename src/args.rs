@@ -19,7 +19,7 @@ pub(crate) struct RepoArgs {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum RepoCommand {
-    /// Run a single search.
+    /// Perform operations on the repo version.
     Version(VersionArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),

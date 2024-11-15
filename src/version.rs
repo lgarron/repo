@@ -7,7 +7,7 @@ use clap::{Args, Subcommand};
 use cargo_metadata::MetadataCommand;
 use serde::Deserialize;
 
-use crate::ecosystem::{EcosystemArgs, RepoEcosystem};
+use crate::ecosystem::{Ecosystem, EcosystemArgs};
 
 #[derive(Args, Debug)]
 pub(crate) struct VersionArgs {
@@ -66,7 +66,7 @@ struct PackageJSONWithVersion {
 
 const PACKAGE_JSON_PATH: &str = "./package.json";
 
-fn npm_get_version() -> Result<String, String> {
+pub(crate) fn npm_get_version() -> Result<String, String> {
     // TODO: semantically parse version
     let Ok(file) = File::open(PACKAGE_JSON_PATH) else {
         return Err("Could not read `package.json`".to_owned());
@@ -113,47 +113,47 @@ fn cargo_bump_version(version_bump_command: VersionBumpCommand) {
         .expect("Could not bump version using `cargo-bump`");
 }
 
-fn version_get_and_print(repo_ecosystem: RepoEcosystem, version_get_args: VersionGetArgs) {
-    let version: String = match repo_ecosystem {
-        RepoEcosystem::Auto => match npm_get_version() {
+fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: VersionGetArgs) {
+    let version: String = match ecosystem_args.ecosystem {
+        None => match npm_get_version() {
             Ok(version) => version,
             Err(_) => cargo_get_version(),
         },
-        RepoEcosystem::Npm => npm_get_version().expect("Could not get `npm` package version."),
-        RepoEcosystem::Cargo => cargo_get_version(),
+        Some(Ecosystem::Npm) => npm_get_version().expect("Could not get `npm` package version."),
+        Some(Ecosystem::Cargo) => cargo_get_version(),
     };
     print_version(&version, &version_get_args);
 }
 
 // TODO: get version from output of the bump commands themselves?
-fn version_bump(repo_ecosystem: RepoEcosystem, version_bump_args: VersionBumpArgs) {
-    fn auto_print_version(repo_ecosystem: RepoEcosystem) {
+fn version_bump(ecosystem_args: &EcosystemArgs, version_bump_args: VersionBumpArgs) {
+    let auto_print_version = |repo_ecosystem: Ecosystem| {
         println!("Bumped version using ecosystem: {}", repo_ecosystem);
         print!("Bumped to version: ");
         version_get_and_print(
-            repo_ecosystem,
+            ecosystem_args,
             VersionGetArgs {
                 no_prefix: false, // TODO
             },
         )
-    }
-    match repo_ecosystem {
-        RepoEcosystem::Auto => {
+    };
+    match ecosystem_args.ecosystem {
+        None => {
             if npm_get_version().is_ok() {
                 npm_bump_version(version_bump_args.command);
-                auto_print_version(RepoEcosystem::Npm);
+                auto_print_version(Ecosystem::Npm);
             } else {
                 cargo_bump_version(version_bump_args.command);
-                auto_print_version(RepoEcosystem::Cargo);
+                auto_print_version(Ecosystem::Cargo);
             }
         }
-        RepoEcosystem::Npm => {
+        Some(Ecosystem::Npm) => {
             npm_bump_version(version_bump_args.command);
-            auto_print_version(RepoEcosystem::Npm);
+            auto_print_version(Ecosystem::Npm);
         }
-        RepoEcosystem::Cargo => {
+        Some(Ecosystem::Cargo) => {
             cargo_bump_version(version_bump_args.command);
-            auto_print_version(RepoEcosystem::Cargo);
+            auto_print_version(Ecosystem::Cargo);
         }
     }
 }
@@ -163,10 +163,10 @@ fn version_bump(repo_ecosystem: RepoEcosystem, version_bump_args: VersionBumpArg
 pub(crate) fn version_command(version_args: VersionArgs) {
     match version_args.command {
         VersionCommand::Get(version_get_args) => {
-            version_get_and_print(version_args.ecosystem_args.ecosystem, version_get_args);
+            version_get_and_print(&version_args.ecosystem_args, version_get_args);
         }
         VersionCommand::Bump(version_bump_args) => {
-            version_bump(version_args.ecosystem_args.ecosystem, version_bump_args);
+            version_bump(&version_args.ecosystem_args, version_bump_args);
         }
     };
 }

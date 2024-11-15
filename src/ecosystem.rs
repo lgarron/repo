@@ -2,30 +2,39 @@ use std::fmt::Display;
 
 use clap::{Args, ValueEnum};
 
+use crate::version::npm_get_version;
+
 #[derive(Args, Debug)]
 pub(crate) struct EcosystemArgs {
-    // TODO: flatten?
-    #[clap(long, default_value = "auto")]
-    pub(crate) ecosystem: RepoEcosystem,
+    #[clap(long)]
+    pub(crate) ecosystem: Option<Ecosystem>,
 }
 
 #[derive(Debug, Clone, ValueEnum)]
-pub(crate) enum RepoEcosystem {
-    Auto,
+pub(crate) enum Ecosystem {
     Npm,
     Cargo,
 }
 
-impl Display for RepoEcosystem {
+impl Display for Ecosystem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
             "{}",
             match self {
-                RepoEcosystem::Auto => "auto",
-                RepoEcosystem::Npm => "npm",
-                RepoEcosystem::Cargo => "cargo",
+                Ecosystem::Npm => "npm",
+                Ecosystem::Cargo => "cargo",
             }
         )
+    }
+}
+
+impl Default for Ecosystem {
+    fn default() -> Self {
+        if npm_get_version().is_ok() {
+            Self::Npm
+        } else {
+            Self::Cargo
+        }
     }
 }

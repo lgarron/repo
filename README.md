@@ -9,6 +9,7 @@ Usage: repo <COMMAND>
 
 Commands:
   version      Perform operations on the repo version
+  publish      Publish
   ci           Manage CI (continuous integration) at `.github/workflows/CI.yaml`
   completions  Print completions for the given shell
   help         Print this message or the help of the given subcommand(s)
@@ -31,7 +32,7 @@ Commands:
   help  Print this message or the help of the given subcommand(s)
 
 Options:
-      --ecosystem <ECOSYSTEM>  [default: auto] [possible values: auto, npm, cargo]
+      --ecosystem <ECOSYSTEM>  [possible values: npm, cargo]
   -h, --help                   Print help
 ````
 
@@ -49,4 +50,16 @@ Commands:
 
 Options:
   -h, --help  Print help
+````
+
+## `repo publish`
+
+````cli-help-publish
+Publish
+
+Usage: repo publish [OPTIONS]
+
+Options:
+      --ecosystem <ECOSYSTEM>  [possible values: npm, cargo]
+  -h, --help                   Print help
 ````

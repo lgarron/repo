@@ -6,6 +6,7 @@ use clap_complete::generator::generate;
 use clap_complete::{Generator, Shell};
 
 use crate::ci::CIArgs;
+use crate::publish::PublishArgs;
 use crate::version::VersionArgs;
 
 /// repo — a tool for repo management
@@ -21,6 +22,8 @@ pub(crate) struct RepoArgs {
 pub(crate) enum RepoCommand {
     /// Perform operations on the repo version.
     Version(VersionArgs),
+    /// Publish.
+    Publish(PublishArgs),
     /// Manage CI (continuous integration) at `.github/workflows/CI.yaml`
     CI(CIArgs),
     /// Print completions for the given shell.

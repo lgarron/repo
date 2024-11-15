@@ -59,6 +59,7 @@ impl Display for VersionBumpCommand {
 
 #[derive(Args, Debug)]
 struct EcosystemArgs {
+    // TODO: flatten?
     #[clap(long, default_value = "auto")]
     pub ecosystem: RepoEcosystem,
 }
@@ -68,6 +69,20 @@ enum RepoEcosystem {
     Auto,
     Npm,
     Cargo,
+}
+
+impl Display for RepoEcosystem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                RepoEcosystem::Auto => "auto",
+                RepoEcosystem::Npm => "npm",
+                RepoEcosystem::Cargo => "cargo",
+            }
+        )
+    }
 }
 
 #[derive(Deserialize)]
@@ -124,33 +139,60 @@ fn cargo_bump_version(version_bump_command: VersionBumpCommand) {
         .expect("Could not bump version using `cargo-bump`");
 }
 
+fn version_get_and_print(repo_ecosystem: RepoEcosystem, version_get_args: VersionGetArgs) {
+    let version: String = match repo_ecosystem {
+        RepoEcosystem::Auto => match npm_get_version() {
+            Ok(version) => version,
+            Err(_) => cargo_get_version(),
+        },
+        RepoEcosystem::Npm => npm_get_version().expect("Could not get `npm` package version."),
+        RepoEcosystem::Cargo => cargo_get_version(),
+    };
+    print_version(&version, &version_get_args);
+}
+
+// TODO: get version from output of the bump commands themselves?
+fn version_bump(repo_ecosystem: RepoEcosystem, version_bump_args: VersionBumpArgs) {
+    fn auto_print_version(repo_ecosystem: RepoEcosystem) {
+        println!("Bumped version using ecosystem: {}", repo_ecosystem);
+        print!("Bumped to version: ");
+        version_get_and_print(
+            repo_ecosystem,
+            VersionGetArgs {
+                no_prefix: false, // TODO
+            },
+        )
+    }
+    match repo_ecosystem {
+        RepoEcosystem::Auto => {
+            if npm_get_version().is_ok() {
+                npm_bump_version(version_bump_args.command);
+                auto_print_version(RepoEcosystem::Npm);
+            } else {
+                cargo_bump_version(version_bump_args.command);
+                auto_print_version(RepoEcosystem::Cargo);
+            }
+        }
+        RepoEcosystem::Npm => {
+            npm_bump_version(version_bump_args.command);
+            auto_print_version(RepoEcosystem::Npm);
+        }
+        RepoEcosystem::Cargo => {
+            cargo_bump_version(version_bump_args.command);
+            auto_print_version(RepoEcosystem::Cargo);
+        }
+    }
+}
+
 // TODO: use traits to abstract across ecosystems
 // TODO: support cross-checking versions across ecosystems
 pub(crate) fn version_command(version_args: VersionArgs) {
     match version_args.command {
         VersionCommand::Get(version_get_args) => {
-            let version = match version_args.ecosystem_args.ecosystem {
-                RepoEcosystem::Auto => match npm_get_version() {
-                    Ok(version) => version,
-                    Err(_) => cargo_get_version(),
-                },
-                RepoEcosystem::Npm => {
-                    npm_get_version().expect("Could not get `npm` package version.")
-                }
-                RepoEcosystem::Cargo => cargo_get_version(),
-            };
-            print_version(&version, &version_get_args);
+            version_get_and_print(version_args.ecosystem_args.ecosystem, version_get_args);
         }
-        VersionCommand::Bump(version_bump_args) => match version_args.ecosystem_args.ecosystem {
-            RepoEcosystem::Auto => {
-                if npm_get_version().is_ok() {
-                    npm_bump_version(version_bump_args.command)
-                } else {
-                    cargo_bump_version(version_bump_args.command)
-                }
-            }
-            RepoEcosystem::Npm => npm_bump_version(version_bump_args.command),
-            RepoEcosystem::Cargo => cargo_bump_version(version_bump_args.command),
-        },
-    }
+        VersionCommand::Bump(version_bump_args) => {
+            version_bump(version_args.ecosystem_args.ecosystem, version_bump_args);
+        }
+    };
 }

@@ -10,7 +10,7 @@ pub(crate) struct CIArgs {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum CICommand {
-    /// Get the current version
+    /// Set up a CI template for GitHub and open for editing.
     Setup,
 }
 

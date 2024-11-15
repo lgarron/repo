@@ -24,7 +24,7 @@ pub(crate) fn publish_command(publish_args: PublishArgs) {
             Command::new("cargo")
                 .args(["publish"])
                 .spawn()
-                .expect("Could not publish using `npm`");
+                .expect("Could not publish using `cargo`");
         }
     }
 }

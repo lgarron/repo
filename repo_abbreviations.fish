@@ -7,7 +7,13 @@ end
 
 repo completions fish | source
 
+abbr -a "v" "repo version"
+abbr -a "version" "repo version"
 abbr_subcommand repo v "version"
+
+abbr -a "vb" "repo version bump"
+abbr -a "vbm" "repo version bump minor"
+abbr -a "vbp" "repo version bump patch"
 abbr_subcommand repo bump "version bump"
 abbr_subcommand repo major "version bump major"
 abbr_subcommand repo minor "version bump minor"

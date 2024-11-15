@@ -16,7 +16,7 @@ pub(crate) struct TemplateFileArgs {
 
 #[derive(Debug, Subcommand)]
 enum TemplateFileCommand {
-    Create(TemplateFileCreateArgs),
+    Add(TemplateFileCreateArgs),
     Edit,
     Reveal,
 }
@@ -45,7 +45,7 @@ pub(crate) struct TemplateFile<'a> {
 impl<'a> TemplateFile<'a> {
     pub(crate) fn handle_command(&self, template_file_args: TemplateFileArgs) {
         match template_file_args.command {
-            TemplateFileCommand::Create(template_file_create_args) => {
+            TemplateFileCommand::Add(template_file_create_args) => {
                 self.create(template_file_create_args);
             }
             TemplateFileCommand::Edit => self.open_for_editing(),

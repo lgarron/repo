@@ -22,7 +22,7 @@ abbr_subcommand repo p "publish"
 abbr_subcommand repo b "boilerplate"
 abbr_subcommand repo ci "boilerplate ci"
 abbr_subcommand repo gr "boilerplate auto-publish-github-release"
-abbr_subcommand_arg repo c create boilerplate
+abbr_subcommand_arg repo a add boilerplate
 abbr_subcommand_arg repo e edit boilerplate
 abbr_subcommand_arg repo r reveal boilerplate
 

@@ -23,3 +23,5 @@ abbr_subcommand repo patch "version bump patch"
 
 abbr_subcommand repo p "publish"
 abbr -a "pp" "repo publish"
+
+abbr_subcommand repo s "setup"

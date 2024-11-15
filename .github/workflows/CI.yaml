@@ -15,3 +15,4 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: make setup
       - run: make lint
+      - run: cargo run -- --help

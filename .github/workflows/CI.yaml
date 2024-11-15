@@ -14,5 +14,5 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - uses: Swatinem/rust-cache@v2
       - run: make setup
+      - run: make cargo-test-help
       - run: make lint
-      - run: cargo run -- --help

@@ -2,6 +2,14 @@
 setup:
 	bun install --no-save
 
+.PHONY: test
+test: cargo-test-help lint
+
+.PHONY: cargo-test-help
+cargo-test-help:
+	cargo run -- --help > /dev/null
+
+
 .PHONY: publish
 publish:
 	cargo publish

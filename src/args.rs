@@ -8,6 +8,7 @@ use clap_complete::{Generator, Shell};
 use crate::commands::boilerplate::BoilerplateArgs;
 use crate::commands::ci::CIArgs;
 use crate::commands::publish::PublishArgs;
+use crate::commands::setup::SetupArgs;
 use crate::commands::version::VersionArgs;
 
 /// repo — a tool for repo management
@@ -27,6 +28,8 @@ pub(crate) enum RepoCommand {
     Publish(PublishArgs),
     /// Set up boilerplate for the repo.
     Boilerplate(BoilerplateArgs),
+    /// Set up a repository checkout.
+    Setup(SetupArgs),
     /// Manage CI (continuous integration) at `.github/workflows/CI.yaml`
     CI(CIArgs),
     /// Print completions for the given shell.

@@ -25,3 +25,6 @@ abbr_subcommand repo p "publish"
 abbr -a "pp" "repo publish"
 
 abbr_subcommand repo b "boilerplate"
+
+abbr_subcommand repo s "setup"
+abbr_subcommand repo deps "setup dependencies"

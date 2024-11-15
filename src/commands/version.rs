@@ -7,7 +7,10 @@ use clap::{Args, Subcommand};
 use cargo_metadata::MetadataCommand;
 use serde::Deserialize;
 
-use crate::common::ecosystem::{Ecosystem, EcosystemArgs};
+use crate::common::{
+    ecosystem::{Ecosystem, EcosystemArgs},
+    package_manager::PACKAGE_JSON_PATH,
+};
 
 #[derive(Args, Debug)]
 pub(crate) struct VersionArgs {
@@ -63,8 +66,6 @@ impl Display for VersionBumpCommand {
 struct PackageJSONWithVersion {
     version: String,
 }
-
-const PACKAGE_JSON_PATH: &str = "./package.json";
 
 pub(crate) fn npm_get_version() -> Result<String, String> {
     // TODO: semantically parse version

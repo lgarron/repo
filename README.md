@@ -37,6 +37,34 @@ Options:
   -h, --help                   Print help
 ````
 
+## `repo publish`
+
+````cli-help-publish
+Publish
+
+Usage: repo publish [OPTIONS]
+
+Options:
+      --ecosystem <ECOSYSTEM>  [possible values: npm, cargo]
+  -h, --help                   Print help
+````
+
+## `repo setup`
+
+````cli-help-setup
+Set up the repo
+
+Usage: repo setup <COMMAND>
+
+Commands:
+  ci                           
+  auto-publish-github-release  
+  help                         Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+````
+
 ## `repo ci`
 
 ````cli-help-ci
@@ -51,16 +79,4 @@ Commands:
 
 Options:
   -h, --help  Print help
-````
-
-## `repo publish`
-
-````cli-help-publish
-Publish
-
-Usage: repo publish [OPTIONS]
-
-Options:
-      --ecosystem <ECOSYSTEM>  [possible values: npm, cargo]
-  -h, --help                   Print help
 ````

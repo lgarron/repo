@@ -1,6 +1,9 @@
 use clap::{Args, Subcommand, ValueEnum};
 use edit::edit_file;
-use std::fs::{create_dir_all, write};
+use std::{
+    fs::{create_dir_all, exists, write},
+    process::exit,
+};
 
 use opener::reveal;
 
@@ -20,6 +23,8 @@ enum CICommand {
 struct CISetupArgs {
     #[clap(long)]
     followup: Option<CISetupFollowup>,
+    #[clap(long)]
+    overwrite: bool,
 }
 
 #[derive(Debug, Clone, ValueEnum)]
@@ -71,6 +76,14 @@ pub fn open_ci_template_for_editing() {
 pub(crate) fn ci_command(ci_args: CIArgs) {
     match ci_args.command {
         CICommand::Setup(ci_setup_args) => {
+            if exists(CI_YAML_PATH).expect("Could not access file system.") {
+                if ci_setup_args.overwrite {
+                    eprintln!("Overwriting CI file due to `--overwrite` flag.");
+                } else {
+                    eprintln!("CI file already exists. Pass `--overwrite` to overwrite.");
+                    exit(1);
+                }
+            }
             create_dir_all(CI_YAML_DIR).expect("Unable to write CI template");
             write(CI_YAML_PATH, CI_YAML_TEMPLATE).expect("Unable to write CI template");
             match ci_setup_args.followup {

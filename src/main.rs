@@ -4,6 +4,7 @@ use version::version_command;
 
 mod args;
 mod ci;
+mod ecosystem;
 mod version;
 
 fn main() {

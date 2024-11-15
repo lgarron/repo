@@ -2,10 +2,12 @@ use std::fmt::Display;
 use std::fs::File;
 use std::process::Command;
 
-use clap::{Args, Subcommand, ValueEnum};
+use clap::{Args, Subcommand};
 
 use cargo_metadata::MetadataCommand;
 use serde::Deserialize;
+
+use crate::ecosystem::{EcosystemArgs, RepoEcosystem};
 
 #[derive(Args, Debug)]
 pub(crate) struct VersionArgs {
@@ -52,34 +54,6 @@ impl Display for VersionBumpCommand {
                 VersionBumpCommand::Major => "major",
                 VersionBumpCommand::Minor => "minor",
                 VersionBumpCommand::Patch => "patch",
-            }
-        )
-    }
-}
-
-#[derive(Args, Debug)]
-struct EcosystemArgs {
-    // TODO: flatten?
-    #[clap(long, default_value = "auto")]
-    pub ecosystem: RepoEcosystem,
-}
-
-#[derive(Debug, Clone, ValueEnum)]
-enum RepoEcosystem {
-    Auto,
-    Npm,
-    Cargo,
-}
-
-impl Display for RepoEcosystem {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                RepoEcosystem::Auto => "auto",
-                RepoEcosystem::Npm => "npm",
-                RepoEcosystem::Cargo => "cargo",
             }
         )
     }

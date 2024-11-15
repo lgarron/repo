@@ -5,6 +5,8 @@ use clap::{Args, CommandFactory, Parser, Subcommand};
 use clap_complete::generator::generate;
 use clap_complete::{Generator, Shell};
 
+use crate::version::VersionArgs;
+
 /// repo — a tool for repo management
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -20,18 +22,6 @@ pub(crate) enum RepoCommand {
     Version(VersionArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
-}
-
-#[derive(Args, Debug)]
-pub(crate) struct VersionArgs {
-    #[command(subcommand)]
-    pub command: VersionCommand,
-}
-
-#[derive(Debug, Subcommand)]
-pub(crate) enum VersionCommand {
-    /// Get the current version
-    Get,
 }
 
 #[derive(Args, Debug)]

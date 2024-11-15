@@ -12,8 +12,9 @@ pub(crate) struct EcosystemArgs {
 
 #[derive(Debug, Clone, ValueEnum)]
 pub(crate) enum Ecosystem {
-    Npm,
-    Cargo,
+    #[clap(name = "javascript")]
+    JavaScript,
+    Rust,
 }
 
 impl Display for Ecosystem {
@@ -22,8 +23,8 @@ impl Display for Ecosystem {
             f,
             "{}",
             match self {
-                Ecosystem::Npm => "npm",
-                Ecosystem::Cargo => "cargo",
+                Ecosystem::JavaScript => "javascript",
+                Ecosystem::Rust => "rust",
             }
         )
     }
@@ -32,9 +33,9 @@ impl Display for Ecosystem {
 impl Default for Ecosystem {
     fn default() -> Self {
         if npm_get_version().is_ok() {
-            Self::Npm
+            Self::JavaScript
         } else {
-            Self::Cargo
+            Self::Rust
         }
     }
 }

@@ -120,8 +120,10 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: Versi
             Ok(version) => version,
             Err(_) => cargo_get_version(),
         },
-        Some(Ecosystem::Npm) => npm_get_version().expect("Could not get `npm` package version."),
-        Some(Ecosystem::Cargo) => cargo_get_version(),
+        Some(Ecosystem::JavaScript) => {
+            npm_get_version().expect("Could not get `npm` package version.")
+        }
+        Some(Ecosystem::Rust) => cargo_get_version(),
     };
     print_version(&version, &version_get_args);
 }
@@ -142,19 +144,19 @@ fn version_bump(ecosystem_args: &EcosystemArgs, version_bump_args: VersionBumpAr
         None => {
             if npm_get_version().is_ok() {
                 npm_bump_version(version_bump_args.command);
-                auto_print_version(Ecosystem::Npm);
+                auto_print_version(Ecosystem::JavaScript);
             } else {
                 cargo_bump_version(version_bump_args.command);
-                auto_print_version(Ecosystem::Cargo);
+                auto_print_version(Ecosystem::Rust);
             }
         }
-        Some(Ecosystem::Npm) => {
+        Some(Ecosystem::JavaScript) => {
             npm_bump_version(version_bump_args.command);
-            auto_print_version(Ecosystem::Npm);
+            auto_print_version(Ecosystem::JavaScript);
         }
-        Some(Ecosystem::Cargo) => {
+        Some(Ecosystem::Rust) => {
             cargo_bump_version(version_bump_args.command);
-            auto_print_version(Ecosystem::Cargo);
+            auto_print_version(Ecosystem::Rust);
         }
     }
 }

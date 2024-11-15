@@ -49,7 +49,7 @@ impl PackageManager {
         ecosystem: Ecosystem,
     ) -> Option<Self> {
         match ecosystem {
-            Ecosystem::Npm => {
+            Ecosystem::JavaScript => {
                 if exists(BUN_LOCKB_PATH).unwrap() {
                     Some(Self::Bun)
                 } else if exists(YARN_LOCK_PATH).unwrap() {
@@ -62,7 +62,7 @@ impl PackageManager {
                     None
                 }
             }
-            Ecosystem::Cargo => {
+            Ecosystem::Rust => {
                 if exists(CARGO_TOML).unwrap() {
                     Some(Self::Cargo)
                 } else {

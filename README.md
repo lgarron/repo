@@ -33,7 +33,7 @@ Commands:
   help  Print this message or the help of the given subcommand(s)
 
 Options:
-      --ecosystem <ECOSYSTEM>  [possible values: npm, cargo]
+      --ecosystem <ECOSYSTEM>  [possible values: javascript, rust]
   -h, --help                   Print help
 ````
 
@@ -45,7 +45,7 @@ Publish
 Usage: repo publish [OPTIONS]
 
 Options:
-      --ecosystem <ECOSYSTEM>  [possible values: npm, cargo]
+      --ecosystem <ECOSYSTEM>  [possible values: javascript, rust]
   -h, --help                   Print help
 ````
 

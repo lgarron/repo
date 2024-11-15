@@ -85,7 +85,9 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
         Some(crate::common::package_manager::PackageManager::Cargo) => cargo_install(),
         None => {
             if let Some(package_manager) =
-                PackageManager::preferred_detected_package_manager_for_ecosystem(Ecosystem::Npm)
+                PackageManager::preferred_detected_package_manager_for_ecosystem(
+                    Ecosystem::JavaScript,
+                )
             {
                 // TODO: encode this in the type system
                 match package_manager {
@@ -97,7 +99,7 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
                 }
             }
             if let Some(package_manager) =
-                PackageManager::preferred_detected_package_manager_for_ecosystem(Ecosystem::Cargo)
+                PackageManager::preferred_detected_package_manager_for_ecosystem(Ecosystem::Rust)
             {
                 // TODO: encode this in the type system
                 match package_manager {

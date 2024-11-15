@@ -14,13 +14,13 @@ pub(crate) struct PublishArgs {
 // TODO: support cross-checking versions across ecosystems
 pub(crate) fn publish_command(publish_args: PublishArgs) {
     match publish_args.ecosystem_args.ecosystem.unwrap_or_default() {
-        Ecosystem::Npm => {
+        Ecosystem::JavaScript => {
             Command::new("npm")
                 .args(["publish"])
                 .spawn()
                 .expect("Could not publish using `npm`");
         }
-        Ecosystem::Cargo => {
+        Ecosystem::Rust => {
             Command::new("cargo")
                 .args(["publish"])
                 .spawn()

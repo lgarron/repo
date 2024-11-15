@@ -42,9 +42,11 @@ readme-cli-check-setup:
 
 .PHONY: lint
 lint: readme-cli-check
+	bun x biome check
 
 .PHONY: format
 format: readme-cli-update
+	bun x biome check --write
 
 .PHONY: install
 install:

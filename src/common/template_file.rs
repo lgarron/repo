@@ -55,7 +55,6 @@ impl<'a> TemplateFile<'a> {
 
     /// Autoamtically performs the followup from the `template_file_write_args` argument.
     fn create(&self, template_file_write_args: TemplateFileCreateArgs) {
-        println!("write");
         if exists(&self.relative_path).expect("Could not access file system.") {
             if template_file_write_args.overwrite {
                 eprintln!(
@@ -89,8 +88,6 @@ impl<'a> TemplateFile<'a> {
                 self.relative_path.to_string_lossy()
             );
         };
-
-        println!("endy");
 
         match template_file_write_args.followup {
             Some(TemplateFileCreateFollowup::Edit) => self.open_for_editing(),

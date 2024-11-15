@@ -59,6 +59,7 @@ Usage: repo boilerplate <COMMAND>
 Commands:
   ci                           Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
   auto-publish-github-release  Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
+  biome                        Set up linting using Biome
   help                         Print this message or the help of the given subcommand(s)
 
 Options:

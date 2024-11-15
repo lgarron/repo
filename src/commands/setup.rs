@@ -78,11 +78,11 @@ fn cargo_install() {
 fn setup_dependencies(package_manager_args: PackageManagerArgs) {
     let package_manager = package_manager_args.package_manager;
     match package_manager {
-        Some(crate::common::package_manager::PackageManager::Npm) => npm_install(),
-        Some(crate::common::package_manager::PackageManager::Bun) => bun_install(),
-        Some(crate::common::package_manager::PackageManager::Yarn) => yarn_install(),
-        Some(crate::common::package_manager::PackageManager::Pnpm) => pnpm_install(),
-        Some(crate::common::package_manager::PackageManager::Cargo) => cargo_install(),
+        Some(PackageManager::Npm) => npm_install(),
+        Some(PackageManager::Bun) => bun_install(),
+        Some(PackageManager::Yarn) => yarn_install(),
+        Some(PackageManager::Pnpm) => pnpm_install(),
+        Some(PackageManager::Cargo) => cargo_install(),
         None => {
             if let Some(package_manager) =
                 PackageManager::auto_detect_preferred_package_manager_for_ecosystem(

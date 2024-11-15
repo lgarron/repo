@@ -9,3 +9,5 @@ license = "MIT"
 cargo_metadata = "0.18.1"
 clap = { version = "4.5.21", features = ["derive"] }
 clap_complete = "4.5.38"
+edit = "0.1.5"
+opener = { version = "0.7.2", features = ["reveal"] }

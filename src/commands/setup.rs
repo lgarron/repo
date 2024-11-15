@@ -14,9 +14,9 @@ pub(crate) struct SetupArgs {
 
 #[derive(Debug, Subcommand)]
 enum SetupCommand {
-    // Set up a CI template for GitHub and open for editing.
+    /// Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
     CI(TemplateFileWriteArgs),
-    // Set up a CI template for auto-publishing releases from tags pushed to GitHub.
+    /// Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
     AutoPublishGithubRelease(TemplateFileWriteArgs),
 }
 

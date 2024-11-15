@@ -57,8 +57,8 @@ Set up the repo
 Usage: repo setup <COMMAND>
 
 Commands:
-  ci                           
-  auto-publish-github-release  
+  ci                           Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
+  auto-publish-github-release  Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
   help                         Print this message or the help of the given subcommand(s)
 
 Options:

@@ -6,7 +6,6 @@ use clap_complete::generator::generate;
 use clap_complete::{Generator, Shell};
 
 use crate::commands::boilerplate::BoilerplateArgs;
-use crate::commands::ci::CIArgs;
 use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
 use crate::commands::version::VersionArgs;
@@ -30,8 +29,6 @@ pub(crate) enum RepoCommand {
     Boilerplate(BoilerplateArgs),
     /// Set up a repository checkout.
     Setup(SetupArgs),
-    /// Manage CI (continuous integration) at `.github/workflows/CI.yaml`
-    CI(CIArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
 }

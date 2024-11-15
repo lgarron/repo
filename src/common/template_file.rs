@@ -4,20 +4,33 @@ use std::{
     path::PathBuf,
 };
 
-use clap::{Args, ValueEnum};
+use clap::{Args, Subcommand, ValueEnum};
 use edit::edit_file;
 use opener::reveal;
 
 #[derive(Args, Debug)]
-pub(crate) struct TemplateFileWriteArgs {
+pub(crate) struct TemplateFileArgs {
+    #[command(subcommand)]
+    command: TemplateFileCommand,
+}
+
+#[derive(Debug, Subcommand)]
+enum TemplateFileCommand {
+    Create(TemplateFileCreateArgs),
+    Edit,
+    Reveal,
+}
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct TemplateFileCreateArgs {
     #[clap(long)]
-    followup: Option<TemplateFileWriteFollowup>,
+    followup: Option<TemplateFileCreateFollowup>,
     #[clap(long)]
     overwrite: bool,
 }
 
 #[derive(Debug, Clone, ValueEnum)]
-enum TemplateFileWriteFollowup {
+enum TemplateFileCreateFollowup {
     // TODO: support `Open` as a version of `Edit` that doesn't wait.
     Edit,
     Reveal,
@@ -30,8 +43,18 @@ pub(crate) struct TemplateFile<'a> {
 }
 
 impl<'a> TemplateFile<'a> {
+    pub(crate) fn handle_command(&self, template_file_args: TemplateFileArgs) {
+        match template_file_args.command {
+            TemplateFileCommand::Create(template_file_create_args) => {
+                self.create(template_file_create_args);
+            }
+            TemplateFileCommand::Edit => self.open_for_editing(),
+            TemplateFileCommand::Reveal => self.reveal(),
+        }
+    }
+
     /// Autoamtically performs the followup from the `template_file_write_args` argument.
-    pub fn write(&self, template_file_write_args: TemplateFileWriteArgs) {
+    fn create(&self, template_file_write_args: TemplateFileCreateArgs) {
         println!("write");
         if exists(&self.relative_path).expect("Could not access file system.") {
             if template_file_write_args.overwrite {
@@ -60,17 +83,21 @@ impl<'a> TemplateFile<'a> {
                 self.relative_path.to_string_lossy()
             );
         };
-        file.write_all(self.bytes)
-            .expect("Unable to write CI template");
+        let Ok(()) = file.write_all(self.bytes) else {
+            panic!(
+                "Unable to write file: {}",
+                self.relative_path.to_string_lossy()
+            );
+        };
 
         println!("endy");
 
         match template_file_write_args.followup {
-            Some(TemplateFileWriteFollowup::Edit) => self.open_for_editing(),
-            Some(TemplateFileWriteFollowup::Reveal) => {
+            Some(TemplateFileCreateFollowup::Edit) => self.open_for_editing(),
+            Some(TemplateFileCreateFollowup::Reveal) => {
                 self.reveal();
             }
-            Some(TemplateFileWriteFollowup::None) => {}
+            Some(TemplateFileCreateFollowup::None) => {}
             None => {
                 self.open_for_editing();
             }

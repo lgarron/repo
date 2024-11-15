@@ -20,7 +20,6 @@ readme-cli-update:
 	bun x readme-cli-help --fence cli-help-publish "cargo run --quiet -- publish --help"
 	bun x readme-cli-help --fence cli-help-boilerplate "cargo run --quiet -- boilerplate --help"
 	bun x readme-cli-help --fence cli-help-setup "cargo run --quiet -- setup --help"
-	bun x readme-cli-help --fence cli-help-ci "cargo run --quiet -- ci --help"
 
 .PHONY: readme-cli-check
 readme-cli-check: \
@@ -28,8 +27,7 @@ readme-cli-check: \
 	readme-cli-check-version \
 	readme-cli-check-publish \
 	readme-cli-check-boilerplate \
-	readme-cli-check-setup \
-	readme-cli-check-ci
+	readme-cli-check-setup
 
 readme-cli-check-main:
 	bun x readme-cli-help --check-only "cargo run --quiet -- --help"
@@ -41,8 +39,6 @@ readme-cli-check-boilerplate:
 	bun x readme-cli-help --fence cli-help-boilerplate --check-only "cargo run --quiet -- boilerplate --help"
 readme-cli-check-setup:
 	bun x readme-cli-help --fence cli-help-setup --check-only "cargo run --quiet -- setup --help"
-readme-cli-check-ci:
-	bun x readme-cli-help --fence cli-help-ci --check-only "cargo run --quiet -- ci --help"
 
 .PHONY: lint
 lint: readme-cli-check

@@ -12,7 +12,6 @@ Commands:
   publish      Publish
   boilerplate  Set up boilerplate for the repo
   setup        Set up a repository checkout
-  ci           Manage CI (continuous integration) at `.github/workflows/CI.yaml`
   completions  Print completions for the given shell
   help         Print this message or the help of the given subcommand(s)
 
@@ -80,20 +79,4 @@ Commands:
 Options:
       --package-manager <PACKAGE_MANAGER>  [possible values: npm, bun, yarn, pnpm, cargo]
   -h, --help                               Print help
-````
-
-## `repo ci`
-
-````cli-help-ci
-Manage CI (continuous integration) at `.github/workflows/CI.yaml`
-
-Usage: repo ci <COMMAND>
-
-Commands:
-  boilerplate  Alias for `repo boilerplate ci`
-  edit         Open the CI file
-  help         Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help  Print help
 ````

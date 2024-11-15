@@ -7,6 +7,8 @@ end
 
 repo completions fish | source
 
+abbr -a "p" "repo"
+
 abbr -a "v" "repo version"
 abbr -a "version" "repo version"
 abbr_subcommand repo v "version"

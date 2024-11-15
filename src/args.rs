@@ -5,6 +5,7 @@ use clap::{Args, CommandFactory, Parser, Subcommand};
 use clap_complete::generator::generate;
 use clap_complete::{Generator, Shell};
 
+use crate::ci::CIArgs;
 use crate::version::VersionArgs;
 
 /// repo — a tool for repo management
@@ -22,6 +23,8 @@ pub(crate) enum RepoCommand {
     Version(VersionArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
+    /// Manage CI (continuous integration)
+    CI(CIArgs),
 }
 
 #[derive(Args, Debug)]

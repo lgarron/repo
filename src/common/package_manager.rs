@@ -45,7 +45,7 @@ const BUN_LOCKB_PATH: &str = "./bun.lockb";
 const CARGO_TOML: &str = "./Cargo.toml";
 
 impl PackageManager {
-    pub(crate) fn preferred_detected_package_manager_for_ecosystem(
+    pub(crate) fn auto_detect_preferred_package_manager_for_ecosystem(
         ecosystem: Ecosystem,
     ) -> Option<Self> {
         match ecosystem {

@@ -17,6 +17,9 @@ pub(crate) struct CIArgs {
 enum CICommand {
     /// Set up a CI template for GitHub and open for editing.
     Setup(CISetupArgs),
+    // TODO: support `Open` as a version of `Edit` that doesn't wait.
+    /// Open the CI file.
+    Edit,
 }
 
 #[derive(Args, Debug)]
@@ -29,6 +32,7 @@ struct CISetupArgs {
 
 #[derive(Debug, Clone, ValueEnum)]
 enum CISetupFollowup {
+    // TODO: support `Open` as a version of `Edit` that doesn't wait.
     Edit,
     Reveal,
     None,
@@ -69,33 +73,38 @@ jobs:
 //     open(CI_YAML_PATH).expect("Unable to open CI template")
 // }
 
-pub fn open_ci_template_for_editing() {
+fn open_ci_template_for_editing() {
     edit_file(CI_YAML_PATH).expect("Could not open CI file for editing.");
+}
+
+fn setup(ci_setup_args: CISetupArgs) {
+    if exists(CI_YAML_PATH).expect("Could not access file system.") {
+        if ci_setup_args.overwrite {
+            eprintln!("Overwriting CI file due to `--overwrite` flag.");
+        } else {
+            eprintln!("CI file already exists. Pass `--overwrite` to overwrite.");
+            exit(1);
+        }
+    }
+    create_dir_all(CI_YAML_DIR).expect("Unable to write CI template");
+    write(CI_YAML_PATH, CI_YAML_TEMPLATE).expect("Unable to write CI template");
+    match ci_setup_args.followup {
+        Some(CISetupFollowup::Edit) => open_ci_template_for_editing(),
+        Some(CISetupFollowup::Reveal) => {
+            reveal(CI_YAML_PATH).expect("Unable to reveal CI template")
+        }
+        Some(CISetupFollowup::None) => {}
+        None => {
+            open_ci_template_for_editing();
+        }
+    };
 }
 
 pub(crate) fn ci_command(ci_args: CIArgs) {
     match ci_args.command {
-        CICommand::Setup(ci_setup_args) => {
-            if exists(CI_YAML_PATH).expect("Could not access file system.") {
-                if ci_setup_args.overwrite {
-                    eprintln!("Overwriting CI file due to `--overwrite` flag.");
-                } else {
-                    eprintln!("CI file already exists. Pass `--overwrite` to overwrite.");
-                    exit(1);
-                }
-            }
-            create_dir_all(CI_YAML_DIR).expect("Unable to write CI template");
-            write(CI_YAML_PATH, CI_YAML_TEMPLATE).expect("Unable to write CI template");
-            match ci_setup_args.followup {
-                Some(CISetupFollowup::Edit) => open_ci_template_for_editing(),
-                Some(CISetupFollowup::Reveal) => {
-                    reveal(CI_YAML_PATH).expect("Unable to reveal CI template")
-                }
-                Some(CISetupFollowup::None) => {}
-                None => {
-                    open_ci_template_for_editing();
-                }
-            };
+        CICommand::Edit => {
+            open_ci_template_for_editing();
         }
+        CICommand::Setup(ci_setup_args) => setup(ci_setup_args),
     }
 }

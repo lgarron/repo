@@ -11,8 +11,8 @@ pub(crate) struct CIArgs {
 
 #[derive(Debug, Subcommand)]
 enum CICommand {
-    /// Alias for `repo setup ci`
-    Setup(TemplateFileWriteArgs),
+    /// Alias for `repo boilerplate ci`
+    Boilerplate(TemplateFileWriteArgs),
     // TODO: support `Open` as a version of `Edit` that doesn't wait.
     /// Open the CI file.
     Edit,
@@ -31,7 +31,7 @@ pub(crate) fn ci_command(ci_args: CIArgs) {
         CICommand::Edit => {
             ci_template().open_for_editing();
         }
-        CICommand::Setup(template_file_write_args) => {
+        CICommand::Boilerplate(template_file_write_args) => {
             ci_template().write(template_file_write_args);
         }
     }

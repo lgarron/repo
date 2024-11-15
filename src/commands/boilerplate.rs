@@ -7,13 +7,13 @@ use crate::common::template_file::{TemplateFile, TemplateFileWriteArgs};
 use super::ci::ci_template;
 
 #[derive(Args, Debug)]
-pub(crate) struct SetupArgs {
+pub(crate) struct BoilerplateArgs {
     #[command(subcommand)]
-    command: SetupCommand,
+    command: BoilerplateCommand,
 }
 
 #[derive(Debug, Subcommand)]
-enum SetupCommand {
+enum BoilerplateCommand {
     /// Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
     CI(TemplateFileWriteArgs),
     /// Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
@@ -29,11 +29,12 @@ pub(crate) fn publish_github_release_template() -> TemplateFile<'static> {
 }
 
 // TODO: use traits to abstract across ecosystems
-// TODO: support cross-checking Setups across ecosystems
-pub(crate) fn setup_command(setup_args: SetupArgs) {
-    match setup_args.command {
-        SetupCommand::CI(template_file_write_args) => ci_template().write(template_file_write_args),
-        SetupCommand::AutoPublishGithubRelease(template_file_write_args) => {
+pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
+    match boilerplate_args.command {
+        BoilerplateCommand::CI(template_file_write_args) => {
+            ci_template().write(template_file_write_args)
+        }
+        BoilerplateCommand::AutoPublishGithubRelease(template_file_write_args) => {
             publish_github_release_template().write(template_file_write_args)
         }
     };

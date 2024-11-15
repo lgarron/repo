@@ -10,7 +10,7 @@ Usage: repo <COMMAND>
 Commands:
   version      Perform operations on the repo version
   publish      Publish
-  setup        Set up the repo
+  boilerplate  Set up boilerplate for the repo
   ci           Manage CI (continuous integration) at `.github/workflows/CI.yaml`
   completions  Print completions for the given shell
   help         Print this message or the help of the given subcommand(s)
@@ -49,12 +49,12 @@ Options:
   -h, --help                   Print help
 ````
 
-## `repo setup`
+## `repo boilerplate`
 
-````cli-help-setup
-Set up the repo
+````cli-help-boilerplate
+Set up boilerplate for the repo
 
-Usage: repo setup <COMMAND>
+Usage: repo boilerplate <COMMAND>
 
 Commands:
   ci                           Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
@@ -73,9 +73,9 @@ Manage CI (continuous integration) at `.github/workflows/CI.yaml`
 Usage: repo ci <COMMAND>
 
 Commands:
-  setup  Alias for `repo setup ci`
-  edit   Open the CI file
-  help   Print this message or the help of the given subcommand(s)
+  boilerplate  Alias for `repo boilerplate ci`
+  edit         Open the CI file
+  help         Print this message or the help of the given subcommand(s)
 
 Options:
   -h, --help  Print help

@@ -10,6 +10,7 @@ Usage: repo <COMMAND>
 Commands:
   version      Perform operations on the repo version
   publish      Publish
+  setup        Set up the repo
   ci           Manage CI (continuous integration) at `.github/workflows/CI.yaml`
   completions  Print completions for the given shell
   help         Print this message or the help of the given subcommand(s)
@@ -44,7 +45,7 @@ Manage CI (continuous integration) at `.github/workflows/CI.yaml`
 Usage: repo ci <COMMAND>
 
 Commands:
-  setup  Set up a CI template for GitHub and open for editing
+  setup  Alias for `repo setup ci`
   edit   Open the CI file
   help   Print this message or the help of the given subcommand(s)
 

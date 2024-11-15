@@ -9,10 +9,9 @@ test: cargo-test-help lint
 cargo-test-help:
 	cargo run -- --help > /dev/null
 
-
 .PHONY: publish
 publish:
-	cargo publish
+	cargo run -- publish # Dogfood our own `publish` command
 
 .PHONY: readme-cli-update
 readme-cli-update:

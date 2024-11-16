@@ -64,7 +64,7 @@ impl Display for VersionBumpCommand {
 
 #[derive(Deserialize)]
 struct PackageJSONWithVersion {
-    version: String,
+    version: Option<String>,
 }
 
 pub(crate) fn npm_get_version() -> Result<String, String> {
@@ -75,7 +75,10 @@ pub(crate) fn npm_get_version() -> Result<String, String> {
     let Ok(package_json) = serde_json::from_reader::<_, PackageJSONWithVersion>(file) else {
         return Err("Could not read `package.json`".to_owned());
     };
-    Ok(package_json.version)
+    match package_json.version {
+        Some(version) => Ok(version),
+        None => Err("No version field found in `package.json`".to_owned()),
+    }
 }
 
 fn cargo_get_version() -> String {
@@ -118,7 +121,10 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: Versi
     let version: String = match ecosystem_args.ecosystem {
         None => match npm_get_version() {
             Ok(version) => version,
-            Err(_) => cargo_get_version(),
+            Err(e) => {
+                dbg!(e);
+                cargo_get_version()
+            }
         },
         Some(Ecosystem::JavaScript) => {
             npm_get_version().expect("Could not get `npm` package version.")

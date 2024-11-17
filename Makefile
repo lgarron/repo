@@ -54,4 +54,4 @@ install:
 
 .PHONY: uninstall
 uninstall:
-	cargo uninstall --path .
+	cargo uninstall repo

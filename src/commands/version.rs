@@ -129,7 +129,7 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: Versi
     let version: String = match ecosystem_args.ecosystem {
         None => match npm_get_version() {
             Ok(version) => version,
-            Err(e) => cargo_get_version(),
+            Err(_) => cargo_get_version(),
         },
         Some(Ecosystem::JavaScript) => {
             npm_get_version().expect("Could not get `npm` package version.")

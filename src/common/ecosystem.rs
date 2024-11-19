@@ -10,7 +10,7 @@ pub(crate) struct EcosystemArgs {
     pub(crate) ecosystem: Option<Ecosystem>,
 }
 
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Copy, Clone, ValueEnum)]
 pub(crate) enum Ecosystem {
     #[clap(name = "javascript")]
     JavaScript,

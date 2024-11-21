@@ -1,4 +1,7 @@
-use std::{fs::exists, process::Command};
+use std::{
+    fs::exists,
+    process::{Command, Stdio},
+};
 
 use clap::{Args, Subcommand};
 
@@ -9,16 +12,21 @@ use crate::common::{
 
 #[derive(Args, Debug)]
 pub(crate) struct SetupArgs {
+    /// Run a specific setup command, or infer the ssetup command to run.
     #[command(subcommand)]
-    command: SetupCommand,
-    #[command(flatten)]
-    package_manager_args: PackageManagerArgs,
+    command: Option<SetupCommand>,
 }
 
 #[derive(Debug, Subcommand)]
 enum SetupCommand {
     /// Install dependencies
-    Dependencies,
+    Dependencies(DependenciesArgs),
+}
+
+#[derive(Args, Debug)]
+pub(crate) struct DependenciesArgs {
+    #[command(flatten)]
+    package_manager_args: PackageManagerArgs,
 }
 
 // TODO: skip empty deps?
@@ -76,6 +84,7 @@ fn cargo_install() {
 
 // TODO: multiple package managers in a single repo
 fn setup_dependencies(package_manager_args: PackageManagerArgs) {
+    // TODO: multiple ecosystems
     let package_manager = package_manager_args.package_manager;
     match package_manager {
         Some(PackageManager::Npm) => npm_install(),
@@ -114,10 +123,37 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
     }
 }
 
+pub(crate) fn make_setup_exists() -> bool {
+    Command::new("make")
+        .args(["-n", "setup"])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .expect("Could not detect whether `make setup` exists")
+        .success()
+}
+
+pub(crate) fn make_setup() {
+    Command::new("make")
+        .args(["setup"])
+        .status()
+        .expect("Could not run `make setup` exists`");
+}
+
 pub(crate) fn setup_command(setup_args: SetupArgs) {
     match setup_args.command {
-        SetupCommand::Dependencies => {
-            setup_dependencies(setup_args.package_manager_args);
+        None => {
+            if make_setup_exists() {
+                eprintln!("Running: make setup");
+                make_setup();
+            } else {
+                setup_dependencies(PackageManagerArgs {
+                    package_manager: None,
+                });
+            }
+        }
+        Some(SetupCommand::Dependencies(dependencies_args)) => {
+            setup_dependencies(dependencies_args.package_manager_args);
         }
     };
 }

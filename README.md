@@ -72,13 +72,12 @@ Options:
 ````cli-help-setup
 Set up a repository checkout
 
-Usage: repo setup [OPTIONS] <COMMAND>
+Usage: repo setup [COMMAND]
 
 Commands:
   dependencies  Install dependencies
   help          Print this message or the help of the given subcommand(s)
 
 Options:
-      --package-manager <PACKAGE_MANAGER>  [possible values: npm, bun, yarn, pnpm, cargo]
-  -h, --help                               Print help
+  -h, --help  Print help
 ````

@@ -2,19 +2,18 @@ use std::fmt::Display;
 
 use clap::{Args, ValueEnum};
 
-use crate::commands::version::npm_get_version;
-
 #[derive(Args, Debug)]
 pub(crate) struct EcosystemArgs {
     #[clap(long)]
     pub(crate) ecosystem: Option<Ecosystem>,
 }
 
-#[derive(Debug, Copy, Clone, ValueEnum)]
+#[derive(Debug, Copy, Clone, ValueEnum, PartialEq, Eq)]
 pub(crate) enum Ecosystem {
     #[clap(name = "javascript")]
     JavaScript,
     Rust,
+    // Python,
 }
 
 impl Display for Ecosystem {
@@ -25,17 +24,8 @@ impl Display for Ecosystem {
             match self {
                 Ecosystem::JavaScript => "javascript",
                 Ecosystem::Rust => "rust",
+                // Ecosystem::Python => "python",
             }
         )
-    }
-}
-
-impl Default for Ecosystem {
-    fn default() -> Self {
-        if npm_get_version().is_ok() {
-            Self::JavaScript
-        } else {
-            Self::Rust
-        }
     }
 }

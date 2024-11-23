@@ -1,6 +1,6 @@
-use std::fmt::Display;
 use std::fs::File;
 use std::process::Command;
+use std::{fmt::Display, process::exit};
 
 use clap::{Args, Subcommand};
 
@@ -78,7 +78,7 @@ struct PackageJSONWithVersion {
 pub(crate) fn npm_get_version() -> Result<String, String> {
     // TODO: semantically parse version
     let Ok(file) = File::open(PACKAGE_JSON_PATH) else {
-        return Err("Could not read `package.json`".to_owned());
+        return Err("Could not file `package.json`".to_owned());
     };
     let Ok(package_json) = serde_json::from_reader::<_, PackageJSONWithVersion>(file) else {
         return Err("Could not read `package.json`".to_owned());
@@ -89,16 +89,19 @@ pub(crate) fn npm_get_version() -> Result<String, String> {
     }
 }
 
-fn cargo_get_version() -> String {
-    MetadataCommand::new()
+pub(crate) fn cargo_get_version() -> Result<String, String> {
+    let mut command = MetadataCommand::new();
+    let Ok(metadata) = command
         .manifest_path("./Cargo.toml")
         .current_dir(".")
         .exec()
-        .unwrap()
-        .root_package()
-        .unwrap()
-        .version
-        .to_string()
+    else {
+        return Err("Could not file `Cargo.toml`".to_owned());
+    };
+    let Some(root_package) = metadata.root_package() else {
+        return Err("Could not file `Cargo.toml` root package.".to_owned());
+    };
+    Ok(root_package.version.to_string())
 }
 
 fn print_version(version: &str, version_get_args: &VersionGetArgs) {
@@ -125,18 +128,45 @@ fn cargo_bump_version(version_bump_command: VersionBumpCommand) {
         .expect("Could not bump version using `cargo-bump`");
 }
 
-fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: VersionGetArgs) {
-    let version: String = match ecosystem_args.ecosystem {
-        None => match npm_get_version() {
-            Ok(version) => version,
-            Err(_) => cargo_get_version(),
-        },
-        Some(Ecosystem::JavaScript) => {
-            npm_get_version().expect("Could not get `npm` package version.")
+pub(crate) fn detect_ecosystem_by_getting_version(
+    ecosystem_args: &EcosystemArgs,
+) -> Option<(Ecosystem, String)> {
+    for (ecosystem, get_version) in [
+        (
+            Ecosystem::JavaScript,
+            npm_get_version as fn() -> Result<String, String>,
+        ),
+        (
+            Ecosystem::Rust,
+            cargo_get_version as fn() -> Result<String, String>,
+        ),
+    ] {
+        if let Some(require_ecosystem) = ecosystem_args.ecosystem {
+            if require_ecosystem != ecosystem {
+                // TODO: make this neater
+                continue;
+            }
         }
-        Some(Ecosystem::Rust) => cargo_get_version(),
+        if let Ok(version) = get_version() {
+            return Some((ecosystem, version));
+        }
+    }
+    None
+}
+
+pub(crate) fn must_detect_ecosystem_by_getting_version(
+    ecosystem_args: &EcosystemArgs,
+) -> (Ecosystem, String) {
+    detect_ecosystem_by_getting_version(ecosystem_args)
+        .expect("Could not detect an ecosystem for this repo.")
+}
+
+fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: &VersionGetArgs) {
+    let Some((_, version)) = detect_ecosystem_by_getting_version(ecosystem_args) else {
+        eprintln!("No version found.");
+        exit(1);
     };
-    print_version(&version, &version_get_args);
+    print_version(&version, version_get_args);
 }
 
 // TODO: get version from output of the bump commands themselves?
@@ -146,17 +176,17 @@ fn version_bump(ecosystem_args: &EcosystemArgs, version_bump_args: VersionBumpAr
         print!("Bumped to version: ");
         version_get_and_print(
             ecosystem_args,
-            VersionGetArgs {
+            &VersionGetArgs {
                 no_prefix: false, // TODO
             },
         )
     };
-    match ecosystem_args.ecosystem.unwrap_or_default() {
-        Ecosystem::JavaScript => {
+    match must_detect_ecosystem_by_getting_version(ecosystem_args) {
+        (Ecosystem::JavaScript, _) => {
             npm_bump_version(version_bump_args.command);
             auto_print_version(Ecosystem::JavaScript);
         }
-        Ecosystem::Rust => {
+        (Ecosystem::Rust, _) => {
             cargo_bump_version(version_bump_args.command);
             auto_print_version(Ecosystem::Rust);
         }
@@ -180,11 +210,11 @@ fn cargo_set_version(version: Version) {
 fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {
     println!("Setting version to: v{}", version);
 
-    match ecosystem_args.ecosystem.unwrap_or_default() {
-        Ecosystem::JavaScript => {
+    match must_detect_ecosystem_by_getting_version(ecosystem_args) {
+        (Ecosystem::JavaScript, _) => {
             npm_set_version(version);
         }
-        Ecosystem::Rust => {
+        (Ecosystem::Rust, _) => {
             cargo_set_version(version);
         }
     }
@@ -195,7 +225,7 @@ fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {
 pub(crate) fn version_command(version_args: VersionArgs) {
     match version_args.command {
         VersionCommand::Get(version_get_args) => {
-            version_get_and_print(&version_args.ecosystem_args, version_get_args);
+            version_get_and_print(&version_args.ecosystem_args, &version_get_args);
         }
         VersionCommand::Set(version_set_args) => {
             let version = version_set_args

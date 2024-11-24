@@ -2,6 +2,7 @@ use std::fs::File;
 use std::process::Command;
 use std::{fmt::Display, process::exit};
 
+use cargo_metadata::semver::Prerelease;
 use clap::{Args, Subcommand};
 
 use cargo_metadata::{semver::Version, MetadataCommand};
@@ -49,11 +50,12 @@ struct VersionBumpArgs {
     pub command: VersionBumpCommand,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, PartialEq, Eq)]
 enum VersionBumpCommand {
     Major,
     Minor,
     Patch,
+    Dev,
 }
 
 impl Display for VersionBumpCommand {
@@ -65,6 +67,7 @@ impl Display for VersionBumpCommand {
                 VersionBumpCommand::Major => "major",
                 VersionBumpCommand::Minor => "minor",
                 VersionBumpCommand::Patch => "patch",
+                VersionBumpCommand::Dev => "dev",
             }
         )
     }
@@ -109,7 +112,20 @@ fn print_version(version: &str, version_get_args: &VersionGetArgs) {
     println!("{}{}", prefix, version);
 }
 
+fn dev_bump(version: Version) -> Version {
+    let mut version = version.clone();
+    version.patch += 1;
+    version.pre = Prerelease::new("dev").unwrap();
+    version
+}
+
 fn npm_bump_version(version_bump_command: VersionBumpCommand) {
+    if version_bump_command == VersionBumpCommand::Dev {
+        let version = npm_get_version().expect("Could not get current version.");
+        let version = Version::parse(&version).expect("Could not parse current version.");
+        npm_set_version(dev_bump(version));
+        return;
+    }
     Command::new("npm")
         .args([
             "version",
@@ -121,6 +137,12 @@ fn npm_bump_version(version_bump_command: VersionBumpCommand) {
 }
 
 fn cargo_bump_version(version_bump_command: VersionBumpCommand) {
+    if version_bump_command == VersionBumpCommand::Dev {
+        let version = cargo_get_version().expect("Could not get current version.");
+        let version = Version::parse(&version).expect("Could not parse current version.");
+        cargo_set_version(dev_bump(version));
+        return;
+    }
     println!("Assuming `cargo-bump` is installed…");
     Command::new("cargo")
         .args(["bump", &version_bump_command.to_string()])

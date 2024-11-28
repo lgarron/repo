@@ -143,7 +143,7 @@ fn cargo_bump_version(version_bump_command: VersionBumpCommand) {
         cargo_set_version(dev_bump(version));
         return;
     }
-    println!("Assuming `cargo-bump` is installed…");
+    eprintln!("Assuming `cargo-bump` is installed…");
     Command::new("cargo")
         .args(["bump", &version_bump_command.to_string()])
         .status()
@@ -194,14 +194,7 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: &Vers
 // TODO: get version from output of the bump commands themselves?
 fn version_bump(ecosystem_args: &EcosystemArgs, version_bump_args: VersionBumpArgs) {
     let auto_print_version = |repo_ecosystem: Ecosystem| {
-        println!("Bumped version using ecosystem: {}", repo_ecosystem);
-        print!("Bumped to version: ");
-        version_get_and_print(
-            ecosystem_args,
-            &VersionGetArgs {
-                no_prefix: false, // TODO
-            },
-        )
+        eprintln!("Bumped version using ecosystem: {}", repo_ecosystem);
     };
     match must_detect_ecosystem_by_getting_version(ecosystem_args) {
         (Ecosystem::JavaScript, _) => {
@@ -230,7 +223,7 @@ fn cargo_set_version(version: Version) {
 }
 
 fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {
-    println!("Setting version to: v{}", version);
+    eprintln!("Setting version to: v{}", version);
 
     match must_detect_ecosystem_by_getting_version(ecosystem_args) {
         (Ecosystem::JavaScript, _) => {

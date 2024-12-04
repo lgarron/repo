@@ -49,7 +49,6 @@ fn biome_json_template() -> TemplateFile<'static> {
 }
 
 fn add_biome(template_file_args: TemplateFileArgs) {
-    biome_json_template().handle_command(template_file_args);
     let (binary, args, biome_command_prefix) =
         match PackageManager::auto_detect_preferred_package_manager_for_ecosystem(
             Ecosystem::JavaScript,
@@ -84,7 +83,7 @@ fn add_biome(template_file_args: TemplateFileArgs) {
         .args(args)
         .spawn()
         .expect("Could not add development dependency");
-
+    biome_json_template().handle_command(template_file_args);
     println!(
         "Use the following commands:
 

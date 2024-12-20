@@ -87,7 +87,10 @@ pub(crate) fn npm_get_version() -> Result<String, String> {
         return Err("Could not read `package.json`".to_owned());
     };
     match package_json.version {
-        Some(version) => Ok(version),
+        Some(version) => Ok(match version.strip_prefix("v") {
+            Some(version) => version.to_owned(),
+            None => version,
+        }),
         None => Err("No version field found in `package.json`".to_owned()),
     }
 }

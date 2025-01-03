@@ -22,6 +22,8 @@ enum BoilerplateCommand {
     AutoPublishGithubRelease(TemplateFileArgs),
     /// Set up linting using Biome
     Biome(TemplateFileArgs),
+    /// Set up `rust-toolchain.toml`
+    RustToolchain(TemplateFileArgs),
 }
 
 fn ci_template() -> TemplateFile<'static> {
@@ -44,6 +46,14 @@ fn biome_json_template() -> TemplateFile<'static> {
     let bytes = include_bytes!("../templates/biome.json");
     TemplateFile {
         relative_path: PathBuf::from("./biome.json"),
+        bytes,
+    }
+}
+
+fn rust_toolchain_template() -> TemplateFile<'static> {
+    let bytes = include_bytes!("../templates/rust-toolchain.toml");
+    TemplateFile {
+        relative_path: PathBuf::from("./rust-toolchain.toml"),
         bytes,
     }
 }
@@ -116,5 +126,8 @@ pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
             publish_github_release_template().handle_command(template_file_args);
         }
         BoilerplateCommand::Biome(template_file_args) => add_biome(template_file_args),
+        BoilerplateCommand::RustToolchain(template_file_args) => {
+            rust_toolchain_template().handle_command(template_file_args)
+        }
     };
 }

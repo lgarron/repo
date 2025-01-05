@@ -43,6 +43,7 @@ readme-cli-check-setup:
 .PHONY: lint
 lint: readme-cli-check
 	bun x biome check
+	cargo clippy
 
 .PHONY: format
 format: readme-cli-update

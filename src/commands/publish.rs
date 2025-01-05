@@ -20,13 +20,17 @@ pub(crate) fn publish_command(publish_args: PublishArgs) {
             Command::new("npm")
                 .args(["publish"])
                 .spawn()
-                .expect("Could not publish using `npm`");
+                .expect("Could not publish using `npm`")
+                .wait()
+                .unwrap();
         }
         (Ecosystem::Rust, _) => {
             Command::new("cargo")
                 .args(["publish"])
                 .spawn()
-                .expect("Could not publish using `cargo`");
+                .expect("Could not publish using `cargo`")
+                .wait()
+                .unwrap();
         }
     }
 }

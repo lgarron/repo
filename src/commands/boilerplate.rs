@@ -92,7 +92,9 @@ fn add_biome(template_file_args: TemplateFileArgs) {
     Command::new(binary)
         .args(args)
         .spawn()
-        .expect("Could not add development dependency");
+        .expect("Could not add development dependency")
+        .wait()
+        .unwrap();
     biome_json_template().handle_command(template_file_args);
     println!(
         "Use the following commands:

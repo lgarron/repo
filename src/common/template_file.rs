@@ -42,7 +42,7 @@ pub(crate) struct TemplateFile<'a> {
     pub(crate) bytes: &'a [u8],
 }
 
-impl<'a> TemplateFile<'a> {
+impl TemplateFile<'_> {
     pub(crate) fn handle_command(&self, template_file_args: TemplateFileArgs) {
         match template_file_args.command {
             TemplateFileCommand::Add(template_file_create_args) => {

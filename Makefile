@@ -10,7 +10,7 @@ cargo-test-help:
 	cargo run -- --help > /dev/null
 
 .PHONY: publish
-publish:
+publish: clean
 	cargo run -- publish # Dogfood our own `publish` command
 
 .PHONY: readme-cli-update

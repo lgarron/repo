@@ -4,6 +4,7 @@ description = "An opinionated tool for repo management."
 version = "0.6.5"
 edition = "2021"
 license = "MIT"
+exclude = ["./src/templates/node_modules"]
 
 [dependencies]
 cargo_metadata = "0.18.1"

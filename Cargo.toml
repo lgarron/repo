@@ -3,7 +3,7 @@ name = "repo"
 description = "An opinionated tool for repo management."
 version = "0.6.4"
 edition = "2021"
-exclude = ["./node_modules", "**/.DS_Store"]
+exclude = ["./node_modules/**/*", "**/.DS_Store"]
 
 [dependencies]
 cargo_metadata = "0.18.1"

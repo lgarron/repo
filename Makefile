@@ -56,3 +56,12 @@ install:
 .PHONY: uninstall
 uninstall:
 	cargo uninstall repo
+
+.PHONY: clean
+clean:
+	rm -rf ./node_modules/
+
+.PHONY: reset
+reset:
+	rm -rf ./target/
+

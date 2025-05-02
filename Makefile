@@ -62,6 +62,6 @@ clean:
 	rm -rf ./node_modules/
 
 .PHONY: reset
-reset:
+reset: clean
 	rm -rf ./target/
 

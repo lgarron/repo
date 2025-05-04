@@ -102,17 +102,17 @@ fn add_biome(template_file_args: TemplateFileArgs) {
 `package.json`:
 
 \"lint\": \"{} check\"
-\"format\": \"{} write\"
+\"format\": \"{} check --write\"
 
-`Makefile`:
+`Makefile` (make sure to convert ⇥ to tab indentation):
 
 .PHONY: lint
 lint:
-\t{} check
+⇥{} check
 
 .PHONY: format
 format:
-\t{} check --write
+⇥{} check --write
 ",
         biome_command_prefix, biome_command_prefix, biome_command_prefix, biome_command_prefix,
     )

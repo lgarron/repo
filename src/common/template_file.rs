@@ -2,6 +2,7 @@ use std::{
     fs::{create_dir_all, exists, File},
     io::Write,
     path::PathBuf,
+    process::exit,
 };
 
 use clap::{Args, Subcommand, ValueEnum};
@@ -62,31 +63,35 @@ impl TemplateFile<'_> {
                     self.relative_path.to_string_lossy()
                 );
             } else {
-                panic!(
+                eprintln!(
                     "File already exists (pass `--overwrite` to overwrite): {}",
                     self.relative_path.to_string_lossy()
                 );
+                exit(1);
             }
         }
 
         let Some(_) = self.relative_path.parent().map(create_dir_all) else {
-            panic!(
+            eprintln!(
                 "Unable to create directory for file: {}",
                 self.relative_path.to_string_lossy(),
             );
+            exit(1);
         };
 
         let Ok(mut file) = File::create(&self.relative_path) else {
-            panic!(
+            eprintln!(
                 "Could not open file to write: {}",
                 self.relative_path.to_string_lossy()
             );
+            exit(1);
         };
         let Ok(()) = file.write_all(self.bytes) else {
-            panic!(
+            eprintln!(
                 "Unable to write file: {}",
                 self.relative_path.to_string_lossy()
             );
+            exit(1);
         };
 
         match template_file_write_args.followup {
@@ -103,19 +108,21 @@ impl TemplateFile<'_> {
 
     pub fn open_for_editing(&self) {
         let Ok(()) = edit_file(&self.relative_path) else {
-            panic!(
+            eprintln!(
                 "Could not open file for editing {}",
                 self.relative_path.to_string_lossy()
             );
+            exit(1);
         };
     }
 
     pub fn reveal(&self) {
         let Ok(()) = reveal(&self.relative_path) else {
-            panic!(
+            eprintln!(
                 "Could not open file for editing {}",
                 self.relative_path.to_string_lossy()
             );
+            exit(1);
         };
     }
 }

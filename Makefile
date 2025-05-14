@@ -2,11 +2,6 @@
 setup:
 	bun install --frozen-lockfile
 
-# This is idempotent but an order of magnitude slower than `make setup`, so we only run it when we're about to use `clippy`.
-.PHONY: setup-clippy
-setup-clippy:
-	rustup component add clippy
-
 .PHONY: test
 test: cargo-test-help lint
 
@@ -46,7 +41,7 @@ readme-cli-check-setup:
 	bun x readme-cli-help --fence cli-help-setup --check-only "cargo run --quiet -- setup --help"
 
 .PHONY: lint
-lint: setup-clippy readme-cli-check
+lint: readme-cli-check
 	bun x biome check
 	cargo clippy
 

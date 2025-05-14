@@ -66,22 +66,37 @@ fn add_biome(template_file_args: TemplateFileArgs) {
             // TODO: generalize to a function to add a dependency
             Some(PackageManager::Npm) => (
                 "npm",
-                ["install", "--save-dev", "@biomejs/biome"],
+                [
+                    "install",
+                    "--save-dev",
+                    "@biomejs/biome",
+                    "@cubing/dev-config",
+                ],
                 "bun x @biomejs/biome",
             ),
             Some(PackageManager::Bun) => (
                 "bun",
-                ["add", "--development", "@biomejs/biome"],
+                [
+                    "add",
+                    "--development",
+                    "@biomejs/biome",
+                    "@cubing/dev-config",
+                ],
                 "bun x biome",
             ),
             Some(PackageManager::Yarn) => (
                 "yarn",
-                ["add", "--dev", "@biomejs/biome"],
+                ["add", "--dev", "@biomejs/biome", "@cubing/dev-config"],
                 "npx yarn exec @biomejs/biome",
             ),
             Some(PackageManager::Pnpm) => (
                 "pnpm",
-                ["install", "--save-dev", "@biomejs/biome"],
+                [
+                    "install",
+                    "--save-dev",
+                    "@biomejs/biome",
+                    "@cubing/dev-config",
+                ],
                 "npx pnpm exec biome",
             ),
             Some(PackageManager::Cargo) => panic!("unrechachable"),

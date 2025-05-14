@@ -15,5 +15,10 @@
         "noUnusedImports": "error"
       }
     }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
   }
 }

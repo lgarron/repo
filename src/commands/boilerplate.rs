@@ -22,6 +22,8 @@ enum BoilerplateCommand {
     AutoPublishGithubRelease(TemplateFileArgs),
     /// Set up linting using Biome
     Biome(TemplateFileArgs),
+    /// Set up `tsconfig.json`
+    Tsconfig(TemplateFileArgs),
     /// Set up `rust-toolchain.toml`
     RustToolchain(TemplateFileArgs),
 }
@@ -46,6 +48,14 @@ fn biome_json_template() -> TemplateFile<'static> {
     let bytes = include_bytes!("../templates/biome.json");
     TemplateFile {
         relative_path: PathBuf::from("./biome.json"),
+        bytes,
+    }
+}
+
+fn tsconfig_template() -> TemplateFile<'static> {
+    let bytes = include_bytes!("../templates/tsconfig.json");
+    TemplateFile {
+        relative_path: PathBuf::from("./tsconfig.json"),
         bytes,
     }
 }
@@ -133,6 +143,33 @@ format:
     )
 }
 
+fn add_tsconfig(template_file_args: TemplateFileArgs) {
+    // Note that we don't install the `typescript` package because
+    // `tsconfig.json` is still needed to get VS Code's built-in TypeScript
+    // annotations to accept some well-established features like top-level
+    // `await` (even if the project itself doesn't use `tsc`).
+    let (binary, args) = match PackageManager::auto_detect_preferred_package_manager_for_ecosystem(
+        Ecosystem::JavaScript,
+    ) {
+        // TODO: generalize to a function to add a dependency
+        Some(PackageManager::Npm) => ("npm", ["install", "--save-dev", "@cubing/dev-config"]),
+        Some(PackageManager::Bun) => ("bun", ["add", "--development", "@cubing/dev-config"]),
+        Some(PackageManager::Yarn) => ("yarn", ["add", "--dev", "@cubing/dev-config"]),
+        Some(PackageManager::Pnpm) => ("pnpm", ["install", "--save-dev", "@cubing/dev-config"]),
+        Some(PackageManager::Cargo) => panic!("unrechachable"),
+        None => {
+            panic!("No JS package detected.")
+        }
+    };
+    Command::new(binary)
+        .args(args)
+        .spawn()
+        .expect("Could not add development dependency")
+        .wait()
+        .unwrap();
+    tsconfig_template().handle_command(template_file_args);
+}
+
 // TODO: use traits to abstract across ecosystems
 pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
     match boilerplate_args.command {
@@ -143,6 +180,7 @@ pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
             publish_github_release_template().handle_command(template_file_args);
         }
         BoilerplateCommand::Biome(template_file_args) => add_biome(template_file_args),
+        BoilerplateCommand::Tsconfig(template_file_args) => add_tsconfig(template_file_args),
         BoilerplateCommand::RustToolchain(template_file_args) => {
             rust_toolchain_template().handle_command(template_file_args)
         }

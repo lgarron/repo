@@ -2,11 +2,12 @@ use std::{env::current_dir, process::exit};
 
 use clap::{Args, Subcommand};
 
-use crate::common::{package_manager::PackageManagerArgs, vcs::VcsKind};
+use crate::common::{
+    package_manager::PackageManagerArgs, vcs::auto_detect_preferred_vcs_and_repo_root_for_ecosystem,
+};
 
 #[derive(Args, Debug)]
 pub(crate) struct VcsArgs {
-    /// Run a specific setup command, or infer the ssetup command to run.
     #[command(subcommand)]
     command: VcsCommand,
 }
@@ -18,6 +19,8 @@ enum VcsCommand {
     Kind,
     /// Get the repository root folder
     /// If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand).
+    ///
+    /// Also consider `repo worktree root` if you are only looking for a project root folder and don't specifically need it to have a VCS.
     Root,
 }
 
@@ -30,17 +33,13 @@ pub(crate) struct DependenciesArgs {
 pub(crate) fn vcs_command(vcs_args: VcsArgs) {
     match vcs_args.command {
         VcsCommand::Kind => {
-            match VcsKind::auto_detect_preferred_vcs_and_repo_root_for_ecosystem(
-                &current_dir().unwrap(),
-            ) {
+            match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap()) {
                 Some((vcs, _)) => println!("{}", vcs),
                 None => exit(1),
             }
         }
         VcsCommand::Root => {
-            match VcsKind::auto_detect_preferred_vcs_and_repo_root_for_ecosystem(
-                &current_dir().unwrap(),
-            ) {
+            match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap()) {
                 Some((_, path)) => println!("{}", path),
                 None => exit(1),
             }

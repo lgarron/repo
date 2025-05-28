@@ -10,6 +10,7 @@ use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
 use crate::commands::vcs::VcsArgs;
 use crate::commands::version::VersionArgs;
+use crate::commands::workspace::WorkspaceArgs;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -29,8 +30,10 @@ pub(crate) enum RepoCommand {
     Boilerplate(BoilerplateArgs),
     /// Set up a repository checkout.
     Setup(SetupArgs),
-    /// Set up a repository checkout.
+    /// Get information about the current VCS.
     Vcs(VcsArgs),
+    /// Get information about the current workspace.
+    Workspace(WorkspaceArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
 }

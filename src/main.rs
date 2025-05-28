@@ -8,6 +8,7 @@ use commands::publish::publish_command;
 use commands::setup::setup_command;
 use commands::vcs::vcs_command;
 use commands::version::version_command;
+use commands::workspace::workspace_command;
 
 fn main() {
     let args = get_args();
@@ -18,6 +19,7 @@ fn main() {
         args::RepoCommand::Boilerplate(boilerplate_args) => boilerplate_command(boilerplate_args),
         args::RepoCommand::Setup(setup_args) => setup_command(setup_args),
         args::RepoCommand::Vcs(vcs_args) => vcs_command(vcs_args),
+        args::RepoCommand::Workspace(workspace_args) => workspace_command(workspace_args),
         args::RepoCommand::Completions(_) => panic!("We should have exited earlier."),
     }
 }

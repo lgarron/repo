@@ -12,7 +12,8 @@ Commands:
   publish      Publish
   boilerplate  Set up boilerplate for the repo
   setup        Set up a repository checkout
-  vcs          Set up a repository checkout
+  vcs          Get information about the current VCS
+  workspace    Get information about the current workspace
   completions  Print completions for the given shell
   help         Print this message or the help of the given subcommand(s)
 
@@ -88,13 +89,28 @@ Options:
 ## `repo vcs`
 
 ````cli-help-vcs
-Set up a repository checkout
+Get information about the current VCS
 
 Usage: repo vcs <COMMAND>
 
 Commands:
-  kind  Get the kind of VCS If there are multiple in the same project (e.g. `jj` + `git`), at most one will be returned
-  root  Get the repository root folder
+  kind  Get the kind of VCS. If there are multiple in the same project (e.g. `jj` + `git`), at most one will be returned (consistent with the `root` subcommand)
+  root  Get the repository root folder If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand)
+  help  Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+````
+
+## `repo workspace`
+
+````cli-help-workspace
+Get information about the current workspace
+
+Usage: repo workspace <COMMAND>
+
+Commands:
+  root  Get the workspace root folder based on VCS or other litmus files (e.g. `package.json`, `Cargo.toml`) If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand)
   help  Print this message or the help of the given subcommand(s)
 
 Options:

@@ -8,6 +8,7 @@ use clap_complete::{Generator, Shell};
 use crate::commands::boilerplate::BoilerplateArgs;
 use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
+use crate::commands::vcs::VcsArgs;
 use crate::commands::version::VersionArgs;
 
 #[derive(Parser, Debug)]
@@ -28,6 +29,8 @@ pub(crate) enum RepoCommand {
     Boilerplate(BoilerplateArgs),
     /// Set up a repository checkout.
     Setup(SetupArgs),
+    /// Set up a repository checkout.
+    Vcs(VcsArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
 }

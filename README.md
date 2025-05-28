@@ -12,6 +12,7 @@ Commands:
   publish      Publish
   boilerplate  Set up boilerplate for the repo
   setup        Set up a repository checkout
+  vcs          Set up a repository checkout
   completions  Print completions for the given shell
   help         Print this message or the help of the given subcommand(s)
 
@@ -79,6 +80,22 @@ Usage: repo setup [COMMAND]
 Commands:
   dependencies  Install dependencies
   help          Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+````
+
+## `repo vcs`
+
+````cli-help-vcs
+Set up a repository checkout
+
+Usage: repo vcs <COMMAND>
+
+Commands:
+  kind  Get the kind of VCS If there are multiple in the same project (e.g. `jj` + `git`), at most one will be returned
+  root  Get the repository root folder
+  help  Print this message or the help of the given subcommand(s)
 
 Options:
   -h, --help  Print help

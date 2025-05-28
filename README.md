@@ -61,6 +61,7 @@ Commands:
   ci                           Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
   auto-publish-github-release  Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
   biome                        Set up linting using Biome
+  tsconfig                     Set up `tsconfig.json`
   rust-toolchain               Set up `rust-toolchain.toml`
   help                         Print this message or the help of the given subcommand(s)
 

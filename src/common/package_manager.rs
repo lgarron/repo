@@ -41,6 +41,7 @@ pub(crate) const PACKAGE_JSON_PATH: &str = "./package.json";
 pub(crate) const PACKAGE_LOCK_JSON_PATH: &str = "./package-lock.json";
 pub(crate) const YARN_LOCK_PATH: &str = "./yarn.lock";
 pub(crate) const YARN_PNPM_LOCK_YAML_PATH: &str = "./pnpm-lock.yaml";
+const BUN_LOCK_PATH: &str = "./bun.lock";
 const BUN_LOCKB_PATH: &str = "./bun.lockb";
 const CARGO_TOML: &str = "./Cargo.toml";
 
@@ -50,7 +51,7 @@ impl PackageManager {
     ) -> Option<Self> {
         match ecosystem {
             Ecosystem::JavaScript => {
-                if exists(BUN_LOCKB_PATH).unwrap() {
+                if exists(BUN_LOCK_PATH).unwrap() || exists(BUN_LOCKB_PATH).unwrap() {
                     Some(Self::Bun)
                 } else if exists(YARN_LOCK_PATH).unwrap() {
                     Some(Self::Yarn)

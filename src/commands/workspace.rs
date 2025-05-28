@@ -29,7 +29,7 @@ pub(crate) fn workspace_command(workspace_args: WorkspaceArgs) {
     match workspace_args.command {
         WorkspaceCommand::Root => {
             if let Some(path) = auto_detect_workspace_root(&current_dir().unwrap()) {
-                println!("{}", path)
+                print!("{}", path)
             } else {
                 exit(1)
             }

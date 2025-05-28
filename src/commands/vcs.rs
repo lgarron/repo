@@ -34,13 +34,13 @@ pub(crate) fn vcs_command(vcs_args: VcsArgs) {
     match vcs_args.command {
         VcsCommand::Kind => {
             match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap()) {
-                Some((vcs, _)) => println!("{}", vcs),
+                Some((vcs, _)) => print!("{}", vcs),
                 None => exit(1),
             }
         }
         VcsCommand::Root => {
             match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap()) {
-                Some((_, path)) => println!("{}", path),
+                Some((_, path)) => print!("{}", path),
                 None => exit(1),
             }
         }

@@ -92,7 +92,7 @@ fn add_biome(template_file_args: TemplateFileArgs) {
                     "@biomejs/biome",
                     "@cubing/dev-config",
                 ],
-                "bun x biome",
+                "bun x @biomejs/biome",
             ),
             Some(PackageManager::Yarn) => (
                 "yarn",

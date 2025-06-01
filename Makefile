@@ -49,12 +49,12 @@ readme-cli-check-workspace:
 
 .PHONY: lint
 lint: readme-cli-check
-	bun x biome check
+	bun x @biomejs/biome check
 	cargo clippy
 
 .PHONY: format
 format: readme-cli-update
-	bun x biome check --write
+	bun x @biomejs/biome check --write
 
 .PHONY: install
 install:

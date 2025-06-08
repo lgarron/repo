@@ -1,8 +1,10 @@
-use std::{env::current_dir, process::exit};
+use std::process::exit;
 
 use clap::{Args, Subcommand};
 
-use crate::common::{package_manager::PackageManagerArgs, workspace::auto_detect_workspace_root};
+use crate::common::{
+    args::PathArgs, package_manager::PackageManagerArgs, workspace::auto_detect_workspace_root,
+};
 
 #[derive(Args, Debug)]
 pub(crate) struct WorkspaceArgs {
@@ -16,7 +18,7 @@ enum WorkspaceCommand {
     /// If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand).
     ///
     /// Also consider `repo vcs root` if you are only looking for VCS roots.
-    Root,
+    Root(PathArgs),
 }
 
 #[derive(Args, Debug)]
@@ -27,8 +29,8 @@ pub(crate) struct DependenciesArgs {
 
 pub(crate) fn workspace_command(workspace_args: WorkspaceArgs) {
     match workspace_args.command {
-        WorkspaceCommand::Root => {
-            if let Some(path) = auto_detect_workspace_root(&current_dir().unwrap()) {
+        WorkspaceCommand::Root(workspace_root_args) => {
+            if let Some(path) = auto_detect_workspace_root(&workspace_root_args.path()) {
                 print!("{}", path)
             } else {
                 exit(1)

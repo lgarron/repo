@@ -9,6 +9,9 @@ use commands::setup::setup_command;
 use commands::vcs::vcs_command;
 use commands::version::version_command;
 use commands::workspace::workspace_command;
+use shadow_rs::shadow;
+
+shadow!(build);
 
 fn main() {
     let args = get_args();

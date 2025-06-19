@@ -5,6 +5,7 @@ use clap::{Args, CommandFactory, Parser, Subcommand};
 use clap_complete::generator::generate;
 use clap_complete::{Generator, Shell};
 
+use crate::build::CLAP_LONG_VERSION;
 use crate::commands::boilerplate::BoilerplateArgs;
 use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
@@ -14,7 +15,7 @@ use crate::commands::workspace::WorkspaceArgs;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-#[clap(name = "repo")]
+#[clap(name = "repo", long_version = CLAP_LONG_VERSION)]
 pub(crate) struct RepoArgs {
     #[command(subcommand)]
     pub command: RepoCommand,

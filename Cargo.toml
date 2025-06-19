@@ -5,6 +5,7 @@ version = "0.6.7-dev"
 edition = "2021"
 license = "MIT"
 exclude = ["src/templates/node_modules"]
+build = "build.rs"
 
 [dependencies]
 cargo_metadata = "0.18.1"
@@ -14,4 +15,8 @@ edit = "0.1.5"
 opener = { version = "0.7.2", features = ["reveal"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.132"
+shadow-rs = { version = "1.2.0", default-features = false }
 url = "2.5.4"
+
+[build-dependencies]
+shadow-rs = "1.2.0"

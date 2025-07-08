@@ -45,8 +45,7 @@ fn publish_github_release_template() -> TemplateFile<'static> {
 }
 
 fn biome_json_template() -> TemplateFile<'static> {
-    // TODO: this file should be named `biome.json` (https://github.com/biomejs/biome/issues/6509)
-    let bytes = include_bytes!("../templates/biome.template.json");
+    let bytes = include_bytes!("../templates/biome.json");
     TemplateFile {
         relative_path: PathBuf::from("./biome.json"),
         bytes,

@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@biomejs/biome": "v2.0.0",
+    "@biomejs/biome": "^2.1.1",
     "@cubing/dev-config": "^0.3.3",
     "readme-cli-help": "v0.1.10"
   }

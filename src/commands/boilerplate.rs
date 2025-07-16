@@ -168,6 +168,29 @@ fn add_tsconfig(template_file_args: TemplateFileArgs) {
         .wait()
         .unwrap();
     tsconfig_template().handle_command(template_file_args);
+    // TODO: print `tsc` invocation (requires installation)
+}
+
+fn add_rust_toolchain(template_file_args: TemplateFileArgs) {
+    rust_toolchain_template().handle_command(template_file_args);
+    // TODO: mention `test-cargo-doc`?
+    println!(
+        "Use the following commands:
+
+`Makefile` (make sure to convert ⇥ to tab indentation):
+
+.PHONY: lint-rust
+lint-rust:
+⇥cargo clippy -- --deny warnings
+⇥cargo fmt --check
+
+
+.PHONY: format-rust
+format-rust:
+⇥cargo clippy --fix --allow-no-vcs
+⇥cargo fmt
+"
+    )
 }
 
 // TODO: use traits to abstract across ecosystems
@@ -182,7 +205,7 @@ pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
         BoilerplateCommand::Biome(template_file_args) => add_biome(template_file_args),
         BoilerplateCommand::Tsconfig(template_file_args) => add_tsconfig(template_file_args),
         BoilerplateCommand::RustToolchain(template_file_args) => {
-            rust_toolchain_template().handle_command(template_file_args)
+            add_rust_toolchain(template_file_args)
         }
     };
 }

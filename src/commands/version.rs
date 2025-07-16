@@ -166,8 +166,8 @@ pub(crate) fn detect_ecosystem_by_getting_version(
             cargo_get_version as fn() -> Result<String, String>,
         ),
     ] {
-        if let Some(require_ecosystem) = ecosystem_args.ecosystem {
-            if require_ecosystem != ecosystem {
+        if let Some(required_ecosystem) = ecosystem_args.ecosystem {
+            if required_ecosystem != ecosystem {
                 // TODO: make this neater
                 continue;
             }

@@ -1,6 +1,7 @@
 mod args;
 mod commands;
 mod common;
+mod vendor;
 
 use args::get_args;
 use commands::boilerplate::boilerplate as boilerplate_command;

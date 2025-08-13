@@ -1,3 +1,4 @@
+use std::env::current_dir;
 use std::fs::File;
 use std::process::Command;
 use std::{fmt::Display, process::exit};
@@ -8,6 +9,8 @@ use clap::{Args, Subcommand};
 use cargo_metadata::{semver::Version, MetadataCommand};
 use serde::Deserialize;
 
+use crate::common::commit_wrapped_operation::CommitWrappedOperation;
+use crate::common::vcs::{auto_detect_preferred_vcs_and_repo_root_for_ecosystem, VcsKind};
 use crate::common::{
     ecosystem::{Ecosystem, EcosystemArgs},
     package_manager::PACKAGE_JSON_PATH,
@@ -42,34 +45,62 @@ struct VersionGetArgs {
 struct VersionSetArgs {
     #[clap()]
     pub version: String,
+    #[command(flatten)]
+    commit_args: CommitArgs,
 }
 
 #[derive(Args, Debug)]
 struct VersionBumpArgs {
     #[command(subcommand)]
-    pub command: VersionBumpCommand,
+    pub command: VersionBumpMagnitude,
+    #[command(flatten)]
+    commit_args: CommitArgs,
 }
 
-#[derive(Debug, Subcommand, PartialEq, Eq)]
-enum VersionBumpCommand {
+#[derive(Debug, Subcommand, PartialEq, Eq, Clone)]
+enum VersionBumpMagnitude {
     Major,
     Minor,
     Patch,
     Dev,
 }
 
-impl Display for VersionBumpCommand {
+impl Display for VersionBumpMagnitude {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
             "{}",
             match self {
-                VersionBumpCommand::Major => "major",
-                VersionBumpCommand::Minor => "minor",
-                VersionBumpCommand::Patch => "patch",
-                VersionBumpCommand::Dev => "dev",
+                VersionBumpMagnitude::Major => "major",
+                VersionBumpMagnitude::Minor => "minor",
+                VersionBumpMagnitude::Patch => "patch",
+                VersionBumpMagnitude::Dev => "dev",
             }
         )
+    }
+}
+
+#[derive(Args, Debug)]
+pub(crate) struct CommitArgs {
+    #[clap(long)]
+    pub commit: bool,
+    #[clap(long)]
+    pub commit_using: Option<VcsKind>,
+}
+
+impl CommitArgs {
+    pub fn vcs(&self) -> Result<VcsKind, String> {
+        Ok(match &self.commit_using {
+            Some(vcs_kind) => vcs_kind.clone(),
+            None => {
+                let Some((vcs_kind, _)) =
+                    auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap())
+                else {
+                    return Err("No VCS specified or found.".to_owned());
+                };
+                vcs_kind
+            }
+        })
     }
 }
 
@@ -122,8 +153,8 @@ fn dev_bump(version: Version) -> Version {
     version
 }
 
-fn npm_bump_version(version_bump_command: VersionBumpCommand) {
-    if version_bump_command == VersionBumpCommand::Dev {
+fn npm_bump_version(version_bump_command: VersionBumpMagnitude) {
+    if version_bump_command == VersionBumpMagnitude::Dev {
         let version = npm_get_version().expect("Could not get current version.");
         let version = Version::parse(&version).expect("Could not parse current version.");
         npm_set_version(dev_bump(version));
@@ -139,8 +170,8 @@ fn npm_bump_version(version_bump_command: VersionBumpCommand) {
         .expect("Could not bump version using `npm`");
 }
 
-fn cargo_bump_version(version_bump_command: VersionBumpCommand) {
-    if version_bump_command == VersionBumpCommand::Dev {
+fn cargo_bump_version(version_bump_command: VersionBumpMagnitude) {
+    if version_bump_command == VersionBumpMagnitude::Dev {
         let version = cargo_get_version().expect("Could not get current version.");
         let version = Version::parse(&version).expect("Could not parse current version.");
         cargo_set_version(dev_bump(version));
@@ -195,18 +226,24 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: &Vers
 }
 
 // TODO: get version from output of the bump commands themselves?
-fn version_bump(ecosystem_args: &EcosystemArgs, version_bump_args: VersionBumpArgs) {
+// TODO: return `Result<Version, …>`.
+fn version_bump(
+    ecosystem_args: &EcosystemArgs,
+    version_bump_magniture: VersionBumpMagnitude,
+) -> Result<String, String> {
     let auto_print_version = |repo_ecosystem: Ecosystem| {
         eprintln!("Bumped version using ecosystem: {}", repo_ecosystem);
     };
     match must_detect_ecosystem_by_getting_version(ecosystem_args) {
         (Ecosystem::JavaScript, _) => {
-            npm_bump_version(version_bump_args.command);
+            npm_bump_version(version_bump_magniture);
             auto_print_version(Ecosystem::JavaScript);
+            npm_get_version()
         }
         (Ecosystem::Rust, _) => {
-            cargo_bump_version(version_bump_args.command);
+            cargo_bump_version(version_bump_magniture);
             auto_print_version(Ecosystem::Rust);
+            cargo_get_version()
         }
     }
 }
@@ -246,15 +283,36 @@ pub(crate) fn version_command(version_args: VersionArgs) {
             version_get_and_print(&version_args.ecosystem_args, &version_get_args);
         }
         VersionCommand::Set(version_set_args) => {
-            let version = version_set_args
-                .version
-                .strip_prefix("v")
-                .unwrap_or(&version_set_args.version);
-            let version = Version::parse(version).expect("Invalid version specified");
-            version_set(&version_args.ecosystem_args, version);
+            let commit_wrapped_operation =
+                CommitWrappedOperation::try_from(version_set_args.commit_args).unwrap();
+            commit_wrapped_operation
+                .perform_operation(&|| {
+                    let version = version_set_args
+                        .version
+                        .strip_prefix("v")
+                        .unwrap_or(&version_set_args.version);
+                    let version = Version::parse(version).expect("Invalid version specified");
+                    version_set(&version_args.ecosystem_args, version.clone());
+                    Ok(format!("Set version to: `v{}`", version))
+                })
+                .unwrap();
         }
         VersionCommand::Bump(version_bump_args) => {
-            version_bump(&version_args.ecosystem_args, version_bump_args);
+            let commit_wrapped_operation =
+                CommitWrappedOperation::try_from(version_bump_args.commit_args).unwrap();
+            commit_wrapped_operation
+                .perform_operation(&|| {
+                    let version_bump_magnitude: &VersionBumpMagnitude = &version_bump_args.command;
+                    let new_version =
+                        version_bump(&version_args.ecosystem_args, version_bump_magnitude.clone())
+                            .unwrap();
+
+                    Ok(format!(
+                        "Bump to next {} version: `v{}`",
+                        version_bump_magnitude, new_version
+                    ))
+                })
+                .unwrap();
         }
     };
 }

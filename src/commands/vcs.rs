@@ -22,7 +22,7 @@ enum VcsCommand {
     /// Get the repository root folder
     /// If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand).
     ///
-    /// Also consider `repo worktree root` if you are only looking for a project root folder and don't specifically need it to have a VCS.
+    /// Also consider `repo workspace root` if you are only looking for a project root folder and don't specifically need it to have a VCS.
     Root,
     /// Operate on the latest commit. This does not include the working copy (or a non-merge `@` if it is empty or has an empty description, in case of `jj`).
     LatestCommit(LatestCommitArgs),

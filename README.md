@@ -96,7 +96,7 @@ Usage: repo vcs <COMMAND>
 Commands:
   kind           Get the kind of VCS. If there are multiple in the same project (e.g. `jj` + `git`), at most one will be returned (consistent with the `root` subcommand)
   root           Get the repository root folder If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand)
-  latest-commit  Operate on the latest commit. This does not include the working copy (or a non-merge `@` with an empty description, in case of `jj`)
+  latest-commit  Operate on the latest commit. This does not include the working copy (or a non-merge `@` if it is empty or has an empty description, in case of `jj`)
   help           Print this message or the help of the given subcommand(s)
 
 Options:

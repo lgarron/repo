@@ -1,3 +1,5 @@
+#!/usr/bin/env node --
+
 import { exists } from "node:fs/promises";
 import { join } from "node:path";
 import { argv, exit } from "node:process";

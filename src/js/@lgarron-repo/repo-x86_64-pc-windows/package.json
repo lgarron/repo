@@ -1,0 +1,13 @@
+{
+  "name": "@lgarron-repo/repo-x86_64-pc-windows",
+  "os": [
+    "windows"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "version": "0.7.1-dev2",
+  "bin": {
+    "repo": "repo"
+  }
+}

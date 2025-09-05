@@ -1,0 +1,13 @@
+{
+  "name": "@lgarron-repo/repo-aarch64-apple-darwin",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "version": "0.7.1-dev2",
+  "bin": {
+    "repo": "repo"
+  }
+}

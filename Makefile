@@ -10,8 +10,15 @@ cargo-test-help:
 	cargo run -- --help > /dev/null
 
 .PHONY: publish
-publish: clean
+publish: clean publish-rust publish-js
+
+.PHONY: publish-rust
+publish-rust:
 	cargo run -- publish # Dogfood our own `publish` command
+
+.PHONY: publish-js
+publish-js:
+	bun run -- 'script/release-npm.ts'
 
 .PHONY: readme-cli-update
 readme-cli-update:
@@ -66,12 +73,14 @@ uninstall:
 
 .PHONY: clean
 clean:
-	rm -rf ./node_modules/
+	rm -rf ./.temp/
+	rm -rf ./src/js/@lgarron-repo/repo-*/repo
 
 .PHONY: reset
 reset: clean
+	rm -rf ./node_modules/
 	rm -rf ./target/
 
 .PHONY: build-release
 build-release:
-	cargo build --release --verbose
+	cargo build --release

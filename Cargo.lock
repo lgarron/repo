@@ -664,7 +664,7 @@ checksum = "809e8dc61f6de73b46c85f4c96486310fe304c434cfa43669d7b40f711150908"
 
 [[package]]
 name = "repo"
-version = "0.8.3-dev"
+version = "0.8.3"
 dependencies = [
  "cargo_metadata",
  "clap",

@@ -48,7 +48,7 @@ jobs:
           path: ./target/release/repo
 
   build-x86_64-linux:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

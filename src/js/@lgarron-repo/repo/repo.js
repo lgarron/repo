@@ -20,6 +20,7 @@ for (const architectureTriple of [
     if (e.code === "ERR_MODULE_NOT_FOUND") {
       continue;
     }
+    throw e;
   }
   if (await existsSync(path)) {
     let command;
@@ -29,6 +30,7 @@ for (const architectureTriple of [
       if (e.code === "EBADARCH") {
         continue;
       }
+      throw e;
     }
     await new Promise((resolve) => command.addListener("exit", resolve));
     exit(command.exitCode);

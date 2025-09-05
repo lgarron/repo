@@ -26,7 +26,7 @@ for (const architectureTriple of [
       import.meta.resolve(`@lgarron-repo/repo-${architectureTriple}`),
     );
     if (DEBUG) {
-      console.error(`[${architectureTriple}] Resolved to path: `, e);
+      console.error(`[${architectureTriple}] Resolved to path: `, path);
     }
   } catch (e) {
     if (e.code === "ERR_MODULE_NOT_FOUND") {

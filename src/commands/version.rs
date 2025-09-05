@@ -143,7 +143,7 @@ pub(crate) fn cargo_get_version() -> Result<String, String> {
 
 fn print_version(version: &str, version_get_args: &VersionGetArgs) {
     let prefix = if version_get_args.no_prefix { "" } else { "v" };
-    println!("{}{}", prefix, version);
+    print!("{}{}", prefix, version);
 }
 
 fn dev_bump(version: Version) -> Version {

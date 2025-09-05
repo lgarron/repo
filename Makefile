@@ -1,5 +1,8 @@
 .PHONY: setup
-setup:
+setup: setup-js
+
+.PHONY: setup-js
+setup-js:
 	bun install --frozen-lockfile
 
 .PHONY: test
@@ -59,11 +62,11 @@ lint: lint-js readme-cli-check
 	cargo clippy
 
 .PHONY: lint-js
-lint-js:
+lint-js: setup-js
 	bun x @biomejs/biome check
 
 .PHONY: format
-format: readme-cli-update
+format: setup-js readme-cli-update
 	bun x @biomejs/biome check --write
 
 .PHONY: install

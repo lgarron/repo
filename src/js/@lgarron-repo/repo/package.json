@@ -1,6 +1,6 @@
 {
   "name": "@lgarron-repo/repo",
-  "version": "0.7.2-pre8",
+  "version": "0.7.2-pre9",
   "bin": {
     "repo": "./repo.js"
   },

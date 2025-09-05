@@ -1,6 +1,6 @@
 #!/usr/bin/env node --
 
-import { exists } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { argv, exit } from "node:process";
 import { fileURLToPath } from "node:url";
@@ -15,7 +15,7 @@ for (const architectureTriple of [
   const path = fileURLToPath(
     import.meta.resolve(join("..", `repo-${architectureTriple}`, "repo")),
   );
-  if (await exists(path)) {
+  if (await existsSync(path)) {
     let command;
     try {
       command = new PrintableShellCommand(

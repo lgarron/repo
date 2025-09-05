@@ -110,7 +110,7 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
     ),
   );
 
-  await $`cd ${PACKAGE_DIR} && npm publish --tag dev --access public || echo "Already published?"`;
+  await $`cd ${PACKAGE_DIR} && npm publish --access public || echo "Already published?"`;
 }
 
 await file("./src/js/@lgarron-repo/repo/package.json").write(
@@ -135,4 +135,4 @@ await file("./src/js/@lgarron-repo/repo/package.json").write(
     "  ",
   ),
 );
-await $`cd ./src/js/@lgarron-repo/repo && npm publish --tag dev --access public || echo "Already published?"`;
+await $`cd ./src/js/@lgarron-repo/repo && npm publish --access public || echo "Already published?"`;

@@ -55,9 +55,12 @@ readme-cli-check-workspace:
 	bun x readme-cli-help --fence cli-help-workspace --check-only "cargo run --quiet -- workspace --help"
 
 .PHONY: lint
-lint: readme-cli-check
-	bun x @biomejs/biome check
+lint: lint-js readme-cli-check
 	cargo clippy
+
+.PHONY: lint-js
+lint-js:
+	bun x @biomejs/biome check
 
 .PHONY: format
 format: readme-cli-update

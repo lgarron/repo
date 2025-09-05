@@ -4,8 +4,6 @@ import { argv, exit } from "node:process";
 import { fileURLToPath } from "node:url";
 import { PrintableShellCommand } from "printable-shell-command";
 
-// const require = createRequire(import.meta.url);
-
 for (const architectureTriple of [
   "aarch64-apple-darwin",
   "x86_64-unknown-linux-gnu",

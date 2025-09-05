@@ -1,8 +1,8 @@
 {
   "name": "@lgarron-repo/repo",
-  "version": "0.7.2-pre5",
+  "version": "0.7.2-pre6",
   "bin": {
-    "repo": "./repo.js"
+    "repo": "node ./repo.js"
   },
   "optionalDependencies": {
     "@lgarron-repo/repo-aarch64-apple-darwin": "0.7.2-pre2",

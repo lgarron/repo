@@ -1,6 +1,6 @@
 import { mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { $, sleep } from "bun";
+import { $, file, sleep } from "bun";
 
 const WORKFLOW_NAME = "Build release binaries";
 const MILLISECONDS_PER_SECOND = 1000;
@@ -52,11 +52,15 @@ const downloads = Object.fromEntries(
 
 console.log(downloads);
 
-const ARCHITECTURE_TRIPLES = [
-  "x86_64-apple-darwin",
-  "aarch64-apple-darwin",
-  "x86_64-pc-windows",
-  "x86_64-unknown-linux-gnu",
+const ARCHITECTURE_TRIPLES: {
+  triple: string;
+  npmOS: string[];
+  npmCPU: string[];
+}[] = [
+  { triple: "x86_64-apple-darwin", npmOS: ["darwin"], npmCPU: ["x64"] },
+  { triple: "aarch64-apple-darwin", npmOS: ["darwin"], npmCPU: ["arm64"] },
+  { triple: "x86_64-pc-windows", npmOS: ["windows"], npmCPU: ["x64"] },
+  { triple: "x86_64-unknown-linux-gnu", npmOS: ["linux"], npmCPU: ["x64"] },
 ];
 
 function isWindows(architectureTriple: string): boolean {
@@ -66,24 +70,69 @@ function isWindows(architectureTriple: string): boolean {
 const TEMP_DIR = "./.temp/artifacts";
 await rm(TEMP_DIR, { recursive: true, force: true });
 
-for (const architectureTriple of ARCHITECTURE_TRIPLES) {
-  const downloadInfo = downloads[`repo.${architectureTriple}`];
-  console.log(architectureTriple);
-  const ZIP_PARENT_DIR = join(TEMP_DIR, architectureTriple);
-  const ZIP_PATH = join(TEMP_DIR, `${architectureTriple}.zip`);
+const version = (await $`cargo run --quiet -- version get`.text()).trim();
+
+for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
+  const downloadInfo = downloads[`repo.${triple}`];
+  console.log(triple);
+  const ZIP_PARENT_DIR = join(TEMP_DIR, triple);
+  const ZIP_PATH = join(TEMP_DIR, `${triple}.zip`);
   await mkdir(ZIP_PARENT_DIR, { recursive: true });
   await $`gh api /repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip > ${ZIP_PATH}`;
   // `-o` means "overwrite"
-  const PACKAGE_DIR = `./src/js/@lgarron-repo/repo-${architectureTriple}`;
+  const PACKAGE_DIR = `./src/js/@lgarron-repo/repo-${triple}`;
   await $`unzip -o -d ${PACKAGE_DIR} ${ZIP_PATH}`;
 
-  const suffix = isWindows(architectureTriple) ? ".exe" : "";
+  const suffix = isWindows(triple) ? ".exe" : "";
   await rename(
     join(PACKAGE_DIR, `repo${suffix}`),
-    join(PACKAGE_DIR, `repo-${architectureTriple}${suffix}`),
+    join(PACKAGE_DIR, `repo-${triple}${suffix}`),
+  );
+
+  await file(join(PACKAGE_DIR, "package.json")).write(
+    JSON.stringify(
+      {
+        name: `@lgarron-repo/repo-${triple}`,
+        os: npmOS,
+        cpu: npmCPU,
+        version: version,
+        bin: {
+          [`repo-${triple}`]: `repo-${triple}`,
+        },
+        exports: {
+          ".": {
+            default: `./repo-${triple}`,
+          },
+        },
+      },
+      null,
+      "  ",
+    ),
   );
 
   await $`cd ${PACKAGE_DIR} && npm publish --tag dev --access public || echo "Already published?"`;
 }
 
+await file("./src/js/@lgarron-repo/repo/package.json").write(
+  JSON.stringify(
+    {
+      name: "@lgarron-repo/repo",
+      version: version,
+      bin: {
+        repo: "repo.js",
+      },
+      optionalDependencies: {
+        "@lgarron-repo/repo-aarch64-apple-darwin": version,
+        "@lgarron-repo/repo-x86_64-apple-darwin": version,
+        "@lgarron-repo/repo-x86_64-pc-windows": version,
+        "@lgarron-repo/repo-x86_64-unknown-linux-gnu": version,
+      },
+      engines: {
+        node: ">=20.6.0",
+      },
+    },
+    null,
+    "  ",
+  ),
+);
 await $`cd ./src/js/@lgarron-repo/repo && npm publish --tag dev --access public || echo "Already published?"`;

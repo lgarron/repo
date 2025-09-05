@@ -45,7 +45,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: repo.macos-x86_64-pc-windows
-          path: .\target\release\repo
+          path: ./target/release/repo.exe
 
   build-x86_64-linux:
     runs-on: ubuntu-latest

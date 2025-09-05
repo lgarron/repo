@@ -1,5 +1,6 @@
 import { mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
+import { exit } from "node:process";
 import { $, file, sleep } from "bun";
 
 const WORKFLOW_NAME = "Build release binaries";
@@ -25,6 +26,13 @@ const run = await (async () => {
     const run = runs.workflow_runs.filter(
       (run) => run.name === WORKFLOW_NAME,
     )[0];
+    if (!run) {
+      console.error(
+        `Workflow run \"${WORKFLOW_NAME}\"is not available for this commit: ${commitSHA}
+Push a tag to run the release flow.`,
+      );
+      exit(2);
+    }
     console.log(`Workflow run id: ${run.id}`);
 
     if (run.status === "completed") {

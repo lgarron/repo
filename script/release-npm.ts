@@ -7,8 +7,8 @@ const MILLISECONDS_PER_SECOND = 1000;
 
 await mkdir("./.temp", { recursive: true });
 
-// TODO: implement `repo vcs current-commit hash`;
-const commitSHA = (await $`git rev-parse HEAD`.text()).trim();
+// Dogfood our own hash calculation.
+const commitSHA = await $`cargo run --quiet  -- vcs latest-commit hash`.text();
 
 const run = await (async () => {
   while (true) {

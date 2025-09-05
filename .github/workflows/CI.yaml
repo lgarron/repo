@@ -31,7 +31,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: repo.macos-x86_64-apple-darwin
-          path: ./target/release/repo
+          path: ./target/x86_64-apple-darwin/release/repo
 
   build-aarch64-apple-darwin:
     runs-on: macos-latest

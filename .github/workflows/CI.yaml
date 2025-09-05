@@ -17,6 +17,22 @@ jobs:
       - run: make cargo-test-help
       - run: make lint
 
+  build-x86_64-apple-darwin:
+    # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup target add x86_64-apple-darwin
+      - run: cargo build --target x86_64-apple-darwin --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repo.macos-x86_64-apple-darwin
+          path: ./target/release/repo
+
   build-aarch64-apple-darwin:
     runs-on: macos-latest
     steps:

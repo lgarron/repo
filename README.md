@@ -94,9 +94,10 @@ Get information about the current VCS
 Usage: repo vcs <COMMAND>
 
 Commands:
-  kind  Get the kind of VCS. If there are multiple in the same project (e.g. `jj` + `git`), at most one will be returned (consistent with the `root` subcommand)
-  root  Get the repository root folder If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand)
-  help  Print this message or the help of the given subcommand(s)
+  kind           Get the kind of VCS. If there are multiple in the same project (e.g. `jj` + `git`), at most one will be returned (consistent with the `root` subcommand)
+  root           Get the repository root folder If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand)
+  latest-commit  Operate on the latest commit. This does not include the working copy (or a non-merge `@` with an empty description, in case of `jj`)
+  help           Print this message or the help of the given subcommand(s)
 
 Options:
   -h, --help  Print help

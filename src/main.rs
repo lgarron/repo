@@ -21,7 +21,7 @@ fn main() {
         args::RepoCommand::Publish(publish_args) => publish_command(publish_args),
         args::RepoCommand::Boilerplate(boilerplate_args) => boilerplate_command(boilerplate_args),
         args::RepoCommand::Setup(setup_args) => setup_command(setup_args),
-        args::RepoCommand::Vcs(vcs_args) => vcs_command(vcs_args),
+        args::RepoCommand::Vcs(vcs_args) => vcs_command(vcs_args).unwrap(),
         args::RepoCommand::Workspace(workspace_args) => workspace_command(workspace_args),
         args::RepoCommand::Completions(_) => panic!("We should have exited earlier."),
     }

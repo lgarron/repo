@@ -42,7 +42,6 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
-      - run: find target
       - uses: actions/upload-artifact@v4
         with:
           name: repo.macos-x86_64-pc-windows
@@ -58,7 +57,6 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
-      - run: make find target
       - uses: actions/upload-artifact@v4
         with:
           name: repo.macos-x86_64-linux

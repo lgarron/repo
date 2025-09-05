@@ -74,4 +74,4 @@ reset: clean
 
 .PHONY: build-release
 build-release:
-	cargo build --release
+	cargo build --release --verbose

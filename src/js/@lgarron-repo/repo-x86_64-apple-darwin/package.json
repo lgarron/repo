@@ -6,8 +6,8 @@
   "cpu": [
     "x64"
   ],
-  "version": "0.7.2-pre2",
+  "version": "0.7.2-pre8",
   "bin": {
-    "repo": "repo"
+    "repo-x86_64-apple-darwin": "repo-x86_64-apple-darwin"
   }
 }

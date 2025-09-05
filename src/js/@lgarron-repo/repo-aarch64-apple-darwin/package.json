@@ -6,7 +6,7 @@
   "cpu": [
     "arm64"
   ],
-  "version": "0.7.2-pre12",
+  "version": "0.7.2-pre18",
   "bin": {
     "repo-aarch64-apple-darwin": "repo-aarch64-apple-darwin"
   },

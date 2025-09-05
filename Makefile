@@ -72,3 +72,6 @@ clean:
 reset: clean
 	rm -rf ./target/
 
+.PHONY: build-release
+build-release:
+	cargo build --release

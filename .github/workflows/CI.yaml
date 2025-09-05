@@ -30,7 +30,7 @@ jobs:
       - run: cargo build --target x86_64-apple-darwin --release
       - uses: actions/upload-artifact@v4
         with:
-          name: repo.macos-x86_64-apple-darwin
+          name: repo.x86_64-apple-darwin
           path: ./target/x86_64-apple-darwin/release/repo
 
   build-aarch64-apple-darwin:
@@ -45,7 +45,7 @@ jobs:
       - run: make build-release
       - uses: actions/upload-artifact@v4
         with:
-          name: repo.macos-aarch64-apple-darwin
+          name: repo.aarch64-apple-darwin
           path: ./target/release/repo
 
   build-x86_64-pc-windows:
@@ -60,7 +60,7 @@ jobs:
       - run: make build-release
       - uses: actions/upload-artifact@v4
         with:
-          name: repo.macos-x86_64-pc-windows
+          name: repo.x86_64-pc-windows
           path: ./target/release/repo.exe
 
   build-x86_64-linux:
@@ -75,5 +75,5 @@ jobs:
       - run: make build-release
       - uses: actions/upload-artifact@v4
         with:
-          name: repo.macos-x86_64-linux
+          name: repo.x86_64-linux
           path: ./target/release/repo

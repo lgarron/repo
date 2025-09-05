@@ -7,22 +7,31 @@ import { PrintableShellCommand } from "printable-shell-command";
 // const require = createRequire(import.meta.url);
 
 for (const architectureTriple of [
-  "x86_64-apple-darwin",
   "aarch64-apple-darwin",
-  "x86_64-pc-windows",
   "x86_64-unknown-linux-gnu",
+  "x86_64-apple-darwin",
+  "x86_64-pc-windows",
 ]) {
   const path = fileURLToPath(
     import.meta.resolve(join("..", `repo-${architectureTriple}`, "repo")),
   );
   if (await exists(path)) {
-    const command = new PrintableShellCommand(
-      path,
-      argv.slice(2),
-    ).spawnNodeInherit();
+    let command;
+    try {
+      command = new PrintableShellCommand(
+        path,
+        argv.slice(2),
+      ).spawnNodeInherit();
+    } catch (e) {
+      if (e.code === "EBADARCH") {
+        continue;
+      }
+    }
     try {
       await command.success;
-    } catch {}
+    } catch (e) {
+      console.log(e);
+    }
     exit(command.exitCode);
   }
 }

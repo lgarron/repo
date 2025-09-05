@@ -6,8 +6,13 @@
   "cpu": [
     "x64"
   ],
-  "version": "0.7.2-pre8",
+  "version": "0.7.2-pre11",
   "bin": {
     "repo-x86_64-unknown-linux-gnu": "repo-x86_64-unknown-linux-gnu"
+  },
+  "exports": {
+    ".": {
+      "default": "./repo-x86_64-unknown-linux-gnu"
+    }
   }
 }

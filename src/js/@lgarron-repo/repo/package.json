@@ -1,13 +1,13 @@
 {
   "name": "@lgarron-repo/repo",
-  "version": "0.7.2-pre9",
+  "version": "0.7.2-pre11",
   "bin": {
     "repo": "./repo.js"
   },
   "optionalDependencies": {
-    "@lgarron-repo/repo-aarch64-apple-darwin": "0.7.2-pre8",
-    "@lgarron-repo/repo-x86_64-apple-darwin": "0.7.2-pre8",
-    "@lgarron-repo/repo-x86_64-pc-windows": "0.7.2-pre8",
-    "@lgarron-repo/repo-x86_64-unknown-linux-gnu": "0.7.2-pre8"
+    "@lgarron-repo/repo-aarch64-apple-darwin": "0.7.2-pre11",
+    "@lgarron-repo/repo-x86_64-apple-darwin": "0.7.2-pre11",
+    "@lgarron-repo/repo-x86_64-pc-windows": "0.7.2-pre11",
+    "@lgarron-repo/repo-x86_64-unknown-linux-gnu": "0.7.2-pre11"
   }
 }

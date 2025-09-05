@@ -6,8 +6,13 @@
   "cpu": [
     "x64"
   ],
-  "version": "0.7.2-pre8",
+  "version": "0.7.2-pre11",
   "bin": {
     "repo-x86_64-apple-darwin": "repo-x86_64-apple-darwin"
+  },
+  "exports": {
+    ".": {
+      "default": "./repo-x86_64-apple-darwin"
+    }
   }
 }

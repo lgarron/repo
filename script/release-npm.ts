@@ -1,4 +1,4 @@
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { $, sleep } from "bun";
 
@@ -59,6 +59,10 @@ const ARCHITECTURE_TRIPLES = [
   "x86_64-unknown-linux-gnu",
 ];
 
+function isWindows(architectureTriple: string): boolean {
+  return architectureTriple.endsWith("-windows");
+}
+
 const TEMP_DIR = "./.temp/artifacts";
 await rm(TEMP_DIR, { recursive: true, force: true });
 
@@ -72,6 +76,12 @@ for (const architectureTriple of ARCHITECTURE_TRIPLES) {
   // `-o` means "overwrite"
   const PACKAGE_DIR = `./src/js/@lgarron-repo/repo-${architectureTriple}`;
   await $`unzip -o -d ${PACKAGE_DIR} ${ZIP_PATH}`;
+
+  const suffix = isWindows(architectureTriple) ? ".exe" : "";
+  await rename(
+    join(PACKAGE_DIR, `repo${suffix}`),
+    join(PACKAGE_DIR, `repo-${architectureTriple}${suffix}`),
+  );
 
   await $`cd ${PACKAGE_DIR} && npm publish --tag dev --access public || echo "Already published?"`;
 }

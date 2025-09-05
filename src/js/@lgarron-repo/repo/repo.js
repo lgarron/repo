@@ -1,10 +1,8 @@
 #!/usr/bin/env node --
 
+import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { argv, exit } from "node:process";
-import { fileURLToPath } from "node:url";
-import { PrintableShellCommand } from "printable-shell-command";
 
 for (const architectureTriple of [
   "aarch64-apple-darwin",
@@ -12,26 +10,17 @@ for (const architectureTriple of [
   "x86_64-apple-darwin",
   "x86_64-pc-windows",
 ]) {
-  const path = fileURLToPath(
-    import.meta.resolve(join("..", `repo-${architectureTriple}`, "repo")),
-  );
+  const path = import.meta.resolve(`@lgarron-repo/repo-${architectureTriple}`);
   if (await existsSync(path)) {
     let command;
     try {
-      command = new PrintableShellCommand(
-        path,
-        argv.slice(2),
-      ).spawnNodeInherit();
+      command = spawn(path, argv.slice(2), { stdio: "inherit" });
     } catch (e) {
       if (e.code === "EBADARCH") {
         continue;
       }
     }
-    try {
-      await command.success;
-    } catch (e) {
-      console.log(e);
-    }
+    await new Promise((resolve) => command.addListener("exit", resolve));
     exit(command.exitCode);
   }
 }

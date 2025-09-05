@@ -1,7 +1,7 @@
 {
   "name": "@lgarron-repo/repo",
-  "version": "0.7.2-pre3",
-  "bin": "repo",
+  "version": "0.7.2-pre4",
+  "bin": "./repo.ts",
   "optionalDependencies": {
     "@lgarron-repo/repo-aarch64-apple-darwin": "0.7.2-pre2",
     "@lgarron-repo/repo-x86_64-apple-darwin": "0.7.2-pre2",

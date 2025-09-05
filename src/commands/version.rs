@@ -153,6 +153,12 @@ fn dev_bump(version: Version) -> Version {
     version
 }
 
+fn remove_prerelease(version: Version) -> Version {
+    let mut version = version.clone();
+    version.pre = Prerelease::EMPTY;
+    version
+}
+
 fn npm_bump_version(version_bump_command: VersionBumpMagnitude) {
     if version_bump_command == VersionBumpMagnitude::Dev {
         let version = npm_get_version().expect("Could not get current version.");
@@ -177,6 +183,17 @@ fn cargo_bump_version(version_bump_command: VersionBumpMagnitude) {
         cargo_set_version(dev_bump(version));
         return;
     }
+
+    // Match `npm`: Bumping a `patch` of a pre-release removes the pre-release label but keeps the same patch.
+    if version_bump_command == VersionBumpMagnitude::Patch {
+        let version = cargo_get_version().expect("Could not get current version.");
+        let version = Version::parse(&version).expect("Could not parse current version.");
+        if !version.pre.is_empty() {
+            cargo_set_version(remove_prerelease(version));
+            return;
+        }
+    }
+
     eprintln!("Assuming `cargo-bump` is installed…");
     Command::new("cargo")
         .args(["bump", &version_bump_command.to_string()])
@@ -256,6 +273,7 @@ fn npm_set_version(version: Version) {
 }
 
 fn cargo_set_version(version: Version) {
+    eprintln!("Assuming `cargo-bump` is installed…");
     Command::new("cargo")
         .args(["bump", &version.to_string()])
         .status()

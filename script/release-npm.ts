@@ -1,20 +1,40 @@
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { $ } from "bun";
+import { $, sleep } from "bun";
 
 const WORKFLOW_NAME = "Build release binaries";
+const MILLISECONDS_PER_SECOND = 1000;
 
 await mkdir("./.temp", { recursive: true });
 
 // TODO: implement `repo vcs current-commit hash`;
 const commitSHA = (await $`git rev-parse HEAD`.text()).trim();
-const runs: { workflow_runs: { id: number; name: string }[] } =
-  await $`gh api "/repos/lgarron/repo/actions/runs?head_sha=${commitSHA}"`.json();
 
-console.log(runs);
+const run = await (async () => {
+  while (true) {
+    const runs: {
+      workflow_runs: {
+        id: number;
+        name: string;
+        // https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
+        status: "completed" | string;
+      }[];
+    } =
+      await $`gh api "/repos/lgarron/repo/actions/runs?head_sha=${commitSHA}"`.json();
 
-const run = runs.workflow_runs.filter((run) => run.name === WORKFLOW_NAME)[0];
-console.log(`Workflow run id: ${run.id}`);
+    const run = runs.workflow_runs.filter(
+      (run) => run.name === WORKFLOW_NAME,
+    )[0];
+    console.log(`Workflow run id: ${run.id}`);
+
+    if (run.status === "completed") {
+      return run;
+    }
+
+    console.info("Workflow is not complete, waiting 10 seconds…");
+    await sleep(10 * MILLISECONDS_PER_SECOND);
+  }
+})();
 
 const data: {
   artifacts: { name: string; id: number; archive_download_url: string }[];

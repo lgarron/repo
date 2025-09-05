@@ -3,3 +3,4 @@
 /target
 /package-lock.json
 /src/js/@lgarron-repo/repo-*/repo
+/src/js/@lgarron-repo/repo-*/repo.exe

@@ -183,11 +183,9 @@ fn bun_add(
     args.push(&dependency_arg);
     // TODO: robust escaping.
     let command_string = format!(
-        "bun {} {} {} '{}'",
-        args[0],
-        args[1],
-        args[2],
-        args[3].replace("'", "\\'")
+        "bun {} '{}'",
+        args[0..(args.len() - 2)].join(" "),
+        args[args.len() - 1].replace("'", "\\'")
     );
     npm_command.args(args);
     let _ = get_stdout(npm_command).unwrap();
@@ -200,6 +198,7 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
             let package_manager = match &dependencies_args.package_manager_args.package_manager {
                 Some(package_manager) => package_manager.clone(),
                 None => {
+                    // TODO: handle projects without version.
                     let Some((ecosystem, _)) =
                         detect_ecosystem_by_getting_version(&dependencies_args.ecosystem_args)
                     else {

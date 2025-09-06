@@ -110,6 +110,7 @@ struct PackageJSONWithVersion {
 }
 
 pub(crate) fn npm_get_version() -> Result<String, String> {
+    // TODO: use `npm root`
     // TODO: semantically parse version
     let Ok(file) = File::open(PACKAGE_JSON_PATH) else {
         return Err("Could not file `package.json`".to_owned());

@@ -4,8 +4,5 @@
     "@cubing/dev-config": "^0.3.6",
     "@types/bun": "^1.2.21",
     "readme-cli-help": "v0.1.10"
-  },
-  "dependencies": {
-    "printable-shell-command": "^1.1.3"
   }
 }

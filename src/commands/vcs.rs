@@ -4,8 +4,7 @@ use clap::{Args, Subcommand};
 
 use crate::common::{
     inference::get_stdout,
-    package_manager::PackageManagerArgs,
-    vcs::{auto_detect_preferred_vcs_and_repo_root_for_ecosystem, VcsKind},
+    vcs::{auto_detect_preferred_vcs_and_repo_root, VcsKind},
 };
 
 #[derive(Args, Debug)]
@@ -40,12 +39,6 @@ enum LatestCommitSubcommand {
     Hash,
 }
 
-#[derive(Args, Debug)]
-pub(crate) struct DependenciesArgs {
-    #[command(flatten)]
-    package_manager_args: PackageManagerArgs,
-}
-
 fn jj_get_latest_commmit_hash() -> Result<String, String> {
     let mut jj_command = Command::new("jj");
     jj_command.args([
@@ -78,13 +71,13 @@ fn git_get_latest_commmit_hash() -> Result<String, String> {
 pub(crate) fn vcs_command(vcs_args: VcsArgs) -> Result<(), String> {
     match vcs_args.command {
         VcsCommand::Kind => {
-            match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap()) {
+            match auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap()) {
                 Some((vcs, _)) => print!("{}", vcs),
                 None => return Err("Could not detect a VCS repo.".to_owned()),
             }
         }
         VcsCommand::Root => {
-            match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap()) {
+            match auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap()) {
                 Some((_, path)) => print!("{}", path),
                 None => return Err("Could not detect a VCS repo.".to_owned()),
             }
@@ -92,9 +85,7 @@ pub(crate) fn vcs_command(vcs_args: VcsArgs) -> Result<(), String> {
         VcsCommand::LatestCommit(latest_commit_args) => {
             match latest_commit_args.command {
                 LatestCommitSubcommand::Hash => {
-                    match auto_detect_preferred_vcs_and_repo_root_for_ecosystem(
-                        &current_dir().unwrap(),
-                    ) {
+                    match auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap()) {
                         Some((VcsKind::Jj, _)) => print!("{}", jj_get_latest_commmit_hash()?),
                         Some((VcsKind::Git, _)) => print!("{}", git_get_latest_commmit_hash()?),
                         Some((VcsKind::Mercurial, _)) => {

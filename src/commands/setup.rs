@@ -20,13 +20,7 @@ pub(crate) struct SetupArgs {
 #[derive(Debug, Subcommand)]
 enum SetupCommand {
     /// Install dependencies
-    Dependencies(DependenciesArgs),
-}
-
-#[derive(Args, Debug)]
-pub(crate) struct DependenciesArgs {
-    #[command(flatten)]
-    package_manager_args: PackageManagerArgs,
+    Dependencies(PackageManagerArgs),
 }
 
 // TODO: skip empty deps?
@@ -152,8 +146,8 @@ pub(crate) fn setup_command(setup_args: SetupArgs) {
                 });
             }
         }
-        Some(SetupCommand::Dependencies(dependencies_args)) => {
-            setup_dependencies(dependencies_args.package_manager_args);
+        Some(SetupCommand::Dependencies(package_manager_args)) => {
+            setup_dependencies(package_manager_args);
         }
     };
 }

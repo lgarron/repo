@@ -8,14 +8,15 @@ An opinionated tool for repo management.
 Usage: repo <COMMAND>
 
 Commands:
-  version      Perform operations on the repo version
-  publish      Publish
-  boilerplate  Set up boilerplate for the repo
-  setup        Set up a repository checkout
-  vcs          Get information about the current VCS
-  workspace    Get information about the current workspace
-  completions  Print completions for the given shell
-  help         Print this message or the help of the given subcommand(s)
+  version       Perform operations on the repo version
+  publish       Publish
+  boilerplate   Set up boilerplate for the repo
+  setup         Set up a repository checkout
+  vcs           Get information about the current VCS
+  workspace     Get information about the current workspace
+  dependencies  Operate on dependencies
+  completions   Print completions for the given shell
+  help          Print this message or the help of the given subcommand(s)
 
 Options:
   -h, --help     Print help
@@ -116,4 +117,21 @@ Commands:
 
 Options:
   -h, --help  Print help
+````
+
+## `repo dependencies`
+
+````cli-help-dependencies
+Operate on dependencies
+
+Usage: repo dependencies [OPTIONS] <COMMAND>
+
+Commands:
+  roll  
+  help  Print this message or the help of the given subcommand(s)
+
+Options:
+      --ecosystem <ECOSYSTEM>              [possible values: javascript, rust]
+      --package-manager <PACKAGE_MANAGER>  [possible values: npm, bun, yarn, pnpm, cargo]
+  -h, --help                               Print help
 ````

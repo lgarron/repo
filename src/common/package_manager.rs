@@ -12,7 +12,7 @@ pub(crate) struct PackageManagerArgs {
     pub(crate) package_manager: Option<PackageManager>,
 }
 
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Clone, ValueEnum, PartialEq, Eq)]
 pub(crate) enum PackageManager {
     Npm,
     Bun,
@@ -72,4 +72,14 @@ impl PackageManager {
             }
         }
     }
+
+    // pub(crate) fn ecosystem(&self) -> Ecosystem {
+    //     match self {
+    //         PackageManager::Npm => Ecosystem::JavaScript,
+    //         PackageManager::Bun => Ecosystem::JavaScript,
+    //         PackageManager::Yarn => Ecosystem::JavaScript,
+    //         PackageManager::Pnpm => Ecosystem::JavaScript,
+    //         PackageManager::Cargo => Ecosystem::Rust,
+    //     }
+    // }
 }

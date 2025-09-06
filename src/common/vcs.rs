@@ -36,7 +36,7 @@ impl Display for VcsKind {
 // pub(crate) const JJ_PATH: &str = "./.jj";
 pub(crate) const HG_PATH: &str = "./.hg";
 
-pub(crate) fn auto_detect_preferred_vcs_and_repo_root_for_ecosystem(
+pub(crate) fn auto_detect_preferred_vcs_and_repo_root(
     // TODO: accept file path?
     path_of_folder_or_subfolder: &Path,
 ) -> Option<(VcsKind, String)> {

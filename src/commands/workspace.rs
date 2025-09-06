@@ -2,9 +2,7 @@ use std::process::exit;
 
 use clap::{Args, Subcommand};
 
-use crate::common::{
-    args::PathArgs, package_manager::PackageManagerArgs, workspace::auto_detect_workspace_root,
-};
+use crate::common::{args::PathArgs, workspace::auto_detect_workspace_root};
 
 #[derive(Args, Debug)]
 pub(crate) struct WorkspaceArgs {
@@ -19,12 +17,6 @@ enum WorkspaceCommand {
     ///
     /// Also consider `repo vcs root` if you are only looking for VCS roots.
     Root(PathArgs),
-}
-
-#[derive(Args, Debug)]
-pub(crate) struct DependenciesArgs {
-    #[command(flatten)]
-    package_manager_args: PackageManagerArgs,
 }
 
 pub(crate) fn workspace_command(workspace_args: WorkspaceArgs) {

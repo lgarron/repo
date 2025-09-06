@@ -11,6 +11,8 @@ use commands::version::version_command;
 use commands::workspace::workspace_command;
 use shadow_rs::shadow;
 
+use crate::commands::dependencies::dependencies_command;
+
 shadow!(build);
 
 fn main() {
@@ -23,6 +25,9 @@ fn main() {
         args::RepoCommand::Setup(setup_args) => setup_command(setup_args),
         args::RepoCommand::Vcs(vcs_args) => vcs_command(vcs_args).unwrap(),
         args::RepoCommand::Workspace(workspace_args) => workspace_command(workspace_args),
+        args::RepoCommand::Dependencies(dependencies_args) => {
+            dependencies_command(dependencies_args).unwrap()
+        }
         args::RepoCommand::Completions(_) => panic!("We should have exited earlier."),
     }
 }

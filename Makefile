@@ -32,6 +32,7 @@ readme-cli-update:
 	bun x readme-cli-help --fence cli-help-setup "cargo run --quiet -- setup --help"
 	bun x readme-cli-help --fence cli-help-vcs "cargo run --quiet -- vcs --help"
 	bun x readme-cli-help --fence cli-help-workspace "cargo run --quiet -- workspace --help"
+	bun x readme-cli-help --fence cli-help-dependencies "cargo run --quiet -- dependencies --help"
 
 .PHONY: readme-cli-check
 readme-cli-check: \
@@ -56,6 +57,8 @@ readme-cli-check-vcs:
 	bun x readme-cli-help --fence cli-help-vcs --check-only "cargo run --quiet -- vcs --help"
 readme-cli-check-workspace:
 	bun x readme-cli-help --fence cli-help-workspace --check-only "cargo run --quiet -- workspace --help"
+readme-cli-check-dependencies:
+	bun x readme-cli-help --fence cli-help-dependencies --check-only "cargo run --quiet -- dependencies --help"
 
 .PHONY: lint
 lint: lint-js readme-cli-check

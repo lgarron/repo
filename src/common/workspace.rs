@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::common::package_manager::PACKAGE_JSON_PATH;
 
-use super::{inference::get_stdout, vcs::auto_detect_preferred_vcs_and_repo_root_for_ecosystem};
+use super::{inference::get_stdout, vcs::auto_detect_preferred_vcs_and_repo_root};
 
 #[derive(Deserialize)]
 struct CargoMetadataSubset {
@@ -19,7 +19,7 @@ pub(crate) fn auto_detect_workspace_root(
     path_of_folder_or_subfolder: &Path,
 ) -> Option<String> {
     if let Some((_, root)) =
-        auto_detect_preferred_vcs_and_repo_root_for_ecosystem(path_of_folder_or_subfolder)
+        auto_detect_preferred_vcs_and_repo_root(path_of_folder_or_subfolder)
     {
         return Some(root);
     }

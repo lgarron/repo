@@ -7,6 +7,7 @@ use clap_complete::{Generator, Shell};
 
 use crate::build::CLAP_LONG_VERSION;
 use crate::commands::boilerplate::BoilerplateArgs;
+use crate::commands::dependencies::DependenciesArgs;
 use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
 use crate::commands::vcs::VcsArgs;
@@ -35,6 +36,8 @@ pub(crate) enum RepoCommand {
     Vcs(VcsArgs),
     /// Get information about the current workspace.
     Workspace(WorkspaceArgs),
+    /// Operate on dependencies.
+    Dependencies(DependenciesArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
 }

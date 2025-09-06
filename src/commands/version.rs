@@ -10,7 +10,7 @@ use cargo_metadata::{semver::Version, MetadataCommand};
 use serde::Deserialize;
 
 use crate::common::commit_wrapped_operation::CommitWrappedOperation;
-use crate::common::vcs::{auto_detect_preferred_vcs_and_repo_root_for_ecosystem, VcsKind};
+use crate::common::vcs::{auto_detect_preferred_vcs_and_repo_root, VcsKind};
 use crate::common::{
     ecosystem::{Ecosystem, EcosystemArgs},
     package_manager::PACKAGE_JSON_PATH,
@@ -46,7 +46,7 @@ struct VersionSetArgs {
     #[clap()]
     pub version: String,
     #[command(flatten)]
-    commit_args: CommitArgs,
+    commit_args: CommitOperationArgs,
 }
 
 #[derive(Args, Debug)]
@@ -54,7 +54,7 @@ struct VersionBumpArgs {
     #[command(subcommand)]
     pub command: VersionBumpMagnitude,
     #[command(flatten)]
-    commit_args: CommitArgs,
+    commit_args: CommitOperationArgs,
 }
 
 #[derive(Debug, Subcommand, PartialEq, Eq, Clone)]
@@ -81,20 +81,20 @@ impl Display for VersionBumpMagnitude {
 }
 
 #[derive(Args, Debug)]
-pub(crate) struct CommitArgs {
+pub(crate) struct CommitOperationArgs {
     #[clap(long)]
     pub commit: bool,
     #[clap(long)]
     pub commit_using: Option<VcsKind>,
 }
 
-impl CommitArgs {
+impl CommitOperationArgs {
     pub fn vcs(&self) -> Result<VcsKind, String> {
         Ok(match &self.commit_using {
             Some(vcs_kind) => vcs_kind.clone(),
             None => {
                 let Some((vcs_kind, _)) =
-                    auto_detect_preferred_vcs_and_repo_root_for_ecosystem(&current_dir().unwrap())
+                    auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap())
                 else {
                     return Err("No VCS specified or found.".to_owned());
                 };
@@ -302,7 +302,7 @@ pub(crate) fn version_command(version_args: VersionArgs) {
         }
         VersionCommand::Set(version_set_args) => {
             let commit_wrapped_operation =
-                CommitWrappedOperation::try_from(version_set_args.commit_args).unwrap();
+                CommitWrappedOperation::try_from(&version_set_args.commit_args).unwrap();
             commit_wrapped_operation
                 .perform_operation(&|| {
                     let version = version_set_args
@@ -317,7 +317,7 @@ pub(crate) fn version_command(version_args: VersionArgs) {
         }
         VersionCommand::Bump(version_bump_args) => {
             let commit_wrapped_operation =
-                CommitWrappedOperation::try_from(version_bump_args.commit_args).unwrap();
+                CommitWrappedOperation::try_from(&version_bump_args.commit_args).unwrap();
             commit_wrapped_operation
                 .perform_operation(&|| {
                     let version_bump_magnitude: &VersionBumpMagnitude = &version_bump_args.command;

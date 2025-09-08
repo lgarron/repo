@@ -60,3 +60,14 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
+
+  build-aarch64-unknown-linux-gnu:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup toolchain list
+      - run: make build-release

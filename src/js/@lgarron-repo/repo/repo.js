@@ -4,51 +4,43 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { argv, env, exit } from "node:process";
 import { fileURLToPath } from "node:url";
+import { architectures } from "./architectures";
 
 // biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463 or https://github.com/biomejs/biome/issues/6736
 const DEBUG = env["REPO_DEBUG_NPM_RESOLUTION"] === "true";
 
-for (const architectureTriple of [
-  "aarch64-apple-darwin",
-  "x86_64-unknown-linux-gnu",
-  "aarch64-unknown-linux-gnu",
-  "x86_64-apple-darwin",
-  "x86_64-pc-windows",
-]) {
+for (const { rustTarget } of architectures) {
   if (DEBUG) {
     console.error(
       `--------
-[${architectureTriple}] Testing architecture triple: ${architectureTriple}`,
+[${rustTarget}] Testing Rust target: ${rustTarget}`,
     );
   }
   let path;
   try {
     path = fileURLToPath(
-      import.meta.resolve(`@lgarron-repo/repo-${architectureTriple}`),
+      import.meta.resolve(`@lgarron-repo/repo-${rustTarget}`),
     );
     if (DEBUG) {
-      console.error(`[${architectureTriple}] Resolved to path: `, path);
+      console.error(`[${rustTarget}] Resolved to path: `, path);
     }
   } catch (e) {
     if (e.code === "ERR_MODULE_NOT_FOUND") {
       if (DEBUG) {
         console.error(
-          `[${architectureTriple}] Failed to resolve. Continuing to next architecture.`,
+          `[${rustTarget}] Failed to resolve. Continuing to next target.`,
         );
       }
       continue;
     }
     if (DEBUG) {
-      console.error(
-        `[${architectureTriple}] Unexpected error during resolution: `,
-        e,
-      );
+      console.error(`[${rustTarget}] Unexpected error during resolution: `, e);
     }
     throw e;
   }
   if (await existsSync(path)) {
     if (DEBUG) {
-      console.error(`[${architectureTriple}] Path exists: `, path);
+      console.error(`[${rustTarget}] Path exists: `, path);
     }
     let command;
     try {
@@ -57,14 +49,14 @@ for (const architectureTriple of [
       if (e.code === "EBADARCH") {
         if (DEBUG) {
           console.error(
-            `[${architectureTriple}] Bad architecture. Continuing to next architecture`,
+            `[${rustTarget}] Bad architecture. Continuing to next target`,
           );
         }
         continue;
       }
       if (DEBUG) {
         console.error(
-          `[${architectureTriple}] Unexpected error during binary launch: `,
+          `[${rustTarget}] Unexpected error during binary launch: `,
           e,
         );
       }

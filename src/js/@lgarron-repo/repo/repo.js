@@ -24,7 +24,7 @@ for (const { rustTarget } of architectures) {
     if (DEBUG) {
       console.error(`[${rustTarget}] Resolved to path: `, path);
     }
-  } catch (e) {
+  } catch (/** @type {any} */ e) {
     if (e.code === "ERR_MODULE_NOT_FOUND") {
       if (DEBUG) {
         console.error(
@@ -45,7 +45,7 @@ for (const { rustTarget } of architectures) {
     let command;
     try {
       command = spawn(path, argv.slice(2), { stdio: "inherit" });
-    } catch (e) {
+    } catch (/** @type {any} */ e) {
       if (e.code === "EBADARCH") {
         if (DEBUG) {
           console.error(

@@ -44,9 +44,11 @@ pub(crate) fn workspace_command(workspace_args: WorkspaceArgs) {
                 match workspace_root_args.fallback {
                     Some(RootFallback::ClosestDir) => {
                         if path.is_dir() {
-                            print!("{}", path.to_string_lossy())
+                            print!("{}", path.to_string_lossy());
+                            return;
                         } else if let Some(parent_path) = path.parent() {
-                            print!("{}", parent_path.to_string_lossy())
+                            print!("{}", parent_path.to_string_lossy());
+                            return;
                         }
                     }
                     None => {}

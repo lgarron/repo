@@ -31,7 +31,6 @@ pub(crate) struct WorkspaceRootArgs {
 #[derive(Debug, Clone, ValueEnum, PartialEq, Eq)]
 enum RootFallback {
     /// Use either the path itself (if it's an existing directory) or its parent (if it's not).
-    ///
     /// Note: due to Rust parsing quirks, non-existent paths are always treated as non-directories (even if they have a trailing slash), i.e. their parent will be returned.
     // TODO: always treat paths with a trailing slash as dirs.
     #[clap(name = "closest-dir")]

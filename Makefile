@@ -45,21 +45,21 @@ readme-cli-check: \
 	readme-cli-check-workspace \
 	readme-cli-check-dependencies
 
-readme-cli-check-main: ./target/debug/repo
+readme-cli-check-main: setup-js ./target/debug/repo
 	bun x readme-cli-help --check-only "./target/debug/repo --help"
-readme-cli-check-version:
+readme-cli-check-version: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-version --check-only "./target/debug/repo version --help"
-readme-cli-check-publish:
+readme-cli-check-publish: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-publish --check-only "./target/debug/repo publish --help"
-readme-cli-check-boilerplate:
+readme-cli-check-boilerplate: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-boilerplate --check-only "./target/debug/repo boilerplate --help"
-readme-cli-check-setup:
+readme-cli-check-setup: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-setup --check-only "./target/debug/repo setup --help"
-readme-cli-check-vcs:
+readme-cli-check-vcs: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-vcs --check-only "./target/debug/repo vcs --help"
-readme-cli-check-workspace:
+readme-cli-check-workspace: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-workspace --check-only "./target/debug/repo workspace --help"
-readme-cli-check-dependencies:
+readme-cli-check-dependencies: setup-js ./target/debug/repo
 	bun x readme-cli-help --fence cli-help-dependencies --check-only "./target/debug/repo dependencies --help"
 
 .PHONY: build-debug

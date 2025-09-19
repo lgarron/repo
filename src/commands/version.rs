@@ -136,10 +136,40 @@ pub(crate) fn cargo_get_version() -> Result<String, String> {
     else {
         return Err("Could not file `Cargo.toml`".to_owned());
     };
-    let Some(root_package) = metadata.root_package() else {
-        return Err("Could not file `Cargo.toml` root package.".to_owned());
+    if let Some(root_package) = metadata.root_package() {
+        // return Err("Could not file `Cargo.toml` root package.".to_owned());
+        return Ok(root_package.version.to_string());
     };
-    Ok(root_package.version.to_string())
+
+    let workspace_default_packages = metadata.workspace_default_packages();
+    if let Some(workspace_default_package) = workspace_default_packages.first() {
+        eprintln!(
+            "Getting the Rust package version from the {} workspace default package: {}",
+            if workspace_default_packages.len() == 1 {
+                "sole"
+            } else {
+                "first"
+            },
+            workspace_default_package.name
+        );
+        return Ok(workspace_default_package.version.to_string());
+    }
+
+    let workspace_packages = metadata.workspace_packages();
+    if let Some(workspace_package) = workspace_packages.first() {
+        eprintln!(
+            "Getting the Rust package version from the {} workspace package: {}",
+            if workspace_packages.len() == 1 {
+                "sole"
+            } else {
+                "first"
+            },
+            workspace_package.name
+        );
+        return Ok(workspace_package.version.to_string());
+    }
+
+    Err("Could not get version.".to_owned())
 }
 
 fn print_version(version: &str, version_get_args: &VersionGetArgs) {

@@ -288,7 +288,7 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
             // Based on https://github.com/jj-vcs/jj/discussions/2563#discussioncomment-11885001
             let mut jj_command = PrintableShellCommand::new("jj");
             jj_command.arg("log");
-            jj_command.args(["-r", "latest(tags())::@- ~ empty()"]);
+            jj_command.args(["-r", "latest(tags())::@-"]);
             jj_command.arg("--no-graph");
             jj_command.arg("--reversed");
             jj_command.args(["-T", "commit_id.short(8) ++ \" \" ++ tags ++ \"\n\""]);
@@ -307,8 +307,12 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
                 exit(1);
             }
             let tag = first_line_parts[1];
-            let latest: &str = lines.last().unwrap(); // We already checked the length is at least one.
-            format!("{}-{}-g{}", tag, lines.len(), latest)
+            if lines.len() == 1 {
+                tag.to_owned()
+            } else {
+                let latest: &str = lines.last().unwrap().split(" ").next().unwrap(); // We already checked the length is not 0 or 1.
+                format!("{}-{}-g{}", tag, lines.len() - 1, latest)
+            }
         }
         VcsKind::Mercurial => {
             eprintln!("Mercurial is unsupported for this operation.");

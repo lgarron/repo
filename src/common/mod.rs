@@ -1,6 +1,7 @@
 pub(crate) mod args;
 pub(crate) mod command;
 pub(crate) mod commit_wrapped_operation;
+pub(crate) mod debug;
 pub(crate) mod ecosystem;
 pub(crate) mod inference;
 pub(crate) mod package_manager;

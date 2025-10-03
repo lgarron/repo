@@ -10,6 +10,7 @@ use cargo_metadata::{semver::Version, MetadataCommand};
 use serde::Deserialize;
 
 use crate::common::commit_wrapped_operation::CommitWrappedOperation;
+use crate::common::debug::DebugPrintable;
 use crate::common::vcs::{auto_detect_preferred_vcs_and_repo_root, VcsKind};
 use crate::common::{
     ecosystem::{Ecosystem, EcosystemArgs},
@@ -203,6 +204,7 @@ fn npm_bump_version(version_bump_command: VersionBumpMagnitude) {
             "--no-git-tag-version",
             &version_bump_command.to_string(),
         ])
+        .debug_print()
         .status()
         .expect("Could not bump version using `npm`");
 }
@@ -228,6 +230,7 @@ fn cargo_bump_version(version_bump_command: VersionBumpMagnitude) {
     eprintln!("Assuming `cargo-bump` is installed…");
     Command::new("cargo")
         .args(["bump", &version_bump_command.to_string()])
+        .debug_print()
         .status()
         .expect("Could not bump version using `cargo-bump`");
 }
@@ -307,6 +310,7 @@ fn cargo_set_version(version: Version) {
     eprintln!("Assuming `cargo-bump` is installed…");
     Command::new("cargo")
         .args(["bump", &version.to_string()])
+        .debug_print()
         .status()
         .expect("Could not bump version using `npm`");
 }

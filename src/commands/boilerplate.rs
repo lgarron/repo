@@ -3,6 +3,7 @@ use std::{path::PathBuf, process::Command};
 use clap::{Args, Subcommand};
 
 use crate::common::{
+    debug::DebugPrintable,
     ecosystem::Ecosystem,
     package_manager::PackageManager,
     template_file::{TemplateFile, TemplateFileArgs},
@@ -116,6 +117,7 @@ fn add_biome(template_file_args: TemplateFileArgs) {
         };
     Command::new(binary)
         .args(args)
+        .debug_print()
         .spawn()
         .expect("Could not add development dependency")
         .wait()
@@ -163,6 +165,7 @@ fn add_tsconfig(template_file_args: TemplateFileArgs) {
     };
     Command::new(binary)
         .args(args)
+        .debug_print()
         .spawn()
         .expect("Could not add development dependency")
         .wait()

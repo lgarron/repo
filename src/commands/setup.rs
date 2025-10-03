@@ -6,6 +6,7 @@ use std::{
 use clap::{Args, Subcommand};
 
 use crate::common::{
+    debug::DebugPrintable,
     ecosystem::Ecosystem,
     package_manager::{PackageManager, PackageManagerArgs, PACKAGE_LOCK_JSON_PATH},
 };
@@ -38,6 +39,7 @@ fn npm_install() {
     };
     Command::new("npm")
         .args([install_commmand])
+        .debug_print()
         .status()
         .expect("Could not install dependencies using `npm`");
 }
@@ -46,6 +48,7 @@ fn bun_install() {
     println!("Installing dependencies using: `bun`");
     Command::new("bun")
         .args(["install", "--no-save"])
+        .debug_print()
         .status()
         .expect("Could not install dependencies using `bun`");
 }
@@ -54,6 +57,7 @@ fn yarn_install() {
     println!("Installing dependencies using: `npx yarn`");
     Command::new("npx")
         .args(["yarn", "install", "--frozen-lockfile"])
+        .debug_print()
         .status()
         .expect("Could not install dependencies using `npx yarn`");
 }
@@ -62,6 +66,7 @@ fn pnpm_install() {
     println!("Installing dependencies using: `npx pnpm`");
     Command::new("npx")
         .args(["pnpm", "install", "--frozen-lockfile"])
+        .debug_print()
         .status()
         .expect("Could not install dependencies using `npx pnpm`");
 }
@@ -72,6 +77,7 @@ fn cargo_install() {
     // TODO: https://github.com/rust-lang/cargo/issues/2644
     Command::new("cargo")
         .args(["build"])
+        .debug_print()
         .status()
         .expect("Could not install dependencies using `cargo`");
 }
@@ -122,6 +128,7 @@ pub(crate) fn make_setup_exists() -> bool {
         .args(["-n", "setup"])
         .stdout(Stdio::null())
         .stderr(Stdio::null())
+        .debug_print()
         .status()
         .expect("Could not detect whether `make setup` exists")
         .success()
@@ -130,6 +137,7 @@ pub(crate) fn make_setup_exists() -> bool {
 pub(crate) fn make_setup() {
     Command::new("make")
         .args(["setup"])
+        .debug_print()
         .status()
         .expect("Could not run `make setup` exists`");
 }

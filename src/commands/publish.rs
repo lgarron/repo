@@ -2,7 +2,10 @@ use std::process::Command;
 
 use clap::Args;
 
-use crate::common::ecosystem::{Ecosystem, EcosystemArgs};
+use crate::common::{
+    debug::DebugPrintable,
+    ecosystem::{Ecosystem, EcosystemArgs},
+};
 
 use super::version::must_detect_ecosystem_by_getting_version;
 
@@ -19,6 +22,7 @@ pub(crate) fn publish_command(publish_args: PublishArgs) {
         (Ecosystem::JavaScript, _) => {
             Command::new("npm")
                 .args(["publish"])
+                .debug_print()
                 .spawn()
                 .expect("Could not publish using `npm`")
                 .wait()
@@ -27,6 +31,7 @@ pub(crate) fn publish_command(publish_args: PublishArgs) {
         (Ecosystem::Rust, _) => {
             Command::new("cargo")
                 .args(["publish"])
+                .debug_print()
                 .spawn()
                 .expect("Could not publish using `cargo`")
                 .wait()

@@ -1,8 +1,11 @@
 use std::process::{Command, Stdio};
 
+use crate::common::debug::DebugPrintable;
+
 // Gracefully recovers from any error by returning `None`.
 // Currently trims the output.
 pub(crate) fn get_stdout(mut command: Command) -> Option<String> {
+    command.debug_print();
     command.stdout(Stdio::piped()).stderr(Stdio::null());
     let Ok(exit_status) = command.status() else {
         return None;

@@ -771,7 +771,7 @@ dependencies = [
 
 [[package]]
 name = "repo"
-version = "0.8.12"
+version = "0.8.13-dev"
 dependencies = [
  "cargo_metadata",
  "clap",

@@ -57,7 +57,7 @@ for (const architectureTriple of [
       if (e.code === "EBADARCH") {
         if (DEBUG) {
           console.error(
-            `[${architectureTriple}] Bad architecture. Continuing to next architecture`,
+            `[${architectureTriple}] Bad architecture. Continuing to next architecture.`,
           );
         }
         continue;

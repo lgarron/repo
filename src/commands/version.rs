@@ -285,8 +285,7 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
             description
         }
         VcsKind::Jj => {
-            // Based on:
-            // From https://github.com/jj-vcs/jj/discussions/2563#discussioncomment-11885001
+            // Based on https://github.com/jj-vcs/jj/discussions/2563#discussioncomment-11885001
             let mut jj_command = PrintableShellCommand::new("jj");
             jj_command.arg("log");
             jj_command.args(["-r", "latest(tags())::@- ~ empty()"]);

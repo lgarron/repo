@@ -31,10 +31,11 @@ Perform operations on the repo version
 Usage: repo version [OPTIONS] <COMMAND>
 
 Commands:
-  get   Get the current version
-  set   Set the current version
-  bump  Bump the current version
-  help  Print this message or the help of the given subcommand(s)
+  get       Get the current version
+  describe  Get more detailed version info, similar to `git describe --tags`
+  set       Set the current version
+  bump      Bump the current version
+  help      Print this message or the help of the given subcommand(s)
 
 Options:
       --ecosystem <ECOSYSTEM>  [possible values: javascript, rust]

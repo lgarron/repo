@@ -1,16 +1,10 @@
-use std::{fmt::Display, fs::exists, path::Path, process::Command};
+use std::{env::current_dir, fmt::Display, fs::exists, path::Path, process::Command};
 
 use clap::ValueEnum;
 
 use super::inference::get_stdout;
 
-// #[derive(Args, Debug)]
-// pub(crate) struct VcsOptionArgs {
-//     #[clap(long)]
-//     pub(crate) vcs: Option<VCS>,
-// }
-
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Copy, Clone, ValueEnum)]
 pub(crate) enum VcsKind {
     Git,
     Jj,
@@ -68,4 +62,18 @@ pub(crate) fn auto_detect_preferred_vcs_and_repo_root(
         dir_or_ancestor = dir.parent();
     }
     None
+}
+
+pub fn vcs_or_infer(vcs: Option<VcsKind>) -> Result<VcsKind, String> {
+    Ok(match vcs {
+        Some(vcs_kind) => vcs_kind,
+        None => {
+            let Some((vcs_kind, _)) =
+                auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap())
+            else {
+                return Err("No VCS specified or found.".to_owned());
+            };
+            vcs_kind
+        }
+    })
 }

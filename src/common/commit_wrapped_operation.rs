@@ -2,7 +2,11 @@ use std::process::Command;
 
 use crate::{
     commands::version::CommitOperationArgs,
-    common::{command::command_must_succeed, inference::get_stdout, vcs::VcsKind},
+    common::{
+        command::command_must_succeed,
+        inference::get_stdout,
+        vcs::{vcs_or_infer, VcsKind},
+    },
 };
 
 pub struct CommitWrappedOperation {
@@ -16,7 +20,7 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
     fn try_from(commit_args: &CommitOperationArgs) -> Result<Self, Self::Error> {
         Ok(Self {
             perform_commit: commit_args.commit,
-            commit_using: commit_args.vcs()?,
+            commit_using: vcs_or_infer(commit_args.commit_using)?,
         })
     }
 }

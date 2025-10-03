@@ -1,4 +1,3 @@
-use std::env::current_dir;
 use std::fs::File;
 use std::process::Command;
 use std::{fmt::Display, process::exit};
@@ -7,11 +6,13 @@ use cargo_metadata::semver::Prerelease;
 use clap::{Args, Subcommand};
 
 use cargo_metadata::{semver::Version, MetadataCommand};
+use printable_shell_command::PrintableShellCommand;
 use serde::Deserialize;
 
 use crate::common::commit_wrapped_operation::CommitWrappedOperation;
 use crate::common::debug::DebugPrintable;
-use crate::common::vcs::{auto_detect_preferred_vcs_and_repo_root, VcsKind};
+use crate::common::inference::get_stdout;
+use crate::common::vcs::{vcs_or_infer, VcsKind};
 use crate::common::{
     ecosystem::{Ecosystem, EcosystemArgs},
     package_manager::PACKAGE_JSON_PATH,
@@ -29,6 +30,8 @@ pub(crate) struct VersionArgs {
 enum VersionCommand {
     /// Get the current version
     Get(VersionGetArgs),
+    /// Get more detailed version info, similar to `git describe --tags`
+    Describe(VersionDescribeArgs),
     /// Set the current version
     Set(VersionSetArgs),
     /// Bump the current version
@@ -40,6 +43,12 @@ struct VersionGetArgs {
     /// Do not print the `v` prefix (e.g. print `0.1.3` instead of `v0.1.3`)
     #[clap(long)]
     pub no_prefix: bool,
+}
+
+#[derive(Args, Debug)]
+struct VersionDescribeArgs {
+    #[clap(long)]
+    pub use_vcs: Option<VcsKind>,
 }
 
 #[derive(Args, Debug)]
@@ -87,22 +96,6 @@ pub(crate) struct CommitOperationArgs {
     pub commit: bool,
     #[clap(long)]
     pub commit_using: Option<VcsKind>,
-}
-
-impl CommitOperationArgs {
-    pub fn vcs(&self) -> Result<VcsKind, String> {
-        Ok(match &self.commit_using {
-            Some(vcs_kind) => vcs_kind.clone(),
-            None => {
-                let Some((vcs_kind, _)) =
-                    auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap())
-                else {
-                    return Err("No VCS specified or found.".to_owned());
-                };
-                vcs_kind
-            }
-        })
-    }
 }
 
 #[derive(Deserialize)]
@@ -276,6 +269,56 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: &Vers
     print_version(&version, version_get_args);
 }
 
+fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
+    let Ok(vcs) = vcs_or_infer(version_describe_args.use_vcs) else {
+        eprintln!("Could not determin VCS to use.");
+        exit(1);
+    };
+    let description = match vcs {
+        VcsKind::Git => {
+            let mut git_command = Command::new("git");
+            git_command.args(["describe", "--tags"]);
+            let Some(description) = get_stdout(git_command) else {
+                eprintln!("Could not get description using `git`.");
+                exit(1);
+            };
+            description
+        }
+        VcsKind::Jj => {
+            // Based on:
+            // From https://github.com/jj-vcs/jj/discussions/2563#discussioncomment-11885001
+            let mut jj_command = PrintableShellCommand::new("jj");
+            jj_command.arg("log");
+            jj_command.args(["-r", "latest(tags())::@- ~ empty()"]);
+            jj_command.arg("--no-graph");
+            jj_command.arg("--reversed");
+            jj_command.args(["-T", "commit_id.short(8) ++ \" \" ++ tags ++ \"\n\""]);
+            let Some(commits) = get_stdout(jj_command) else {
+                eprintln!("Could not get description using `jj`.");
+                exit(1);
+            };
+            let lines: Vec<&str> = commits.split("\n").collect();
+            if lines.is_empty() {
+                eprintln!("Could not get enough commits to describe using `jj`.");
+                exit(1);
+            }
+            let first_line_parts: Vec<&str> = lines[0].split(" ").collect();
+            if first_line_parts.len() < 2 {
+                eprintln!("Could not get tag to describe using `jj`.");
+                exit(1);
+            }
+            let tag = first_line_parts[1];
+            let latest: &str = lines.last().unwrap(); // We already checked the length is at least one.
+            format!("{}-{}-g{}", tag, lines.len(), latest)
+        }
+        VcsKind::Mercurial => {
+            eprintln!("Mercurial is unsupported for this operation.");
+            exit(1);
+        }
+    };
+    println!("{}", description);
+}
+
 // TODO: get version from output of the bump commands themselves?
 // TODO: return `Result<Version, …>`.
 fn version_bump(
@@ -334,6 +377,9 @@ pub(crate) fn version_command(version_args: VersionArgs) {
     match version_args.command {
         VersionCommand::Get(version_get_args) => {
             version_get_and_print(&version_args.ecosystem_args, &version_get_args);
+        }
+        VersionCommand::Describe(version_describe_args) => {
+            version_describe_and_print(&version_describe_args);
         }
         VersionCommand::Set(version_set_args) => {
             let commit_wrapped_operation =

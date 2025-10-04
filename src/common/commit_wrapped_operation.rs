@@ -1,5 +1,7 @@
 use std::process::Command;
 
+use printable_shell_command::PrintableShellCommand;
+
 use crate::{
     commands::version::CommitOperationArgs,
     common::{
@@ -54,7 +56,7 @@ impl CommitWrappedOperation {
                     return Err("Could not get `jj log` output.".to_owned());
                 };
                 if stdout.trim() != "." {
-                    let mut command = Command::new("jj");
+                    let mut command = PrintableShellCommand::new("jj");
                     command.args(["new"]);
                     command_must_succeed(command)?;
                 }
@@ -71,14 +73,16 @@ impl CommitWrappedOperation {
         }
         match self.commit_using {
             VcsKind::Git => {
-                let mut command = Command::new("git");
-                command.args(["commit", "--all", "--message", message]);
+                let mut command = PrintableShellCommand::new("git");
+                command.arg_each(["commit", "--all"]);
+                command.args(["--message", message]);
                 command_must_succeed(command)?;
                 Ok(())
             }
             VcsKind::Jj => {
-                let mut command = Command::new("jj");
-                command.args(["commit", "--message", message]);
+                let mut command = PrintableShellCommand::new("jj");
+                command.arg("commit");
+                command.args(["--message", message]);
                 command_must_succeed(command)?;
                 Ok(())
             }

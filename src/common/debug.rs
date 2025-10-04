@@ -1,11 +1,10 @@
 use std::{
     env::{self},
     io::{stderr, IsTerminal},
-    process::Command,
 };
 
 use colored::{Colorize, CustomColor};
-use printable_shell_command::ShellPrintable;
+use printable_shell_command::{PrintableShellCommand, ShellPrintable};
 
 // TODO: convert the project to construct commands in such a way that they cannot be spawned without printing.
 
@@ -15,7 +14,7 @@ pub(crate) trait DebugPrintable {
     fn debug_print(&mut self) -> &mut Self;
 }
 
-impl DebugPrintable for Command {
+impl DebugPrintable for PrintableShellCommand {
     fn debug_print(&mut self) -> &mut Self {
         if let Ok(var) = env::var(DEBUG_PRINT_SHELL_COMMANDS) {
             if var == "true" {

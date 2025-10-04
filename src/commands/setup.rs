@@ -1,9 +1,7 @@
-use std::{
-    fs::exists,
-    process::{Command, Stdio},
-};
+use std::{fs::exists, process::Stdio};
 
 use clap::{Args, Subcommand};
+use printable_shell_command::PrintableShellCommand;
 
 use crate::common::{
     debug::DebugPrintable,
@@ -37,8 +35,8 @@ fn npm_install() {
             "install"
         }
     };
-    Command::new("npm")
-        .args([install_commmand])
+    PrintableShellCommand::new("npm")
+        .arg_each([install_commmand])
         .debug_print()
         .status()
         .expect("Could not install dependencies using `npm`");
@@ -46,8 +44,8 @@ fn npm_install() {
 
 fn bun_install() {
     println!("Installing dependencies using: `bun`");
-    Command::new("bun")
-        .args(["install", "--no-save"])
+    PrintableShellCommand::new("bun")
+        .arg_each(["install", "--no-save"])
         .debug_print()
         .status()
         .expect("Could not install dependencies using `bun`");
@@ -55,8 +53,8 @@ fn bun_install() {
 
 fn yarn_install() {
     println!("Installing dependencies using: `npx yarn`");
-    Command::new("npx")
-        .args(["yarn", "install", "--frozen-lockfile"])
+    PrintableShellCommand::new("npx")
+        .arg_each(["yarn", "install", "--frozen-lockfile"])
         .debug_print()
         .status()
         .expect("Could not install dependencies using `npx yarn`");
@@ -64,8 +62,8 @@ fn yarn_install() {
 
 fn pnpm_install() {
     println!("Installing dependencies using: `npx pnpm`");
-    Command::new("npx")
-        .args(["pnpm", "install", "--frozen-lockfile"])
+    PrintableShellCommand::new("npx")
+        .arg_each(["pnpm", "install", "--frozen-lockfile"])
         .debug_print()
         .status()
         .expect("Could not install dependencies using `npx pnpm`");
@@ -75,8 +73,8 @@ fn cargo_install() {
     println!("Installing dependencies using: `cargo`");
     println!("Installing dependencies by building the default target. For more information, see: https://github.com/rust-lang/cargo/issues/2644");
     // TODO: https://github.com/rust-lang/cargo/issues/2644
-    Command::new("cargo")
-        .args(["build"])
+    PrintableShellCommand::new("cargo")
+        .arg("build")
         .debug_print()
         .status()
         .expect("Could not install dependencies using `cargo`");
@@ -124,19 +122,19 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
 }
 
 pub(crate) fn make_setup_exists() -> bool {
-    Command::new("make")
-        .args(["-n", "setup"])
+    PrintableShellCommand::new("make")
+        .arg_each(["-n", "setup"])
+        .debug_print()
         .stdout(Stdio::null())
         .stderr(Stdio::null())
-        .debug_print()
         .status()
         .expect("Could not detect whether `make setup` exists")
         .success()
 }
 
 pub(crate) fn make_setup() {
-    Command::new("make")
-        .args(["setup"])
+    PrintableShellCommand::new("make")
+        .arg("setup")
         .debug_print()
         .status()
         .expect("Could not run `make setup` exists`");

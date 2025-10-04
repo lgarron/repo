@@ -1,6 +1,7 @@
-use std::{path::PathBuf, process::Command};
+use std::path::PathBuf;
 
 use clap::{Args, Subcommand};
+use printable_shell_command::PrintableShellCommand;
 
 use crate::common::{
     debug::DebugPrintable,
@@ -115,8 +116,8 @@ fn add_biome(template_file_args: TemplateFileArgs) {
                 panic!("No JS package detected.")
             }
         };
-    Command::new(binary)
-        .args(args)
+    PrintableShellCommand::new(binary)
+        .arg_each(args)
         .debug_print()
         .spawn()
         .expect("Could not add development dependency")
@@ -163,9 +164,8 @@ fn add_tsconfig(template_file_args: TemplateFileArgs) {
             panic!("No JS package detected.")
         }
     };
-    Command::new(binary)
-        .args(args)
-        .debug_print()
+    PrintableShellCommand::new(binary)
+        .arg_each(args)
         .spawn()
         .expect("Could not add development dependency")
         .wait()

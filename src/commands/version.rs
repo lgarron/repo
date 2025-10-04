@@ -191,8 +191,8 @@ fn npm_bump_version(version_bump_command: VersionBumpMagnitude) {
         npm_set_version(dev_bump(version));
         return;
     }
-    Command::new("npm")
-        .args([
+    PrintableShellCommand::new("npm")
+        .arg_each([
             "version",
             "--no-git-tag-version",
             &version_bump_command.to_string(),
@@ -221,7 +221,7 @@ fn cargo_bump_version(version_bump_command: VersionBumpMagnitude) {
     }
 
     eprintln!("Assuming `cargo-bump` is installed…");
-    Command::new("cargo")
+    PrintableShellCommand::new("cargo")
         .args(["bump", &version_bump_command.to_string()])
         .debug_print()
         .status()
@@ -288,10 +288,13 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
             // Based on https://github.com/jj-vcs/jj/discussions/2563#discussioncomment-11885001
             let mut jj_command = PrintableShellCommand::new("jj");
             jj_command.arg("log");
-            jj_command.args(["-r", "latest(tags())::@-"]);
+            jj_command.args(["--revisions", "latest(tags())::@-"]);
             jj_command.arg("--no-graph");
             jj_command.arg("--reversed");
-            jj_command.args(["-T", "commit_id.short(8) ++ \" \" ++ tags ++ \"\n\""]);
+            jj_command.args([
+                "--template",
+                "commit_id.short(8) ++ \" \" ++ tags ++ \"\n\"",
+            ]);
             let Some(commits) = get_stdout(jj_command) else {
                 eprintln!("Could not get description using `jj`.");
                 exit(1);
@@ -354,8 +357,8 @@ fn npm_set_version(version: Version) {
 
 fn cargo_set_version(version: Version) {
     eprintln!("Assuming `cargo-bump` is installed…");
-    Command::new("cargo")
-        .args(["bump", &version.to_string()])
+    PrintableShellCommand::new("cargo")
+        .arg_each(["bump", &version.to_string()])
         .debug_print()
         .status()
         .expect("Could not bump version using `npm`");

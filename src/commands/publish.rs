@@ -1,6 +1,5 @@
-use std::process::Command;
-
 use clap::Args;
+use printable_shell_command::PrintableShellCommand;
 
 use crate::common::{
     debug::DebugPrintable,
@@ -20,8 +19,8 @@ pub(crate) struct PublishArgs {
 pub(crate) fn publish_command(publish_args: PublishArgs) {
     match must_detect_ecosystem_by_getting_version(&publish_args.ecosystem_args) {
         (Ecosystem::JavaScript, _) => {
-            Command::new("npm")
-                .args(["publish"])
+            PrintableShellCommand::new("npm")
+                .arg("publish")
                 .debug_print()
                 .spawn()
                 .expect("Could not publish using `npm`")
@@ -29,8 +28,8 @@ pub(crate) fn publish_command(publish_args: PublishArgs) {
                 .unwrap();
         }
         (Ecosystem::Rust, _) => {
-            Command::new("cargo")
-                .args(["publish"])
+            PrintableShellCommand::new("cargo")
+                .arg("publish")
                 .debug_print()
                 .spawn()
                 .expect("Could not publish using `cargo`")

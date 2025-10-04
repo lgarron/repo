@@ -677,9 +677,9 @@ checksum = "439ee305def115ba05938db6eb1644ff94165c5ab5e9420d1c1bcedbba909391"
 
 [[package]]
 name = "printable-shell-command"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40561b8fcb8fa59713c56012448c0b96818306e4a1cd3de4e85f48c4c8fc5c4d"
+checksum = "a2f4bbc0505fdbfae598a1c90b5184742b32dba492b82362e7973250e7ea19c2"
 dependencies = [
  "itertools",
  "regex",

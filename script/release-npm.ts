@@ -109,11 +109,11 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
         os: npmOS,
         cpu: npmCPU,
         bin: {
-          [`repo-${triple}`]: `repo-${triple}`,
+          [`repo-${triple}`]: `repo-${triple}${suffix}`,
         },
         exports: {
           ".": {
-            default: `./repo-${triple}`,
+            default: `./repo-${triple}${suffix}`,
           },
         },
       },

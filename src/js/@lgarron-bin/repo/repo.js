@@ -24,7 +24,7 @@ for (const architectureTriple of [
   let path;
   try {
     path = fileURLToPath(
-      import.meta.resolve(`@lgarron-repo/repo-${architectureTriple}`),
+      import.meta.resolve(`@lgarron-bin/repo-${architectureTriple}`),
     );
     if (DEBUG) {
       console.error(`[${architectureTriple}] Resolved to path: `, path);

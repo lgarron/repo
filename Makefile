@@ -94,8 +94,8 @@ uninstall:
 clean:
 	rm -rf ./.temp/
 	rm -rf \
-		./src/js/@lgarron-repo/repo/package.json \
-		./src/js/@lgarron-repo/repo-*
+		./src/js/@lgarron-bin/repo/package.json \
+		./src/js/@lgarron-bin/repo-*
 
 .PHONY: reset
 reset: clean

@@ -89,7 +89,7 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   await mkdir(ZIP_PARENT_DIR, { recursive: true });
   await $`gh api /repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip > ${ZIP_PATH}`;
   // `-o` means "overwrite"
-  const PACKAGE_DIR = `./src/js/@lgarron-repo/repo-${triple}`;
+  const PACKAGE_DIR = `./src/js/@lgarron-bin/repo-${triple}`;
   await $`unzip -o -d ${PACKAGE_DIR} ${ZIP_PATH}`;
 
   const suffix = isWindows(triple) ? ".exe" : "";
@@ -101,7 +101,7 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   await file(join(PACKAGE_DIR, "package.json")).write(
     JSON.stringify(
       {
-        name: `@lgarron-repo/repo-${triple}`,
+        name: `@lgarron-bin/repo-${triple}`,
         os: npmOS,
         cpu: npmCPU,
         version: version,
@@ -122,20 +122,20 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   await $`cd ${PACKAGE_DIR} && npm publish --access public || echo "Already published?"`;
 }
 
-await file("./src/js/@lgarron-repo/repo/package.json").write(
+await file("./src/js/@lgarron-bin/repo/package.json").write(
   JSON.stringify(
     {
-      name: "@lgarron-repo/repo",
+      name: "@lgarron-bin/repo",
       version: version,
       bin: {
         repo: "repo.js",
       },
       optionalDependencies: {
-        "@lgarron-repo/repo-aarch64-apple-darwin": version,
-        "@lgarron-repo/repo-x86_64-apple-darwin": version,
-        "@lgarron-repo/repo-x86_64-pc-windows": version,
-        "@lgarron-repo/repo-x86_64-unknown-linux-gnu": version,
-        "@lgarron-repo/aarch64-unknown-linux-gnu": version,
+        "@lgarron-bin/repo-aarch64-apple-darwin": version,
+        "@lgarron-bin/repo-x86_64-apple-darwin": version,
+        "@lgarron-bin/repo-x86_64-pc-windows": version,
+        "@lgarron-bin/repo-x86_64-unknown-linux-gnu": version,
+        "@lgarron-bin/aarch64-unknown-linux-gnu": version,
       },
       engines: {
         node: ">=20.6.0",
@@ -145,4 +145,4 @@ await file("./src/js/@lgarron-repo/repo/package.json").write(
     "  ",
   ),
 );
-await $`cd ./src/js/@lgarron-repo/repo && npm publish --access public || echo "Already published?"`;
+await $`cd ./src/js/@lgarron-bin/repo && npm publish --access public || echo "Already published?"`;

@@ -2,6 +2,9 @@
 /node_modules
 /target
 /package-lock.json
-/src/js/@lgarron-repo/repo-*/repo
-/src/js/@lgarron-repo/repo-*/repo.exe
-/src/js/@lgarron-repo/repo-*/repo-*
+/src/js/@lgarron-bin/repo-*/repo
+/src/js/@lgarron-bin/repo-*/repo.exe
+/src/js/@lgarron-bin/repo-*/repo-*
+
+# Legacy paths
+/src/js/@lgarron-repo

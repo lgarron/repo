@@ -322,7 +322,7 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
             exit(1);
         }
     };
-    println!("{}", description);
+    print!("{}", description);
 }
 
 // TODO: get version from output of the bump commands themselves?

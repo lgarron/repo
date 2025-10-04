@@ -105,6 +105,7 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
         name,
         version: version,
         repository: "github:lgarron/repo",
+        type: "module",
         os: npmOS,
         cpu: npmCPU,
         bin: {
@@ -134,6 +135,7 @@ await file("./src/js/@lgarron-bin/repo/package.json").write(
       name: "@lgarron-bin/repo",
       version: version,
       repository: "github:lgarron/repo",
+      type: "module",
       bin: {
         repo: "repo.js",
       },

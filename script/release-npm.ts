@@ -1,4 +1,4 @@
-import { mkdir, rename, rm } from "node:fs/promises";
+import { cp, mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { exit } from "node:process";
 import { $, file, sleep } from "bun";
@@ -28,7 +28,7 @@ const run = await (async () => {
     )[0];
     if (!run) {
       console.error(
-        `Workflow run \"${WORKFLOW_NAME}\"is not available for this commit: ${commitSHA}
+        `Workflow run \"${WORKFLOW_NAME}\" is not available for this commit: ${commitSHA}
 Push a tag to run the release flow.`,
       );
       exit(2);
@@ -98,13 +98,15 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
     join(PACKAGE_DIR, `repo-${triple}${suffix}`),
   );
 
+  const name = `@lgarron-bin/repo-${triple}`;
   await file(join(PACKAGE_DIR, "package.json")).write(
     JSON.stringify(
       {
-        name: `@lgarron-bin/repo-${triple}`,
+        name,
+        version: version,
+        repository: "github:lgarron/repo",
         os: npmOS,
         cpu: npmCPU,
-        version: version,
         bin: {
           [`repo-${triple}`]: `repo-${triple}`,
         },
@@ -119,6 +121,10 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
     ),
   );
 
+  await file(join(PACKAGE_DIR, "README.md")).write(`# \`${name}\`
+
+Platform-specific package for: https://www.npmjs.com/package/@lgarron-bin/repo`);
+
   await $`cd ${PACKAGE_DIR} && npm publish --access public || echo "Already published?"`;
 }
 
@@ -127,6 +133,7 @@ await file("./src/js/@lgarron-bin/repo/package.json").write(
     {
       name: "@lgarron-bin/repo",
       version: version,
+      repository: "github:lgarron/repo",
       bin: {
         repo: "repo.js",
       },
@@ -145,4 +152,5 @@ await file("./src/js/@lgarron-bin/repo/package.json").write(
     "  ",
   ),
 );
+await cp("./README.md", "./src/js/@lgarron-bin/repo/README.md");
 await $`cd ./src/js/@lgarron-bin/repo && npm publish --access public || echo "Already published?"`;

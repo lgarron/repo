@@ -67,7 +67,7 @@ const ARCHITECTURE_TRIPLES: {
 }[] = [
   { triple: "x86_64-apple-darwin", npmOS: ["darwin"], npmCPU: ["x64"] },
   { triple: "aarch64-apple-darwin", npmOS: ["darwin"], npmCPU: ["arm64"] },
-  { triple: "x86_64-pc-windows", npmOS: ["windows"], npmCPU: ["x64"] },
+  { triple: "x86_64-pc-windows", npmOS: ["win32"], npmCPU: ["x64"] },
   { triple: "x86_64-unknown-linux-gnu", npmOS: ["linux"], npmCPU: ["x64"] },
   { triple: "aarch64-unknown-linux-gnu", npmOS: ["linux"], npmCPU: ["arm64"] },
 ];

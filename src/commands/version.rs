@@ -287,10 +287,8 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
         VcsKind::Jj => {
             // Based on https://github.com/jj-vcs/jj/discussions/2563#discussioncomment-11885001
             let mut jj_command = PrintableShellCommand::new("jj");
-            jj_command.arg("log");
+            jj_command.args(["log", "--no-graph", "--reversed"]);
             jj_command.args(["--revisions", "latest(tags())::@-"]);
-            jj_command.arg("--no-graph");
-            jj_command.arg("--reversed");
             jj_command.args([
                 "--template",
                 "commit_id.short(8) ++ \" \" ++ tags ++ \"\n\"",

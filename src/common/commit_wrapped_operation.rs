@@ -42,16 +42,13 @@ impl CommitWrappedOperation {
                 Ok(())
             }
             VcsKind::Jj => {
-                let mut command = Command::new("jj");
+                let mut command = PrintableShellCommand::new("jj");
+                command.args(["log", "--color=never", "--no-graph"]);
                 command.args([
-                    "log",
-                    "--color=never",
-                    "--no-graph",
                     "--revisions",
                     "@ & empty() & ~merges() & description(exact:\"\")",
-                    "--template",
-                    "'.'",
                 ]);
+                command.args(["--template", "'.'"]);
                 let Some(stdout) = get_stdout(command) else {
                     return Err("Could not get `jj log` output.".to_owned());
                 };

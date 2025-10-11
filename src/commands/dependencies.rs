@@ -2,7 +2,9 @@ use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf};
 
 use cargo_metadata::semver::Version;
 use clap::{Args, Subcommand};
-use printable_shell_command::PrintableShellCommand;
+use printable_shell_command::{
+    ArgumentLineWrapping, FormattingOptions, PrintableShellCommand, ShellPrintableWithOptions,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -149,23 +151,21 @@ fn npm_install(
     new_version: &Version,
 ) -> String {
     let mut npm_command = PrintableShellCommand::new("npm");
-    let args = [
+    npm_command.args([
         "install",
         dependency_type.npm_install_arg(),
         // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
         "--",
         &format!("{}@^{}", &dependency_name.0, new_version),
-    ];
-    npm_command.args(args);
+    ]);
+    let command_string = npm_command
+        .printable_invocation_string_with_options(FormattingOptions {
+            argument_line_wrapping: Some(ArgumentLineWrapping::Inline),
+            ..Default::default()
+        })
+        .unwrap();
     let _ = get_stdout(npm_command).unwrap();
-    // TODO: robust escaping.
-    format!(
-        "npm {} {} {} '{}'",
-        args[0],
-        args[1],
-        args[2],
-        args[3].replace("'", "\\'")
-    )
+    command_string
 }
 
 fn try_bun_add(
@@ -174,21 +174,20 @@ fn try_bun_add(
     new_version: &Version,
 ) -> Result<String, ()> {
     let mut bun_command = PrintableShellCommand::new("bun");
-    let mut args = vec!["add"];
+    bun_command.arg("add");
     if let Some(arg) = dependency_type.bun_add_arg() {
-        args.push(arg);
+        bun_command.arg(arg);
     }
     // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
-    args.push("--");
+    bun_command.arg("--");
     let dependency_arg = format!("{}@^{}", &dependency_name.0, new_version);
-    args.push(&dependency_arg);
-    // TODO: robust escaping.
-    let command_string = format!(
-        "bun {} '{}'",
-        args[0..(args.len() - 2)].join(" "),
-        args[args.len() - 1].replace("'", "\\'")
-    );
-    bun_command.args(args);
+    bun_command.arg(&dependency_arg);
+    let command_string = bun_command
+        .printable_invocation_string_with_options(FormattingOptions {
+            argument_line_wrapping: Some(ArgumentLineWrapping::Inline),
+            ..Default::default()
+        })
+        .unwrap();
     let Some(_) = get_stdout(bun_command) else {
         return Err(());
     };

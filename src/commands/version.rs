@@ -1,5 +1,4 @@
 use std::fs::File;
-use std::process::Command;
 use std::{fmt::Display, process::exit};
 
 use cargo_metadata::semver::Prerelease;
@@ -276,7 +275,7 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
     };
     let description = match vcs {
         VcsKind::Git => {
-            let mut git_command = Command::new("git");
+            let mut git_command = PrintableShellCommand::new("git");
             git_command.args(["describe", "--tags"]);
             let Some(description) = get_stdout(git_command) else {
                 eprintln!("Could not get description using `git`.");
@@ -347,8 +346,9 @@ fn version_bump(
 }
 
 fn npm_set_version(version: Version) {
-    Command::new("npm")
+    PrintableShellCommand::new("npm")
         .args(["version", "--no-git-tag-version", &version.to_string()])
+        .debug_print()
         .status()
         .expect("Could not bump version using `npm`");
 }

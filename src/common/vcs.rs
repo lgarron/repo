@@ -1,6 +1,7 @@
-use std::{env::current_dir, fmt::Display, fs::exists, path::Path, process::Command};
+use std::{env::current_dir, fmt::Display, fs::exists, path::Path};
 
 use clap::ValueEnum;
+use printable_shell_command::PrintableShellCommand;
 
 use super::inference::get_stdout;
 
@@ -35,7 +36,7 @@ pub(crate) fn auto_detect_preferred_vcs_and_repo_root(
     path_of_folder_or_subfolder: &Path,
 ) -> Option<(VcsKind, String)> {
     {
-        let mut jj_command = Command::new("jj");
+        let mut jj_command = PrintableShellCommand::new("jj");
         jj_command
             .current_dir(path_of_folder_or_subfolder)
             .args(["root"]);
@@ -44,7 +45,7 @@ pub(crate) fn auto_detect_preferred_vcs_and_repo_root(
         }
     }
     {
-        let mut git_command = Command::new("git");
+        let mut git_command = PrintableShellCommand::new("git");
         git_command
             .current_dir(path_of_folder_or_subfolder)
             .args(["rev-parse", "--show-toplevel"]);

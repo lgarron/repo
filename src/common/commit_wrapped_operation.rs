@@ -1,5 +1,3 @@
-use std::process::Command;
-
 use printable_shell_command::PrintableShellCommand;
 
 use crate::{
@@ -31,7 +29,7 @@ impl CommitWrappedOperation {
     pub fn prep_commit(&self) -> Result<(), String> {
         match self.commit_using {
             VcsKind::Git => {
-                let mut command = Command::new("git");
+                let mut command = PrintableShellCommand::new("git");
                 command.args(["status", "--porcelain"]);
                 let Some(stdout) = get_stdout(command) else {
                     return Err("Could not get `git status` output".to_owned());

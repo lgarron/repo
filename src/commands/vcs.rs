@@ -1,6 +1,7 @@
-use std::{env::current_dir, process::Command};
+use std::env::current_dir;
 
 use clap::{Args, Subcommand};
+use printable_shell_command::PrintableShellCommand;
 
 use crate::common::{
     inference::get_stdout,
@@ -40,17 +41,18 @@ enum LatestCommitSubcommand {
 }
 
 fn jj_get_latest_commmit_hash() -> Result<String, String> {
-    let mut jj_command = Command::new("jj");
+    let mut jj_command = PrintableShellCommand::new("jj");
     jj_command.args([
         "--no-graph",
         "--ignore-working-copy",
         "--color=never",
+        "--limit=1",
+    ]);
+    jj_command.args([
         "--revisions",
         "::@ & ((~description(exact:\"\") & ~empty()) | merges())",
-        "--limit=1",
-        "--template",
-        "commit_id",
     ]);
+    jj_command.args(["--template", "commit_id"]);
     if let Some(hash) = get_stdout(jj_command) {
         return Ok(hash.trim().to_owned());
     }
@@ -59,7 +61,7 @@ fn jj_get_latest_commmit_hash() -> Result<String, String> {
 }
 
 fn git_get_latest_commmit_hash() -> Result<String, String> {
-    let mut git_command = Command::new("git");
+    let mut git_command = PrintableShellCommand::new("git");
     git_command.args(["rev-parse", "HEAD"]);
     if let Some(hash) = get_stdout(git_command) {
         return Ok(hash.trim().to_owned());

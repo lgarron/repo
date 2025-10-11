@@ -1,7 +1,8 @@
-use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf, process::Command};
+use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf};
 
 use cargo_metadata::semver::Version;
 use clap::{Args, Subcommand};
+use printable_shell_command::PrintableShellCommand;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -121,7 +122,7 @@ impl PackageJSONSubset {
 }
 
 fn must_get_package_json() -> PackageJSONSubset {
-    let mut npm_command = Command::new("npm");
+    let mut npm_command = PrintableShellCommand::new("npm");
     npm_command.args(["root"]);
     let node_modules_folder = get_stdout(npm_command).unwrap();
     let package_json_path = PathBuf::from(node_modules_folder)
@@ -136,7 +137,7 @@ fn must_get_package_json() -> PackageJSONSubset {
 }
 
 fn npm_show_version(dependency_name: &DependencyName) -> Version {
-    let mut npm_command = Command::new("npm");
+    let mut npm_command = PrintableShellCommand::new("npm");
     // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
     npm_command.args(["show", "--", &dependency_name.0, "version"]);
     Version::parse(get_stdout(npm_command).unwrap().trim()).unwrap()
@@ -147,7 +148,7 @@ fn npm_install(
     dependency_name: &DependencyName,
     new_version: &Version,
 ) -> String {
-    let mut npm_command = Command::new("npm");
+    let mut npm_command = PrintableShellCommand::new("npm");
     let args = [
         "install",
         dependency_type.npm_install_arg(),
@@ -172,7 +173,7 @@ fn bun_add(
     dependency_name: &DependencyName,
     new_version: &Version,
 ) -> String {
-    let mut npm_command = Command::new("bun");
+    let mut bun_command = PrintableShellCommand::new("bun");
     let mut args = vec!["add"];
     if let Some(arg) = dependency_type.bun_add_arg() {
         args.push(arg);
@@ -187,8 +188,8 @@ fn bun_add(
         args[0..(args.len() - 2)].join(" "),
         args[args.len() - 1].replace("'", "\\'")
     );
-    npm_command.args(args);
-    let _ = get_stdout(npm_command).unwrap();
+    bun_command.args(args);
+    let _ = get_stdout(bun_command).unwrap();
     command_string
 }
 

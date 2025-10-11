@@ -168,11 +168,11 @@ fn npm_install(
     )
 }
 
-fn bun_add(
+fn try_bun_add(
     dependency_type: &NpmDependencyType,
     dependency_name: &DependencyName,
     new_version: &Version,
-) -> String {
+) -> Result<String, ()> {
     let mut bun_command = PrintableShellCommand::new("bun");
     let mut args = vec!["add"];
     if let Some(arg) = dependency_type.bun_add_arg() {
@@ -189,8 +189,35 @@ fn bun_add(
         args[args.len() - 1].replace("'", "\\'")
     );
     bun_command.args(args);
-    let _ = get_stdout(bun_command).unwrap();
-    command_string
+    let Some(_) = get_stdout(bun_command) else {
+        return Err(());
+    };
+    Ok(command_string)
+}
+
+fn bun_pm_cache_rm() -> Result<(), ()> {
+    let mut bun_command = PrintableShellCommand::new("bun");
+    bun_command.args(["pm", "cache", "rm"]);
+    let Some(_) = get_stdout(bun_command) else {
+        return Err(());
+    };
+    Ok(())
+}
+
+fn bun_add(
+    dependency_type: &NpmDependencyType,
+    dependency_name: &DependencyName,
+    new_version: &Version,
+) -> String {
+    // TODO: sniff for out-of-date-cache by inspecting `stdout`.
+    if let Ok(s) = try_bun_add(dependency_type, dependency_name, new_version) {
+        return s;
+    };
+    eprintln!(
+        "Updating the dependency version failed. Clearing `bun`'s cache and trying one more time."
+    );
+    bun_pm_cache_rm().unwrap();
+    try_bun_add(dependency_type, dependency_name, new_version).unwrap()
 }
 
 pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Result<(), String> {

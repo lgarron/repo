@@ -7,6 +7,7 @@ use std::{
 
 use clap::{Args, Subcommand, ValueEnum};
 use edit::edit_file;
+use fork::{fork, Fork};
 use opener::reveal;
 
 #[derive(Args, Debug)]
@@ -107,13 +108,23 @@ impl TemplateFile<'_> {
     }
 
     pub fn open_for_editing(&self) {
-        let Ok(()) = edit_file(&self.relative_path) else {
-            eprintln!(
-                "Could not open file for editing {}",
-                self.relative_path.to_string_lossy()
-            );
-            exit(1);
-        };
+        // TODO: spawn and adandon the child process instead of forking
+        // ourselves: https://github.com/milkey-mouse/edit/issues/16
+        match fork() {
+            Ok(Fork::Parent(_child)) => {
+                // No-op
+            }
+            Ok(Fork::Child) => {
+                let Ok(()) = edit_file(&self.relative_path) else {
+                    eprintln!(
+                        "Could not open file for editing {}",
+                        self.relative_path.to_string_lossy()
+                    );
+                    exit(1);
+                };
+            }
+            Err(_) => println!("Forking the process to open the editor failed"),
+        }
     }
 
     pub fn reveal(&self) {

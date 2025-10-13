@@ -26,6 +26,8 @@ enum BoilerplateCommand {
     Biome(TemplateFileArgs),
     /// Set up `tsconfig.json`
     Tsconfig(TemplateFileArgs),
+    /// Set up `bunfig.toml`
+    Bunfig(TemplateFileArgs),
     /// Set up `rust-toolchain.toml`
     RustToolchain(TemplateFileArgs),
 }
@@ -58,6 +60,14 @@ fn tsconfig_template() -> TemplateFile<'static> {
     let bytes = include_bytes!("../templates/tsconfig.json");
     TemplateFile {
         relative_path: PathBuf::from("./tsconfig.json"),
+        bytes,
+    }
+}
+
+fn bunfig_template() -> TemplateFile<'static> {
+    let bytes = include_bytes!("../templates/bunfig.toml");
+    TemplateFile {
+        relative_path: PathBuf::from("./bunfig.toml"),
         bytes,
     }
 }
@@ -174,6 +184,11 @@ fn add_tsconfig(template_file_args: TemplateFileArgs) {
     // TODO: print `tsc` invocation (requires installation)
 }
 
+fn add_bunfig(template_file_args: TemplateFileArgs) {
+    bunfig_template().handle_command(template_file_args);
+    // TODO: print `tsc` invocation (requires installation)
+}
+
 fn add_rust_toolchain(template_file_args: TemplateFileArgs) {
     rust_toolchain_template().handle_command(template_file_args);
     // TODO: mention `test-cargo-doc`?
@@ -207,6 +222,7 @@ pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
         }
         BoilerplateCommand::Biome(template_file_args) => add_biome(template_file_args),
         BoilerplateCommand::Tsconfig(template_file_args) => add_tsconfig(template_file_args),
+        BoilerplateCommand::Bunfig(template_file_args) => add_bunfig(template_file_args),
         BoilerplateCommand::RustToolchain(template_file_args) => {
             add_rust_toolchain(template_file_args)
         }

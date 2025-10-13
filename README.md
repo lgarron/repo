@@ -66,6 +66,7 @@ Commands:
   auto-publish-github-release  Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
   biome                        Set up linting using Biome
   tsconfig                     Set up `tsconfig.json`
+  bunfig                       Set up `bunfig.toml`
   rust-toolchain               Set up `rust-toolchain.toml`
   help                         Print this message or the help of the given subcommand(s)
 

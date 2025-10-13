@@ -6,6 +6,7 @@ edition = "2021"
 license = "MIT"
 exclude = ["src/templates/node_modules"]
 build = "build.rs"
+repository = "https://github.com/lgarron/repo"
 
 [dependencies]
 cargo_metadata = "0.18.1"

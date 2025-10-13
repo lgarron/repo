@@ -51,6 +51,21 @@ jobs:
           name: repo.x86_64-pc-windows
           path: ./target/release/repo.exe
 
+  build-aarch64-pc-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup toolchain list
+      - run: make build-release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repo.aarch64-pc-windows
+          path: ./target/release/repo.exe
+
   build-x86_64-unknown-linux-gnu:
     runs-on: ubuntu-latest
     steps:

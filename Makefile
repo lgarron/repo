@@ -13,7 +13,7 @@ cargo-test-help:
 	cargo run -- --help > /dev/null
 
 .PHONY: publish
-publish: clean publish-rust publish-js
+publish: test clean publish-rust publish-js
 
 .PHONY: publish-rust
 publish-rust:

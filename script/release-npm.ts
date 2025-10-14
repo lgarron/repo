@@ -1,15 +1,24 @@
-import { cp, mkdir, rename, rm } from "node:fs/promises";
-import { join } from "node:path";
 import { exit } from "node:process";
-import { $, file, sleep } from "bun";
+import { Path } from "path-class";
+import { PrintableShellCommand } from "printable-shell-command";
+import { Temporal } from "temporal-ponyfill";
 
 const WORKFLOW_NAME = "Build release binaries";
-const MILLISECONDS_PER_SECOND = 1000;
 
-await mkdir("./.temp", { recursive: true });
+const TEMP_ROOT = new Path("./.temp");
+await TEMP_ROOT.mkdir();
 
 // Dogfood our own hash calculation.
-const commitSHA = await $`cargo run --quiet  -- vcs latest-commit hash`.text();
+const commitSHA = await new PrintableShellCommand("cargo", [
+  "run",
+  "--quiet",
+  "--",
+  "vcs",
+  "latest-commit",
+  "hash",
+])
+  .stdout()
+  .text();
 
 const run = await (async () => {
   while (true) {
@@ -20,8 +29,12 @@ const run = await (async () => {
         // https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
         status: "completed" | string;
       }[];
-    } =
-      await $`gh api "/repos/lgarron/repo/actions/runs?head_sha=${commitSHA}"`.json();
+    } = await new PrintableShellCommand("gh", [
+      "api",
+      `/repos/lgarron/repo/actions/runs?head_sha=${commitSHA}`,
+    ])
+      .stdout()
+      .json();
 
     const run = runs.workflow_runs.filter(
       (run) => run.name === WORKFLOW_NAME,
@@ -40,7 +53,14 @@ Push a tag to run the release flow.`,
     }
 
     console.info("Workflow is not complete, waiting 10 seconds…");
-    await sleep(10 * MILLISECONDS_PER_SECOND);
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        Temporal.Duration.from({ seconds: 10 }).total({
+          unit: "milliseconds",
+        }),
+      ),
+    );
   }
 })();
 
@@ -77,84 +97,112 @@ function isWindows(architectureTriple: string): boolean {
   return architectureTriple.endsWith("-windows");
 }
 
-const TEMP_DIR = "./.temp/artifacts";
-await rm(TEMP_DIR, { recursive: true, force: true });
+const TEMP_DIR = new Path("./.temp/artifacts");
+await TEMP_DIR.rm_rf();
 
-const version = (await $`cargo run --quiet -- version get`.text()).trim();
+const version = (
+  await new PrintableShellCommand("cargo", [
+    "run",
+    "--quiet",
+    "--",
+    "version",
+    "get",
+  ])
+    .stdout()
+    .text()
+).trim();
+
+async function publish(cwd: Path) {
+  try {
+    await new PrintableShellCommand("npm", [
+      "publish",
+      ["--access", "public"],
+    ]).shellOut({ cwd: cwd.toString() });
+  } catch (e) {
+    console.error(e);
+    console.error("Already published? Skipping…");
+  }
+}
 
 for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   const downloadInfo = downloads[`repo.${triple}`];
   console.log(triple);
-  const ZIP_PARENT_DIR = join(TEMP_DIR, triple);
-  const ZIP_PATH = join(TEMP_DIR, `${triple}.zip`);
-  await mkdir(ZIP_PARENT_DIR, { recursive: true });
-  await $`gh api /repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip > ${ZIP_PATH}`;
+
+  const ZIP_PARENT_DIR = TEMP_DIR.join(triple);
+  const ZIP_PATH = TEMP_DIR.join(`${triple}.zip`);
+  ZIP_PARENT_DIR.mkdir();
+
+  {
+    // await $`gh api /repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip > ${ZIP_PATH}`;
+    const bytes = await new PrintableShellCommand("gh", [
+      "api",
+      `/repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip`,
+    ])
+      .stdout()
+      .bytes();
+    await ZIP_PATH.write(bytes);
+  }
+
   // `-o` means "overwrite"
-  const PACKAGE_DIR = `./src/js/@lgarron-bin/repo-${triple}`;
-  await $`unzip -o -d ${PACKAGE_DIR} ${ZIP_PATH}`;
+  const PACKAGE_DIR = new Path(`./src/js/@lgarron-bin/repo-${triple}`);
+  await new PrintableShellCommand("unzip", [
+    "-o",
+    "-d",
+    `${PACKAGE_DIR}`,
+    `${ZIP_PATH}`,
+  ]).shellOut();
 
   const suffix = isWindows(triple) ? ".exe" : "";
-  await rename(
-    join(PACKAGE_DIR, `repo${suffix}`),
-    join(PACKAGE_DIR, `repo-${triple}${suffix}`),
+  await PACKAGE_DIR.join(`repo${suffix}`).rename(
+    PACKAGE_DIR.join(`repo-${triple}${suffix}`),
   );
 
   const name = `@lgarron-bin/repo-${triple}`;
-  await file(join(PACKAGE_DIR, "package.json")).write(
-    JSON.stringify(
-      {
-        name,
-        version: version,
-        repository: "github:lgarron/repo",
-        type: "module",
-        os: npmOS,
-        cpu: npmCPU,
-        bin: {
-          [`repo-${triple}`]: `repo-${triple}${suffix}`,
-        },
-        exports: {
-          ".": {
-            default: `./repo-${triple}${suffix}`,
-          },
-        },
+  await PACKAGE_DIR.join("package.json").writeJSON({
+    name,
+    version: version,
+    repository: "github:lgarron/repo",
+    type: "module",
+    os: npmOS,
+    cpu: npmCPU,
+    bin: {
+      [`repo-${triple}`]: `repo-${triple}${suffix}`,
+    },
+    exports: {
+      ".": {
+        default: `./repo-${triple}${suffix}`,
       },
-      null,
-      "  ",
-    ),
-  );
+    },
+  });
 
-  await file(join(PACKAGE_DIR, "README.md")).write(`# \`${name}\`
+  await PACKAGE_DIR.join("README.md").write(`# \`${name}\`
 
 Platform-specific package for: https://www.npmjs.com/package/@lgarron-bin/repo`);
 
-  await $`cd ${PACKAGE_DIR} && npm publish --access public || echo "Already published?"`;
+  await publish(PACKAGE_DIR);
 }
 
-await file("./src/js/@lgarron-bin/repo/package.json").write(
-  JSON.stringify(
-    {
-      name: "@lgarron-bin/repo",
-      version: version,
-      repository: "github:lgarron/repo",
-      type: "module",
-      bin: {
-        repo: "repo.js",
-      },
-      optionalDependencies: {
-        "@lgarron-bin/repo-aarch64-apple-darwin": version,
-        "@lgarron-bin/repo-x86_64-apple-darwin": version,
-        "@lgarron-bin/repo-x86_64-pc-windows": version,
-        "@lgarron-bin/repo-aarch64-pc-windows": version,
-        "@lgarron-bin/repo-x86_64-unknown-linux-gnu": version,
-        "@lgarron-bin/repo-aarch64-unknown-linux-gnu": version,
-      },
-      engines: {
-        node: ">=20.6.0",
-      },
-    },
-    null,
-    "  ",
-  ),
-);
-await cp("./README.md", "./src/js/@lgarron-bin/repo/README.md");
-await $`cd ./src/js/@lgarron-bin/repo && npm publish --access public || echo "Already published?"`;
+const MAIN_PACKAGE_PATH = new Path("./src/js/@lgarron-bin/repo");
+await MAIN_PACKAGE_PATH.join("package.json").writeJSON({
+  name: "@lgarron-bin/repo",
+  version: version,
+  repository: "github:lgarron/repo",
+  type: "module",
+  bin: {
+    repo: "repo.js",
+  },
+  optionalDependencies: {
+    "@lgarron-bin/repo-aarch64-apple-darwin": version,
+    "@lgarron-bin/repo-x86_64-apple-darwin": version,
+    "@lgarron-bin/repo-x86_64-pc-windows": version,
+    "@lgarron-bin/repo-aarch64-pc-windows": version,
+    "@lgarron-bin/repo-x86_64-unknown-linux-gnu": version,
+    "@lgarron-bin/repo-aarch64-unknown-linux-gnu": version,
+  },
+  engines: {
+    node: ">=20.6.0",
+  },
+});
+
+await new Path("./README.md").cp(MAIN_PACKAGE_PATH.join("README.md"));
+await publish(MAIN_PACKAGE_PATH);

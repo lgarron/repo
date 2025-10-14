@@ -145,7 +145,7 @@ await file("./src/js/@lgarron-bin/repo/package.json").write(
         "@lgarron-bin/repo-x86_64-apple-darwin": version,
         "@lgarron-bin/repo-x86_64-pc-windows": version,
         "@lgarron-bin/repo-x86_64-unknown-linux-gnu": version,
-        "@lgarron-bin/aarch64-unknown-linux-gnu": version,
+        "@lgarron-bin/repo-aarch64-unknown-linux-gnu": version,
       },
       engines: {
         node: ">=20.6.0",

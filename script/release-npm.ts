@@ -1,3 +1,4 @@
+import { chmod } from "node:fs/promises";
 import { exit } from "node:process";
 import { Path } from "path-class";
 import { PrintableShellCommand } from "printable-shell-command";
@@ -9,16 +10,17 @@ const TEMP_ROOT = new Path("./.temp");
 await TEMP_ROOT.mkdir();
 
 // Dogfood our own hash calculation.
-const commitSHA = await new PrintableShellCommand("cargo", [
-  "run",
-  "--quiet",
-  "--",
-  "vcs",
-  "latest-commit",
-  "hash",
-])
-  .stdout()
-  .text();
+const commitSHA = "57e9bb48ab0a7d821a4da6deed05a86a912e15d8";
+// await new PrintableShellCommand("cargo", [
+//   "run",
+//   "--quiet",
+//   "--",
+//   "vcs",
+//   "latest-commit",
+//   "hash",
+// ])
+//   .stdout()
+//   .text();
 
 const run = await (async () => {
   while (true) {
@@ -153,9 +155,11 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   ]).shellOut();
 
   const suffix = isWindows(triple) ? ".exe" : "";
-  await PACKAGE_DIR.join(`repo${suffix}`).rename(
-    PACKAGE_DIR.join(`repo-${triple}${suffix}`),
-  );
+  const binName = `repo-${triple}${suffix}`;
+  const binPath = PACKAGE_DIR.join(binName);
+  await PACKAGE_DIR.join(`repo${suffix}`).rename(binPath);
+
+  await chmod(binPath.path, 0o755);
 
   const name = `@lgarron-bin/repo-${triple}`;
   await PACKAGE_DIR.join("package.json").writeJSON({
@@ -166,11 +170,11 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
     os: npmOS,
     cpu: npmCPU,
     bin: {
-      [`repo-${triple}`]: `repo-${triple}${suffix}`,
+      [`repo-${triple}`]: binName,
     },
     exports: {
       ".": {
-        default: `./repo-${triple}${suffix}`,
+        default: `./${binName}`,
       },
     },
   });

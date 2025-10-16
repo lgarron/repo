@@ -1,4 +1,3 @@
-import { chmod } from "node:fs/promises";
 import { exit } from "node:process";
 import { Path } from "path-class";
 import { PrintableShellCommand } from "printable-shell-command";
@@ -10,17 +9,16 @@ const TEMP_ROOT = new Path("./.temp");
 await TEMP_ROOT.mkdir();
 
 // Dogfood our own hash calculation.
-const commitSHA = "57e9bb48ab0a7d821a4da6deed05a86a912e15d8";
-// await new PrintableShellCommand("cargo", [
-//   "run",
-//   "--quiet",
-//   "--",
-//   "vcs",
-//   "latest-commit",
-//   "hash",
-// ])
-//   .stdout()
-//   .text();
+const commitSHA = await new PrintableShellCommand("cargo", [
+  "run",
+  "--quiet",
+  "--",
+  "vcs",
+  "latest-commit",
+  "hash",
+])
+  .stdout()
+  .text();
 
 const run = await (async () => {
   while (true) {
@@ -135,7 +133,6 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   ZIP_PARENT_DIR.mkdir();
 
   {
-    // await $`gh api /repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip > ${ZIP_PATH}`;
     const bytes = await new PrintableShellCommand("gh", [
       "api",
       `/repos/lgarron/repo/actions/artifacts/${downloadInfo.id}/zip`,
@@ -145,12 +142,11 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
     await ZIP_PATH.write(bytes);
   }
 
-  // `-o` means "overwrite"
   const PACKAGE_DIR = new Path(`./src/js/@lgarron-bin/repo-${triple}`);
   await new PrintableShellCommand("unzip", [
+    // `-o` means "overwrite"
     "-o",
-    "-d",
-    `${PACKAGE_DIR}`,
+    ["-d", `${PACKAGE_DIR}`],
     `${ZIP_PATH}`,
   ]).shellOut();
 
@@ -158,8 +154,6 @@ for (const { triple, npmOS, npmCPU } of ARCHITECTURE_TRIPLES) {
   const binName = `repo-${triple}${suffix}`;
   const binPath = PACKAGE_DIR.join(binName);
   await PACKAGE_DIR.join(`repo${suffix}`).rename(binPath);
-
-  await chmod(binPath.path, 0o755);
 
   const name = `@lgarron-bin/repo-${triple}`;
   await PACKAGE_DIR.join("package.json").writeJSON({

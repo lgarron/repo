@@ -1,0 +1,49 @@
+name: Test published packages
+
+on:
+  push:
+    branches:
+      - test-published-packages
+
+jobs:
+  test-x86_64-apple-darwin:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: make test-published-package
+
+  test-aarch64-apple-darwin:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: make test-published-package
+
+  test-x86_64-pc-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: make test-published-package
+
+  test-aarch64-pc-windows:
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: make test-published-package
+
+  test-x86_64-unknown-linux-gnu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: make test-published-package
+
+  test-aarch64-unknown-linux-gnu:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: make test-published-package

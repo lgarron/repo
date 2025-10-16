@@ -105,3 +105,13 @@ reset: clean
 .PHONY: build-release
 build-release:
 	cargo build --release
+
+.PHONY: test-published-package
+test-published-package:
+	# `bun` is not available on all platforms, so we use `npx`.
+	# Further, GitHub Actions has a shim for `npm` that requires additional workarounds inside a script.
+	# So we just perform simple checks here.
+	npm install --save @lgarron-bin/repo
+	npx @lgarron-bin/repo --help
+	npx @lgarron-bin/repo workspace root
+	ls -al ./node_modules/@lgarron-bin/

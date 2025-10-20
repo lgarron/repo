@@ -11,6 +11,7 @@ use printable_shell_command::{
 // TODO: convert the project to construct commands in such a way that they cannot be spawned without printing.
 
 const DEBUG_PRINT_SHELL_COMMANDS: &str = "DEBUG_PRINT_SHELL_COMMANDS";
+const DIM: &str = "dim";
 
 pub(crate) trait DebugPrintable {
     fn debug_print(&mut self) -> &mut Self;
@@ -19,14 +20,14 @@ pub(crate) trait DebugPrintable {
 impl DebugPrintable for PrintableShellCommand {
     fn debug_print(&mut self) -> &mut Self {
         if let Ok(var) = env::var(DEBUG_PRINT_SHELL_COMMANDS) {
-            if var == "true" {
+            if var == "true" || var == DIM {
                 let s = self
                     .printable_invocation_string_with_options(FormattingOptions {
                         skip_line_wrap_before_first_arg: Some(true),
                         ..Default::default()
                     })
                     .unwrap();
-                if stderr().is_terminal() {
+                if var == DIM || stderr().is_terminal() {
                     eprintln!(
                         "{}",
                         s.custom_color(CustomColor {

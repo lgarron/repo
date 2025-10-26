@@ -354,12 +354,37 @@ fn npm_set_version(version: Version) {
 }
 
 fn cargo_set_version(version: Version) {
-    eprintln!("Assuming `cargo-bump` is installed…");
-    PrintableShellCommand::new("cargo")
-        .arg_each(["bump", &version.to_string()])
-        .debug_print()
-        .status()
-        .expect("Could not bump version using `cargo-bump`");
+    eprintln!("Assuming `cargo-bump` or `cargo-workspaces` is installed…");
+    if matches!(
+        PrintableShellCommand::new("cargo")
+            .arg_each(["bump", &version.to_string()])
+            .debug_print()
+            .status()
+            .map(|status| status.success()),
+        Ok(true)
+    ) {
+        return;
+    };
+    if matches!(
+        PrintableShellCommand::new("cargo")
+            .arg_each([
+                "workspaces",
+                "version",
+                "--no-git-commit",
+                "--yes",
+                "--force",
+                "*",
+                "custom",
+                &version.to_string(),
+            ])
+            .debug_print()
+            .status()
+            .map(|status| status.success()),
+        Ok(true)
+    ) {
+        return;
+    };
+    panic!("Could not use `cargo-bump` or `cargo-workspaces` to set the version.");
 }
 
 fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {

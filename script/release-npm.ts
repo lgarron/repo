@@ -28,6 +28,7 @@ const run = await (async () => {
         name: string;
         // https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
         status: "completed" | string;
+        jobs_url: string;
       }[];
     } = await new PrintableShellCommand("gh", [
       "api",
@@ -53,6 +54,37 @@ Push a tag to run the release flow.`,
     }
 
     console.info("Workflow is not complete, waiting 10 seconds…");
+    // Intentionally not awaited. The `fetch(…)` call is usually less than 10
+    // seconds, so we hope it prints while we sleep for the next attempt. If the
+    // `fetch(…)` takes more than 10 seconds, we don't do any special handling,
+    // and just allow inappropriately interleaved output.
+    (async () => {
+      const jobs: {
+        jobs: {
+          name: string;
+          status?: "completed" | string;
+          conclusion?: "success" | string;
+        }[];
+      } = await (await fetch(run.jobs_url)).json();
+      console.log(
+        jobs.jobs
+          .map((job) => {
+            const emoji = (() => {
+              if (job.status !== "completed") {
+                return "⏳";
+              }
+              if (job.conclusion === "success") {
+                return "✅";
+              }
+              return "❌";
+            })();
+            // TODO: parse start/end times and print elapsed times?
+            return `${emoji} Job: \`${job.name}\``;
+          })
+          .join("\n"),
+      );
+    })();
+
     await new Promise((resolve) =>
       setTimeout(
         resolve,

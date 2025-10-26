@@ -28,6 +28,7 @@ const run = await (async () => {
         name: string;
         // https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
         status: "completed" | string;
+        conclusion: "success" | string;
         jobs_url: string;
       }[];
     } = await new PrintableShellCommand("gh", [
@@ -50,6 +51,10 @@ Push a tag to run the release flow.`,
     console.log(`Workflow run id: ${run.id}`);
 
     if (run.status === "completed") {
+      if (run.conclusion !== "success") {
+        console.error("❌ Workflow conclusion was not a success. Exiting.");
+        exit(1);
+      }
       return run;
     }
 
@@ -76,6 +81,7 @@ Push a tag to run the release flow.`,
               if (job.conclusion === "success") {
                 return "✅";
               }
+              // This is never reached in practice, as we detect the entire job as completed (above) first.
               return "❌";
             })();
             // TODO: parse start/end times and print elapsed times?

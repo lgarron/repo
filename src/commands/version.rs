@@ -359,7 +359,7 @@ fn cargo_set_version(version: Version) {
         .arg_each(["bump", &version.to_string()])
         .debug_print()
         .status()
-        .expect("Could not bump version using `npm`");
+        .expect("Could not bump version using `cargo-bump`");
 }
 
 fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {

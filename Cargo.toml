@@ -8,6 +8,10 @@ exclude = ["src/templates/node_modules"]
 build = "build.rs"
 repository = "https://github.com/lgarron/repo"
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }.v{ version }.{ target }"
+pkg-fmt = "bin"
+
 [dependencies]
 cargo_metadata = "0.18.1"
 clap = { version = "4.5.21", features = ["derive"] }

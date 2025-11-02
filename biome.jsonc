@@ -2,7 +2,13 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["./node_modules/@cubing/dev-config/biome/biome.json"],
   "files": {
-    "includes": ["**", "!dist", "!target", "!src/templates/biome.json"]
+    "includes": [
+      "**",
+      "!dist",
+      "!target",
+      // TODO: remove this line and change this back to `"!src/templates/biome.json",` (https://github.com/biomejs/biome/issues/7942)
+      "!src/templates/workaround-indirection-folder"
+    ]
   },
   "linter": {
     "rules": {

@@ -91,10 +91,10 @@ impl Display for VersionBumpMagnitude {
 
 #[derive(Args, Debug)]
 pub(crate) struct CommitOperationArgs {
-    #[clap(long, group = "commit")]
+    #[clap(long, group = "commit-group")]
     commit: bool,
     /// Same as `--commit`, but uses a specified VCS.
-    #[clap(long, group = "commit")]
+    #[clap(long, group = "commit-group")]
     pub commit_using: Option<VcsKind>,
 }
 

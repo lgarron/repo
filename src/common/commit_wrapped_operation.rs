@@ -19,7 +19,7 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
 
     fn try_from(commit_args: &CommitOperationArgs) -> Result<Self, Self::Error> {
         Ok(Self {
-            perform_commit: commit_args.commit,
+            perform_commit: commit_args.perform_commit(),
             commit_using: vcs_or_infer(commit_args.commit_using)?,
         })
     }

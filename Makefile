@@ -77,6 +77,7 @@ lint: lint-js readme-cli-check
 .PHONY: lint-js
 lint-js: setup-js
 	bun x @biomejs/biome check
+	bun x tsc --noEmit --project .
 
 .PHONY: format
 format: setup-js readme-cli-update

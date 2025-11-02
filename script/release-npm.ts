@@ -43,7 +43,7 @@ const run = await (async () => {
     )[0];
     if (!run) {
       console.error(
-        `Workflow run \"${WORKFLOW_NAME}\" is not available for this commit: ${commitSHA}
+        `Workflow run "${WORKFLOW_NAME}" is not available for this commit: ${commitSHA}
 Push a tag to run the release flow.`,
       );
       exit(2);

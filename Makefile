@@ -6,7 +6,11 @@ setup-js:
 	bun install --frozen-lockfile
 
 .PHONY: test
-test: cargo-test-help lint
+test: cargo-test cargo-test-help lint
+
+.PHONY: cargo-test
+cargo-test:
+	cargo test
 
 .PHONY: cargo-test-help
 cargo-test-help:

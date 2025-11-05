@@ -68,3 +68,16 @@ pub(crate) fn get_args() -> RepoArgs {
 
     args
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::args::RepoArgs;
+
+    // https://docs.rs/clap/latest/clap/_derive/_tutorial/index.html#testing
+    #[test]
+    fn test_clap_args() {
+        use clap::CommandFactory;
+
+        RepoArgs::command().debug_assert();
+    }
+}

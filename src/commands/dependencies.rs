@@ -145,6 +145,14 @@ fn npm_show_version(dependency_name: &DependencyName) -> Version {
     Version::parse(get_stdout(npm_command).unwrap().trim()).unwrap()
 }
 
+fn constraint(dependency_name: &DependencyName, new_version: &Version) -> String {
+    if new_version.major == 0 {
+        format!("{}@>={}", &dependency_name.0, new_version)
+    } else {
+        format!("{}@^{}", &dependency_name.0, new_version)
+    }
+}
+
 fn npm_install(
     dependency_type: &NpmDependencyType,
     dependency_name: &DependencyName,
@@ -156,7 +164,7 @@ fn npm_install(
         dependency_type.npm_install_arg(),
         // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
         "--",
-        &format!("{}@^{}", &dependency_name.0, new_version),
+        &constraint(dependency_name, new_version),
     ]);
     let command_string = npm_command
         .printable_invocation_string_with_options(FormattingOptions {
@@ -180,7 +188,7 @@ fn try_bun_add(
     }
     // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
     bun_command.arg("--");
-    let dependency_arg = format!("{}@^{}", &dependency_name.0, new_version);
+    let dependency_arg = constraint(dependency_name, new_version);
     bun_command.arg(&dependency_arg);
     let command_string = bun_command
         .printable_invocation_string_with_options(FormattingOptions {

@@ -40,13 +40,28 @@ pub(crate) struct DependenciesArgs {
 
 #[derive(Debug, Subcommand)]
 enum DependenciesCommand {
-    Roll(DependenciesCommandArgs),
+    Roll(DependenciesRollCommandArgs),
 }
 
 #[derive(Args, Debug)]
-pub(crate) struct DependenciesCommandArgs {
+pub(crate) struct DependenciesRollCommandArgs {
+    #[command(flatten)]
+    roll_args: DependenciesRollArgs,
+
+    #[command(flatten)]
+    common_args: DependenciesCommandCommonArgs,
+}
+
+#[derive(Args, Debug)]
+pub(crate) struct DependenciesRollArgs {
     dependency_name: DependencyName,
 
+    #[clap(long)]
+    pin_exact_version: bool,
+}
+
+#[derive(Args, Debug)]
+pub(crate) struct DependenciesCommandCommonArgs {
     #[command(flatten)]
     commit_args: CommitOperationArgs,
 }
@@ -145,17 +160,32 @@ fn npm_show_version(dependency_name: &DependencyName) -> Version {
     Version::parse(get_stdout(npm_command).unwrap().trim()).unwrap()
 }
 
-fn constraint(dependency_name: &DependencyName, new_version: &Version) -> String {
-    if new_version.major == 0 {
-        format!("{}@>={}", &dependency_name.0, new_version)
+fn npm_package_contraint_arg(
+    dependencies_roll_args: &DependenciesRollArgs,
+    new_version: &Version,
+) -> String {
+    if dependencies_roll_args.pin_exact_version {
+        // Use `=` for explicit pinning.
+        format!(
+            "{}@={}",
+            &dependencies_roll_args.dependency_name.0, new_version
+        )
+    } else if new_version.major == 0 {
+        format!(
+            "{}@>={}",
+            &dependencies_roll_args.dependency_name.0, new_version
+        )
     } else {
-        format!("{}@^{}", &dependency_name.0, new_version)
+        format!(
+            "{}@^{}",
+            &dependencies_roll_args.dependency_name.0, new_version
+        )
     }
 }
 
 fn npm_install(
     dependency_type: &NpmDependencyType,
-    dependency_name: &DependencyName,
+    dependencies_roll_args: &DependenciesRollArgs,
     new_version: &Version,
 ) -> String {
     let mut npm_command = PrintableShellCommand::new("npm");
@@ -164,7 +194,7 @@ fn npm_install(
         dependency_type.npm_install_arg(),
         // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
         "--",
-        &constraint(dependency_name, new_version),
+        &npm_package_contraint_arg(dependencies_roll_args, new_version),
     ]);
     let command_string = npm_command
         .printable_invocation_string_with_options(FormattingOptions {
@@ -178,7 +208,7 @@ fn npm_install(
 
 fn try_bun_add(
     dependency_type: &NpmDependencyType,
-    dependency_name: &DependencyName,
+    dependencies_roll_args: &DependenciesRollArgs,
     new_version: &Version,
 ) -> Result<String, ()> {
     let mut bun_command = PrintableShellCommand::new("bun");
@@ -188,7 +218,7 @@ fn try_bun_add(
     }
     // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
     bun_command.arg("--");
-    let dependency_arg = constraint(dependency_name, new_version);
+    let dependency_arg = npm_package_contraint_arg(dependencies_roll_args, new_version);
     bun_command.arg(&dependency_arg);
     let command_string = bun_command
         .printable_invocation_string_with_options(FormattingOptions {
@@ -213,18 +243,18 @@ fn bun_pm_cache_rm() -> Result<(), ()> {
 
 fn bun_add(
     dependency_type: &NpmDependencyType,
-    dependency_name: &DependencyName,
+    dependencies_roll_args: &DependenciesRollArgs,
     new_version: &Version,
 ) -> String {
     // TODO: sniff for out-of-date-cache by inspecting `stdout`.
-    if let Ok(s) = try_bun_add(dependency_type, dependency_name, new_version) {
+    if let Ok(s) = try_bun_add(dependency_type, dependencies_roll_args, new_version) {
         return s;
     };
     eprintln!(
         "Updating the dependency version failed. Clearing `bun`'s cache and trying one more time."
     );
     bun_pm_cache_rm().unwrap();
-    try_bun_add(dependency_type, dependency_name, new_version).unwrap()
+    try_bun_add(dependency_type, dependencies_roll_args, new_version).unwrap()
 }
 
 pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Result<(), String> {
@@ -252,7 +282,7 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                 }
             };
 
-            let dependency_name = &dependencies_command_args.dependency_name;
+            let dependency_name = &dependencies_command_args.roll_args.dependency_name;
 
             match package_manager {
                 PackageManager::Npm | PackageManager::Bun => {
@@ -264,7 +294,7 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                         if package_json.has_dependency_of_type(npm_dependency_type, dependency_name)
                         {
                             let commit_wrapped_operation = CommitWrappedOperation::try_from(
-                                &dependencies_command_args.commit_args,
+                                &dependencies_command_args.common_args.commit_args,
                             )
                             .unwrap();
                             commit_wrapped_operation
@@ -272,11 +302,15 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                                     let command = if package_manager == PackageManager::Npm {
                                         npm_install(
                                             npm_dependency_type,
-                                            dependency_name,
+                                            &dependencies_command_args.roll_args,
                                             new_version,
                                         )
                                     } else {
-                                        bun_add(npm_dependency_type, dependency_name, new_version)
+                                        bun_add(
+                                            npm_dependency_type,
+                                            &dependencies_command_args.roll_args,
+                                            new_version,
+                                        )
                                     };
                                     println!("{}", command);
                                     Ok(command)

@@ -4,7 +4,10 @@ description = "An opinionated tool for repo management."
 version = "0.13.11-dev"
 edition = "2021"
 license = "MIT"
-exclude = ["src/templates/node_modules"]
+exclude = [
+  "src/templates/node_modules",
+  "src/templates/workaround-indirection-folder/node_modules",
+]
 build = "build.rs"
 repository = "https://github.com/lgarron/repo"
 

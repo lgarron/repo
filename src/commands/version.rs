@@ -2,7 +2,7 @@ use std::fs::File;
 use std::{fmt::Display, process::exit};
 
 use cargo_metadata::semver::Prerelease;
-use clap::{Args, Subcommand};
+use clap::{Args, Subcommand, ValueEnum};
 
 use cargo_metadata::{semver::Version, MetadataCommand};
 use printable_shell_command::PrintableShellCommand;
@@ -61,17 +61,41 @@ struct VersionSetArgs {
 #[derive(Args, Debug)]
 struct VersionBumpArgs {
     #[command(subcommand)]
-    pub command: VersionBumpMagnitude,
+    pub magnitude_subcommand: VersionBumpMagnitude,
     #[command(flatten)]
     commit_args: CommitOperationArgs,
 }
 
-#[derive(Debug, Subcommand, PartialEq, Eq, Clone)]
+#[derive(Debug, ValueEnum, Clone, Copy)]
+enum NumberedVersionComponent {
+    Major,
+    Minor,
+    Patch,
+}
+
+#[derive(Debug, Subcommand)]
 enum VersionBumpMagnitude {
     Major,
     Minor,
     Patch,
-    Dev,
+    Dev(VersionBumpDevArgs),
+}
+
+impl VersionBumpMagnitude {
+    fn bump_component(&self) -> Option<NumberedVersionComponent> {
+        match self {
+            VersionBumpMagnitude::Dev(version_bump_dev_args) => {
+                version_bump_dev_args.bump_component
+            }
+            _ => None,
+        }
+    }
+}
+
+#[derive(Args, Debug)]
+struct VersionBumpDevArgs {
+    #[clap(long)]
+    bump_component: Option<NumberedVersionComponent>,
 }
 
 impl Display for VersionBumpMagnitude {
@@ -83,7 +107,7 @@ impl Display for VersionBumpMagnitude {
                 VersionBumpMagnitude::Major => "major",
                 VersionBumpMagnitude::Minor => "minor",
                 VersionBumpMagnitude::Patch => "patch",
-                VersionBumpMagnitude::Dev => "dev",
+                VersionBumpMagnitude::Dev(_) => "dev",
             }
         )
     }
@@ -177,9 +201,23 @@ fn print_version(version: &str, version_get_args: &VersionGetArgs) {
     print!("{}{}", prefix, version);
 }
 
-fn dev_bump(version: Version) -> Version {
+fn dev_bump(version: Version, bump_component: Option<NumberedVersionComponent>) -> Version {
     let mut version = version.clone();
-    version.patch += 1;
+    let bump_component = bump_component.unwrap_or(NumberedVersionComponent::Patch);
+    match bump_component {
+        NumberedVersionComponent::Major => {
+            version.major += 1;
+            version.minor = 0;
+            version.patch = 0;
+        }
+        NumberedVersionComponent::Minor => {
+            version.minor += 1;
+            version.patch += 0;
+        }
+        NumberedVersionComponent::Patch => {
+            version.patch += 1;
+        }
+    }
     version.pre = Prerelease::new("dev").unwrap();
     version
 }
@@ -190,34 +228,34 @@ fn remove_prerelease(version: Version) -> Version {
     version
 }
 
-fn npm_bump_version(version_bump_command: VersionBumpMagnitude) {
-    if version_bump_command == VersionBumpMagnitude::Dev {
+fn npm_bump_version(version_bump_magnitude: &VersionBumpMagnitude) {
+    if matches!(version_bump_magnitude, VersionBumpMagnitude::Dev(_)) {
         let version = npm_get_version().expect("Could not get current version.");
         let version = Version::parse(&version).expect("Could not parse current version.");
-        npm_set_version(dev_bump(version));
+        npm_set_version(dev_bump(version, version_bump_magnitude.bump_component()));
         return;
     }
     PrintableShellCommand::new("npm")
         .arg_each([
             "version",
             "--no-git-tag-version",
-            &version_bump_command.to_string(),
+            &version_bump_magnitude.to_string(),
         ])
         .debug_print()
         .status()
         .expect("Could not bump version using `npm`");
 }
 
-fn cargo_bump_version(version_bump_command: VersionBumpMagnitude) {
-    if version_bump_command == VersionBumpMagnitude::Dev {
+fn cargo_bump_version(version_bump_magnitude: &VersionBumpMagnitude) {
+    if matches!(version_bump_magnitude, VersionBumpMagnitude::Dev(_)) {
         let version = cargo_get_version().expect("Could not get current version.");
         let version = Version::parse(&version).expect("Could not parse current version.");
-        cargo_set_version(dev_bump(version));
+        cargo_set_version(dev_bump(version, version_bump_magnitude.bump_component()));
         return;
     }
 
     // Match `npm`: Bumping a `patch` of a pre-release removes the pre-release label but keeps the same patch.
-    if version_bump_command == VersionBumpMagnitude::Patch {
+    if matches!(version_bump_magnitude, VersionBumpMagnitude::Patch) {
         let version = cargo_get_version().expect("Could not get current version.");
         let version = Version::parse(&version).expect("Could not parse current version.");
         if !version.pre.is_empty() {
@@ -228,7 +266,7 @@ fn cargo_bump_version(version_bump_command: VersionBumpMagnitude) {
 
     eprintln!("Assuming `cargo-bump` is installed…");
     PrintableShellCommand::new("cargo")
-        .args(["bump", &version_bump_command.to_string()])
+        .args(["bump", &version_bump_magnitude.to_string()])
         .debug_print()
         .status()
         .expect("Could not bump version using `cargo-bump`");
@@ -333,19 +371,19 @@ fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
 // TODO: return `Result<Version, …>`.
 fn version_bump(
     ecosystem_args: &EcosystemArgs,
-    version_bump_magniture: VersionBumpMagnitude,
+    version_bump_magnitude: &VersionBumpMagnitude,
 ) -> Result<String, String> {
     let auto_print_version = |repo_ecosystem: Ecosystem| {
         eprintln!("Bumped version using ecosystem: {}", repo_ecosystem);
     };
     match must_detect_ecosystem_by_getting_version(ecosystem_args) {
         (Ecosystem::JavaScript, _) => {
-            npm_bump_version(version_bump_magniture);
+            npm_bump_version(version_bump_magnitude);
             auto_print_version(Ecosystem::JavaScript);
             npm_get_version()
         }
         (Ecosystem::Rust, _) => {
-            cargo_bump_version(version_bump_magniture);
+            cargo_bump_version(version_bump_magnitude);
             auto_print_version(Ecosystem::Rust);
             cargo_get_version()
         }
@@ -437,10 +475,10 @@ pub(crate) fn version_command(version_args: VersionArgs) {
                 CommitWrappedOperation::try_from(&version_bump_args.commit_args).unwrap();
             commit_wrapped_operation
                 .perform_operation(&|| {
-                    let version_bump_magnitude: &VersionBumpMagnitude = &version_bump_args.command;
+                    let version_bump_magnitude: &VersionBumpMagnitude =
+                        &version_bump_args.magnitude_subcommand;
                     let new_version =
-                        version_bump(&version_args.ecosystem_args, version_bump_magnitude.clone())
-                            .unwrap();
+                        version_bump(&version_args.ecosystem_args, version_bump_magnitude).unwrap();
 
                     Ok(format!(
                         "Bump to next {} version: `v{}`",

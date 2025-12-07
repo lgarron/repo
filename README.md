@@ -2,7 +2,7 @@
 
 ## `repo`
 
-````cli-help
+````text help
 An opinionated tool for repo management.
 
 Usage: repo <COMMAND>
@@ -25,7 +25,7 @@ Options:
 
 ## `repo version`
 
-````cli-help-version
+````text help-version
 Perform operations on the repo version
 
 Usage: repo version [OPTIONS] <COMMAND>
@@ -44,7 +44,7 @@ Options:
 
 ## `repo publish`
 
-````cli-help-publish
+````text help-publish
 Publish
 
 Usage: repo publish [OPTIONS]

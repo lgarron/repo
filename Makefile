@@ -30,42 +30,11 @@ publish-js:
 
 .PHONY: readme-cli-update
 readme-cli-update: ./target/debug/repo
-	bun x readme-cli-help "cargo run --quiet -- --help"
-	bun x readme-cli-help --fence cli-help-version "./target/debug/repo version --help"
-	bun x readme-cli-help --fence cli-help-publish "./target/debug/repo publish --help"
-	bun x readme-cli-help --fence cli-help-boilerplate "./target/debug/repo boilerplate --help"
-	bun x readme-cli-help --fence cli-help-setup "./target/debug/repo setup --help"
-	bun x readme-cli-help --fence cli-help-vcs "./target/debug/repo vcs --help"
-	bun x readme-cli-help --fence cli-help-workspace "./target/debug/repo workspace --help"
-	bun x readme-cli-help --fence cli-help-dependencies "./target/debug/repo dependencies --help"
+	bun x readme-cli-help update
 
 .PHONY: readme-cli-check
-readme-cli-check: \
-	readme-cli-check-main \
-	readme-cli-check-version \
-	readme-cli-check-publish \
-	readme-cli-check-boilerplate \
-	readme-cli-check-setup \
-	readme-cli-check-vcs \
-	readme-cli-check-workspace \
-	readme-cli-check-dependencies
-
-readme-cli-check-main: setup-js ./target/debug/repo
-	bun x readme-cli-help --check-only "./target/debug/repo --help"
-readme-cli-check-version: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-version --check-only "./target/debug/repo version --help"
-readme-cli-check-publish: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-publish --check-only "./target/debug/repo publish --help"
-readme-cli-check-boilerplate: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-boilerplate --check-only "./target/debug/repo boilerplate --help"
-readme-cli-check-setup: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-setup --check-only "./target/debug/repo setup --help"
-readme-cli-check-vcs: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-vcs --check-only "./target/debug/repo vcs --help"
-readme-cli-check-workspace: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-workspace --check-only "./target/debug/repo workspace --help"
-readme-cli-check-dependencies: setup-js ./target/debug/repo
-	bun x readme-cli-help --fence cli-help-dependencies --check-only "./target/debug/repo dependencies --help"
+readme-cli-check: setup-js ./target/debug/repo
+	bun x readme-cli-help check
 
 .PHONY: build-debug
 build-debug: ./target/debug/repo

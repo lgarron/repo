@@ -1,37 +1,38 @@
 {
+  "$schema": "../node_modules/readme-cli-help/schema.json",
   "files": {
     "./README.md": {
-      "blocks": [
+      "codeFences": [
         {
-          "fence": "text help",
+          "infoString": "text help",
           "command": ["./target/debug/repo", "--help"]
         },
         {
-          "fence": "text help-version",
+          "infoString": "text help-version",
           "command": ["./target/debug/repo", "version", "--help"]
         },
         {
-          "fence": "text help-publish",
+          "infoString": "text help-publish",
           "command": ["./target/debug/repo", "publish", "--help"]
         },
         {
-          "fence": "text help-boilerplate",
+          "infoString": "text help-boilerplate",
           "command": ["./target/debug/repo", "boilerplate", "--help"]
         },
         {
-          "fence": "text help-setup",
+          "infoString": "text help-setup",
           "command": ["./target/debug/repo", "setup", "--help"]
         },
         {
-          "fence": "text help-vcs",
+          "infoString": "text help-vcs",
           "command": ["./target/debug/repo", "vcs", "--help"]
         },
         {
-          "fence": "text help-workspace",
+          "infoString": "text help-workspace",
           "command": ["./target/debug/repo", "workspace", "--help"]
         },
         {
-          "fence": "text help-dependencies",
+          "infoString": "text help-dependencies",
           "command": ["./target/debug/repo", "dependencies", "--help"]
         }
       ]

@@ -56,7 +56,7 @@ Options:
 
 ## `repo boilerplate`
 
-````cli-help-boilerplate
+````text help-boilerplate
 Set up boilerplate for the repo
 
 Usage: repo boilerplate <COMMAND>
@@ -66,6 +66,7 @@ Commands:
   auto-publish-github-release  Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
   biome                        Set up linting using Biome
   tsconfig                     Set up `tsconfig.json`
+  readme-cli-help              Set up `readme-cli-help.json`
   bunfig                       Set up `bunfig.toml`
   rust-toolchain               Set up `rust-toolchain.toml`
   help                         Print this message or the help of the given subcommand(s)
@@ -76,7 +77,7 @@ Options:
 
 ## `repo setup`
 
-````cli-help-setup
+````text help-setup
 Set up a repository checkout
 
 Usage: repo setup [COMMAND]
@@ -91,7 +92,7 @@ Options:
 
 ## `repo vcs`
 
-````cli-help-vcs
+````text help-vcs
 Get information about the current VCS
 
 Usage: repo vcs <COMMAND>
@@ -108,7 +109,7 @@ Options:
 
 ## `repo workspace`
 
-````cli-help-workspace
+````text help-workspace
 Get information about the current workspace
 
 Usage: repo workspace <COMMAND>
@@ -123,7 +124,7 @@ Options:
 
 ## `repo dependencies`
 
-````cli-help-dependencies
+````text help-dependencies
 Operate on dependencies
 
 Usage: repo dependencies [OPTIONS] <COMMAND>

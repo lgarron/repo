@@ -1,0 +1,12 @@
+{
+  "files": {
+    "./README.md": {
+      "blocks": [
+        {
+          "fence": "text help",
+          "command": ["./src/main.ts", "--help"]
+        }
+      ]
+    }
+  }
+}

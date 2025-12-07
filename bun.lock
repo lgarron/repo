@@ -9,7 +9,7 @@
         "@types/bun": "^1.3.1",
         "path-class": "^0.6.0",
         "printable-shell-command": "^2.1.2",
-        "readme-cli-help": ">=0.4.0",
+        "readme-cli-help": ">=0.4.6",
         "temporal-ponyfill": "^0.1.0",
       },
     },
@@ -109,6 +109,8 @@
 
     "@types/react": ["@types/react@19.1.12", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-cMoR+FoAf/Jyq6+Df2/Z41jISvGZZ2eTlnsaJRptmZ76Caldwy1odD4xTr/gNV9VLj0AWgg/nmkevIyUfIIq5w=="],
 
+    "ajv": ["ajv@8.17.1", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "fast-uri": "^3.0.1", "json-schema-traverse": "^1.0.0", "require-from-string": "^2.0.2" } }, "sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g=="],
+
     "braces": ["braces@3.0.3", "", { "dependencies": { "fill-range": "^7.1.1" } }, "sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA=="],
 
     "bun-types": ["bun-types@1.3.1", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-NMrcy7smratanWJ2mMXdpatalovtxVggkj11bScuWuiOoXTiKIu2eVS1/7qbyI/4yHedtsn175n4Sm4JcdHLXw=="],
@@ -123,7 +125,11 @@
 
     "execa": ["execa@2.1.0", "", { "dependencies": { "cross-spawn": "^7.0.0", "get-stream": "^5.0.0", "is-stream": "^2.0.0", "merge-stream": "^2.0.0", "npm-run-path": "^3.0.0", "onetime": "^5.1.0", "p-finally": "^2.0.0", "signal-exit": "^3.0.2", "strip-final-newline": "^2.0.0" } }, "sha512-Y/URAVapfbYy2Xp/gb6A0E7iR8xeqOCXsuuaoMn7A5PzrXUK84E1gyiEfq0wQd/GHA6GsoHWwhNq8anb0mleIw=="],
 
+    "fast-deep-equal": ["fast-deep-equal@3.1.3", "", {}, "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="],
+
     "fast-glob": ["fast-glob@3.3.3", "", { "dependencies": { "@nodelib/fs.stat": "^2.0.2", "@nodelib/fs.walk": "^1.2.3", "glob-parent": "^5.1.2", "merge2": "^1.3.0", "micromatch": "^4.0.8" } }, "sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg=="],
+
+    "fast-uri": ["fast-uri@3.1.0", "", {}, "sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA=="],
 
     "fastq": ["fastq@1.19.1", "", { "dependencies": { "reusify": "^1.0.4" } }, "sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ=="],
 
@@ -148,6 +154,8 @@
     "is-stream": ["is-stream@2.0.1", "", {}, "sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg=="],
 
     "isexe": ["isexe@2.0.0", "", {}, "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw=="],
+
+    "json-schema-traverse": ["json-schema-traverse@1.0.0", "", {}, "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug=="],
 
     "merge-stream": ["merge-stream@2.0.0", "", {}, "sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w=="],
 
@@ -189,7 +197,7 @@
 
     "pinkie-promise": ["pinkie-promise@2.0.1", "", { "dependencies": { "pinkie": "^2.0.0" } }, "sha512-0Gni6D4UcLTbv9c57DfxDGdr41XfgUjqWZu492f0cIGr16zDU06BWP/RAEvOuo7CQ0CNjHaLlM59YJJFm3NWlw=="],
 
-    "plural-chain": ["plural-chain@0.2.1", "", {}, "sha512-MTAkLYFtZL+yoFjYzUbsl3fiXftB16MS2AS9MLxApJIgv91neiu65LK/Jg3LNpah/38JErt2NrJsmYdpO1hiLQ=="],
+    "plural-chain": ["plural-chain@0.2.2", "", { "dependencies": { "readme-cli-help": "^0.4.0" } }, "sha512-xZ3h2cF//BzQUgfhI8nuK4QWphavMCwF1x74LIo1Zk8wS2JAT5JjP26pwGK5RABcQvPqHF/qxWSKciegI11t1Q=="],
 
     "printable-shell-command": ["printable-shell-command@2.1.2", "", { "dependencies": { "path-class": "^0.3.3", "type-fest": "^5.1.0" }, "optionalDependencies": { "@types/bun": "^1.2.20", "@types/node": "^24.2.0" } }, "sha512-CzsXuTwIstYkSkrrXW0WlCXPXU+/5Kw2jAV9/Z7IWaFJu2LBBdRW2UP4Ra/sp88gYpTuWRkCmMDJJFbH/s0oZw=="],
 
@@ -197,7 +205,9 @@
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 
-    "readme-cli-help": ["readme-cli-help@0.4.0", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "path-class": ">=0.10.2", "plural-chain": "^0.2.1", "printable-shell-command": "^2.7.3" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-606vRZWMDm1K1zeYC9GxOUqTOUNmUFBRDKwISuy57MNwVO4Uffr5eSP2ozjliTf3YJQ5V2NSNJs5GuEV0TN2+w=="],
+    "readme-cli-help": ["readme-cli-help@0.4.6", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "ajv": "^8.17.1", "path-class": ">=0.10.3", "plural-chain": ">=0.2.2", "printable-shell-command": "^2.7.3" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-9/7Jd3qLpnGEmwI6bUXbcfn5IX+j6/XOjr6u7XAZOFN1Eu+KuW8d2LeZLtbrhxv4tFMSdvYO0W68QH70h0Z82w=="],
+
+    "require-from-string": ["require-from-string@2.0.2", "", {}, "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw=="],
 
     "reusify": ["reusify@1.1.0", "", {}, "sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw=="],
 
@@ -247,10 +257,16 @@
 
     "printable-shell-command/path-class": ["path-class@0.3.4", "", { "dependencies": { "@types/node": "^24.7.1", "trash": "^10.0.0", "typescript": "^5.9.3", "xdg-basedir": "^5.1.0" } }, "sha512-TTHKgMNfPObJRXtWm4PPVtA+nh0iMtkEbcreb7dNY6UZHjiY3raG4ziLHGmqMMMIJTo+EdmY4nAPAxLfdwDeYA=="],
 
-    "readme-cli-help/path-class": ["path-class@0.10.2", "", { "dependencies": { "@types/node": "^24.7.1", "readme-cli-help": ">=0.3.1", "xdg-basedir": "^5.1.0" } }, "sha512-5NxurdtQiVkRdB1m738O7s1eQQdLr9VGPbRWsUDs2hqEEqhfENcgbQHC+s5zczhwtAzppmrB8VHijJi5NwE2Sg=="],
+    "readme-cli-help/path-class": ["path-class@0.10.3", "", { "dependencies": { "@types/node": "^24.7.1", "xdg-basedir": "^5.1.0" } }, "sha512-teUDitVwoVlJTDOXb/WGwDcxRvcwVVdDh8IpfYzZ+E4FaPNtfE7py0eNE2mCNZ10m1IckTpQjCG2cujpw42tTw=="],
 
     "readme-cli-help/printable-shell-command": ["printable-shell-command@2.7.3", "", { "dependencies": { "path-class": ">=0.6.1", "type-fest": ">=5.1.0" }, "optionalDependencies": { "@types/bun": "^1.2.20", "@types/node": "^24.2.0" } }, "sha512-dze0g2XUiBTp6EGd5kPSR2i422sabXWFjnk8qOqxbeUCxcNMNDjA2Z3XYq/8ZL6GmS7nhc/HjtRFXBvRP3c03A=="],
 
     "xdg-trashdir/xdg-basedir": ["xdg-basedir@4.0.0", "", {}, "sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q=="],
+
+    "readme-cli-help/printable-shell-command/path-class": ["path-class@0.10.2", "", { "dependencies": { "@types/node": "^24.7.1", "readme-cli-help": ">=0.3.1", "xdg-basedir": "^5.1.0" } }, "sha512-5NxurdtQiVkRdB1m738O7s1eQQdLr9VGPbRWsUDs2hqEEqhfENcgbQHC+s5zczhwtAzppmrB8VHijJi5NwE2Sg=="],
+
+    "readme-cli-help/printable-shell-command/path-class/readme-cli-help": ["readme-cli-help@0.4.0", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "path-class": ">=0.10.2", "plural-chain": "^0.2.1", "printable-shell-command": "^2.7.3" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-606vRZWMDm1K1zeYC9GxOUqTOUNmUFBRDKwISuy57MNwVO4Uffr5eSP2ozjliTf3YJQ5V2NSNJs5GuEV0TN2+w=="],
+
+    "readme-cli-help/printable-shell-command/path-class/readme-cli-help/plural-chain": ["plural-chain@0.2.1", "", {}, "sha512-MTAkLYFtZL+yoFjYzUbsl3fiXftB16MS2AS9MLxApJIgv91neiu65LK/Jg3LNpah/38JErt2NrJsmYdpO1hiLQ=="],
   }
 }

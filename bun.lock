@@ -9,7 +9,7 @@
         "@types/bun": "^1.3.1",
         "path-class": "^0.6.0",
         "printable-shell-command": "^2.1.2",
-        "readme-cli-help": ">=0.4.6",
+        "readme-cli-help": ">=0.4.7",
         "temporal-ponyfill": "^0.1.0",
       },
     },
@@ -197,7 +197,7 @@
 
     "pinkie-promise": ["pinkie-promise@2.0.1", "", { "dependencies": { "pinkie": "^2.0.0" } }, "sha512-0Gni6D4UcLTbv9c57DfxDGdr41XfgUjqWZu492f0cIGr16zDU06BWP/RAEvOuo7CQ0CNjHaLlM59YJJFm3NWlw=="],
 
-    "plural-chain": ["plural-chain@0.2.2", "", { "dependencies": { "readme-cli-help": "^0.4.0" } }, "sha512-xZ3h2cF//BzQUgfhI8nuK4QWphavMCwF1x74LIo1Zk8wS2JAT5JjP26pwGK5RABcQvPqHF/qxWSKciegI11t1Q=="],
+    "plural-chain": ["plural-chain@0.2.3", "", {}, "sha512-iqzW8/mS8+Yveu1mZtoEtdmg0yglWDM7mL1bKzD4H+BlMaGCl/Ig0oTfSy4oEm6A20sgLS0zWaLbgmRemr1bFg=="],
 
     "printable-shell-command": ["printable-shell-command@2.1.2", "", { "dependencies": { "path-class": "^0.3.3", "type-fest": "^5.1.0" }, "optionalDependencies": { "@types/bun": "^1.2.20", "@types/node": "^24.2.0" } }, "sha512-CzsXuTwIstYkSkrrXW0WlCXPXU+/5Kw2jAV9/Z7IWaFJu2LBBdRW2UP4Ra/sp88gYpTuWRkCmMDJJFbH/s0oZw=="],
 
@@ -205,7 +205,7 @@
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 
-    "readme-cli-help": ["readme-cli-help@0.4.6", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "ajv": "^8.17.1", "path-class": ">=0.10.3", "plural-chain": ">=0.2.2", "printable-shell-command": "^2.7.3" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-9/7Jd3qLpnGEmwI6bUXbcfn5IX+j6/XOjr6u7XAZOFN1Eu+KuW8d2LeZLtbrhxv4tFMSdvYO0W68QH70h0Z82w=="],
+    "readme-cli-help": ["readme-cli-help@0.4.7", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "ajv": "^8.17.1", "path-class": ">=0.10.3", "plural-chain": ">=0.2.3", "printable-shell-command": "^2.7.3" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-GZtKNWry1EFrctsFkq35B7GJG9C+ytfq9M/oyif88gvjcWpWOY5R4jEyu4Gp92sN29dYFbbbalpEbkZvriuXNw=="],
 
     "require-from-string": ["require-from-string@2.0.2", "", {}, "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw=="],
 

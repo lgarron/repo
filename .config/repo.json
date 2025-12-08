@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "postVersion": ["echo", "`postVersion` was exercised!"]
+  }
+}

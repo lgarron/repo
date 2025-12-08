@@ -8,6 +8,7 @@ use clap_complete::{Generator, Shell};
 use crate::build::CLAP_LONG_VERSION;
 use crate::commands::boilerplate::BoilerplateArgs;
 use crate::commands::dependencies::DependenciesArgs;
+use crate::commands::print_schema::PrintSchemaArgs;
 use crate::commands::publish::PublishArgs;
 use crate::commands::setup::SetupArgs;
 use crate::commands::vcs::VcsArgs;
@@ -40,6 +41,8 @@ pub(crate) enum RepoCommand {
     Dependencies(DependenciesArgs),
     /// Print completions for the given shell.
     Completions(CompletionsArgs),
+    /// Print the given JSON schema.
+    PrintSchema(PrintSchemaArgs),
 }
 
 #[derive(Args, Debug)]

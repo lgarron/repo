@@ -1,5 +1,6 @@
 pub(crate) mod boilerplate;
 pub(crate) mod dependencies;
+pub(crate) mod print_schema;
 pub(crate) mod publish;
 pub(crate) mod setup;
 pub(crate) mod vcs;

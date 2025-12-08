@@ -25,7 +25,7 @@ publish-rust:
 	cargo publish --no-verify # Dogfood our own `publish` command
 
 .PHONY: publish-js
-publish-js:
+publish-js: setup-js
 	bun run -- 'script/release-npm.ts'
 
 .PHONY: readme-cli-update
@@ -69,6 +69,8 @@ clean:
 	rm -rf ./.temp/
 	rm -rf \
 		./src/js/@lgarron-bin/repo/package.json \
+		./src/js/@lgarron-bin/repo/schemas/ \
+		./src/js/@lgarron-bin/repo/types/ \
 		./src/js/@lgarron-bin/repo-*
 
 .PHONY: reset

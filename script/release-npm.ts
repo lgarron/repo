@@ -2,6 +2,7 @@ import { exit } from "node:process";
 import { Path } from "path-class";
 import { PrintableShellCommand } from "printable-shell-command";
 import { Temporal } from "temporal-ponyfill";
+import { MAIN_PACKAGE_FOLDER, version } from "./common";
 
 const WORKFLOW_NAME = "Build release binaries";
 
@@ -138,18 +139,6 @@ function isWindows(architectureTriple: string): boolean {
 const TEMP_DIR = new Path("./.temp/artifacts");
 await TEMP_DIR.rm_rf();
 
-const version = (
-  await new PrintableShellCommand("cargo", [
-    "run",
-    "--quiet",
-    "--",
-    "version",
-    "get",
-  ])
-    .stdout()
-    .text()
-).trim();
-
 async function publish(cwd: Path) {
   try {
     await new PrintableShellCommand("npm", [
@@ -218,14 +207,24 @@ Platform-specific package for: https://www.npmjs.com/package/@lgarron-bin/repo`)
   await publish(PACKAGE_DIR);
 }
 
-const MAIN_PACKAGE_PATH = new Path("./src/js/@lgarron-bin/repo");
-await MAIN_PACKAGE_PATH.join("package.json").writeJSON({
+await MAIN_PACKAGE_FOLDER.join("package.json").writeJSON({
   name: "@lgarron-bin/repo",
-  version: version,
+  version,
   repository: "github:lgarron/repo",
   type: "module",
   bin: {
     repo: "repo.js",
+  },
+  exports: {
+    "./bin": {
+      default: "./repo.js",
+    },
+    "./schemas/repo.json": {
+      default: "./schemas/repo.json",
+    },
+    "./types/postVersion": {
+      types: "./types/postVersion",
+    },
   },
   optionalDependencies: {
     "@lgarron-bin/repo-aarch64-apple-darwin": version,
@@ -239,6 +238,7 @@ await MAIN_PACKAGE_PATH.join("package.json").writeJSON({
     node: ">=20.6.0",
   },
 });
+await import("./write-schemas-and-types");
 
-await new Path("./README.md").cp(MAIN_PACKAGE_PATH.join("README.md"));
-await publish(MAIN_PACKAGE_PATH);
+await new Path("./README.md").cp(MAIN_PACKAGE_FOLDER.join("README.md"));
+await publish(MAIN_PACKAGE_FOLDER);

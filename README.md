@@ -16,6 +16,7 @@ Commands:
   workspace     Get information about the current workspace
   dependencies  Operate on dependencies
   completions   Print completions for the given shell
+  print-schema  Print the given JSON schema
   help          Print this message or the help of the given subcommand(s)
 
 Options:

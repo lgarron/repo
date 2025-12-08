@@ -12,6 +12,7 @@ use commands::workspace::workspace_command;
 use shadow_rs::shadow;
 
 use crate::commands::dependencies::dependencies_command;
+use crate::commands::print_schema::print_schema;
 
 shadow!(build);
 
@@ -28,6 +29,7 @@ fn main() {
         args::RepoCommand::Dependencies(dependencies_args) => {
             dependencies_command(dependencies_args).unwrap()
         }
+        args::RepoCommand::PrintSchema(print_schema_args) => print_schema(print_schema_args),
         args::RepoCommand::Completions(_) => panic!("We should have exited earlier."),
     }
 }

@@ -1,4 +1,5 @@
 use std::fs::File;
+use std::process::{Command, Stdio};
 use std::{fmt::Display, process::exit};
 
 use cargo_metadata::semver::Prerelease;
@@ -6,9 +7,11 @@ use clap::{Args, Subcommand, ValueEnum};
 
 use cargo_metadata::{semver::Version, MetadataCommand};
 use printable_shell_command::PrintableShellCommand;
-use serde::Deserialize;
+use schemars::{schema_for, JsonSchema, Schema, SchemaGenerator};
+use serde::{Deserialize, Serialize};
 
 use crate::common::commit_wrapped_operation::CommitWrappedOperation;
+use crate::common::config::Config;
 use crate::common::debug::DebugPrintable;
 use crate::common::inference::get_stdout;
 use crate::common::vcs::{vcs_or_infer, VcsKind};
@@ -25,7 +28,7 @@ pub(crate) struct VersionArgs {
     ecosystem_args: EcosystemArgs,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, Clone)]
 enum VersionCommand {
     /// Get the current version
     Get(VersionGetArgs),
@@ -37,20 +40,53 @@ enum VersionCommand {
     Bump(VersionBumpArgs),
 }
 
-#[derive(Args, Debug)]
+impl Serialize for VersionCommand {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(match self {
+            VersionCommand::Get(_version_get_args) => "get",
+            VersionCommand::Describe(_version_describe_args) => "describe",
+            VersionCommand::Set(_version_set_args) => "set",
+            VersionCommand::Bump(_version_bump_args) => "bump",
+        })
+    }
+}
+
+#[derive(Debug, Serialize, JsonSchema, Clone, Copy)]
+enum VersionCommandType {
+    Get,
+    Describe,
+    Set,
+    Bump,
+}
+
+impl From<&VersionCommand> for VersionCommandType {
+    fn from(value: &VersionCommand) -> Self {
+        match value {
+            VersionCommand::Get(_) => Self::Get,
+            VersionCommand::Describe(_) => Self::Describe,
+            VersionCommand::Set(_) => Self::Set,
+            VersionCommand::Bump(_) => Self::Bump,
+        }
+    }
+}
+
+#[derive(Args, Debug, Clone)]
 struct VersionGetArgs {
     /// Do not print the `v` prefix (e.g. print `0.1.3` instead of `v0.1.3`)
     #[clap(long)]
     pub no_prefix: bool,
 }
 
-#[derive(Args, Debug)]
+#[derive(Args, Debug, Clone)]
 struct VersionDescribeArgs {
     #[clap(long)]
     pub use_vcs: Option<VcsKind>,
 }
 
-#[derive(Args, Debug)]
+#[derive(Args, Debug, Clone)]
 struct VersionSetArgs {
     #[clap()]
     pub version: String,
@@ -58,7 +94,7 @@ struct VersionSetArgs {
     commit_args: CommitOperationArgs,
 }
 
-#[derive(Args, Debug)]
+#[derive(Args, Debug, Clone)]
 struct VersionBumpArgs {
     #[command(subcommand)]
     pub magnitude_subcommand: VersionBumpMagnitude,
@@ -73,7 +109,7 @@ enum NumberedVersionComponent {
     Patch,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, Clone)]
 enum VersionBumpMagnitude {
     Major,
     Minor,
@@ -92,7 +128,26 @@ impl VersionBumpMagnitude {
     }
 }
 
-#[derive(Args, Debug)]
+#[derive(Debug, Serialize, Clone, Copy, JsonSchema)]
+enum VersionBumpMagnitudeType {
+    Major,
+    Minor,
+    Patch,
+    Dev,
+}
+
+impl From<&VersionBumpMagnitude> for VersionBumpMagnitudeType {
+    fn from(value: &VersionBumpMagnitude) -> Self {
+        match value {
+            VersionBumpMagnitude::Major => VersionBumpMagnitudeType::Major,
+            VersionBumpMagnitude::Minor => VersionBumpMagnitudeType::Minor,
+            VersionBumpMagnitude::Patch => VersionBumpMagnitudeType::Patch,
+            VersionBumpMagnitude::Dev(_) => VersionBumpMagnitudeType::Dev,
+        }
+    }
+}
+
+#[derive(Args, Debug, Clone)]
 struct VersionBumpDevArgs {
     #[clap(long)]
     bump_component: Option<NumberedVersionComponent>,
@@ -113,7 +168,16 @@ impl Display for VersionBumpMagnitude {
     }
 }
 
-#[derive(Args, Debug)]
+impl Serialize for VersionBumpMagnitude {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+#[derive(Args, Debug, Clone)]
 pub(crate) struct CommitOperationArgs {
     #[clap(long, group = "commit-group")]
     commit: bool,
@@ -445,15 +509,51 @@ fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {
     }
 }
 
+#[derive(Serialize, Debug, JsonSchema)]
+#[schemars(deny_unknown_fields)]
+pub(crate) struct PostVersionInfo {
+    command: VersionCommandType,
+    // TODO: can we serialize the `VersionCommand` enum directly in an idiomatic way with JSON?
+    // TODO: remove `null` from possible output here? https://github.com/GREsau/schemars/issues/491
+    #[serde(skip_serializing_if = "Option::is_none")]
+    magnitude: Option<VersionBumpMagnitudeType>,
+    #[schemars(schema_with = "json_schema_serialize_version")]
+    version: Version,
+}
+
+fn json_schema_serialize_version(_: &mut SchemaGenerator) -> Schema {
+    schema_for!(String)
+}
+
+const POST_VERSION: &str = "postVersion";
+fn post_version_change(info: PostVersionInfo) {
+    let config = Config::get();
+    let Some(post_version_command) = config.scripts.get(POST_VERSION) else {
+        return;
+    };
+    let Some((command, args)) = post_version_command.split_first() else {
+        panic!("Command is an empty list: {}", POST_VERSION);
+    };
+
+    let mut subprocess = Command::new(command)
+        .args(args)
+        .stdin(Stdio::piped())
+        .spawn()
+        .unwrap();
+    serde_json::to_writer(subprocess.stdin.as_mut().unwrap(), &info).unwrap();
+    assert!(subprocess.wait().unwrap().success());
+}
+
 // TODO: use traits to abstract across ecosystems
 // TODO: support cross-checking versions across ecosystems
 pub(crate) fn version_command(version_args: VersionArgs) {
-    match version_args.command {
+    let command = (&version_args.command).into();
+    match &version_args.command {
         VersionCommand::Get(version_get_args) => {
-            version_get_and_print(&version_args.ecosystem_args, &version_get_args);
+            version_get_and_print(&version_args.ecosystem_args, version_get_args);
         }
         VersionCommand::Describe(version_describe_args) => {
-            version_describe_and_print(&version_describe_args);
+            version_describe_and_print(version_describe_args);
         }
         VersionCommand::Set(version_set_args) => {
             let commit_wrapped_operation =
@@ -466,11 +566,17 @@ pub(crate) fn version_command(version_args: VersionArgs) {
                         .unwrap_or(&version_set_args.version);
                     let version = Version::parse(version).expect("Invalid version specified");
                     version_set(&version_args.ecosystem_args, version.clone());
+                    post_version_change(PostVersionInfo {
+                        command,
+                        magnitude: None,
+                        version: version.clone(),
+                    });
                     Ok(format!("Set version to: `v{}`", version))
                 })
                 .unwrap();
         }
         VersionCommand::Bump(version_bump_args) => {
+            Config::get();
             let commit_wrapped_operation =
                 CommitWrappedOperation::try_from(&version_bump_args.commit_args).unwrap();
             commit_wrapped_operation
@@ -479,7 +585,13 @@ pub(crate) fn version_command(version_args: VersionArgs) {
                         &version_bump_args.magnitude_subcommand;
                     let new_version =
                         version_bump(&version_args.ecosystem_args, version_bump_magnitude).unwrap();
-
+                    let new_version =
+                        Version::parse(&new_version).expect("Internal error: Invalid new version");
+                    post_version_change(PostVersionInfo {
+                        command,
+                        magnitude: Some(version_bump_magnitude.into()),
+                        version: new_version.clone(),
+                    });
                     Ok(format!(
                         "Bump to next {} version: `v{}`",
                         version_bump_magnitude, new_version

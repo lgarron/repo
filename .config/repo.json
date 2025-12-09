@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "postVersion": ["echo", "`postVersion` was exercised!"]
+    "postVersion": ["./script/postVersion.ts"]
   }
 }

@@ -223,7 +223,7 @@ await MAIN_PACKAGE_FOLDER.join("package.json").writeJSON({
       default: "./schemas/repo.json",
     },
     "./types/postVersion": {
-      types: "./types/postVersion",
+      types: "./types/postVersion.d.ts",
     },
   },
   optionalDependencies: {

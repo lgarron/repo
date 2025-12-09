@@ -55,6 +55,7 @@ impl Serialize for VersionCommand {
 }
 
 #[derive(Debug, Serialize, JsonSchema, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
 enum VersionCommandType {
     Get,
     Describe,
@@ -129,6 +130,7 @@ impl VersionBumpMagnitude {
 }
 
 #[derive(Debug, Serialize, Clone, Copy, JsonSchema)]
+#[serde(rename_all = "lowercase")]
 enum VersionBumpMagnitudeType {
     Major,
     Minor,

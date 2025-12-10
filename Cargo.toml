@@ -39,6 +39,7 @@ strip = true
 opt-level = "z"
 lto = true
 codegen-units = 1
+panic = "abort"
 
 [dev-dependencies]
 schemars = "1.1.0"

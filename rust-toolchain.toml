@@ -1,3 +1,23 @@
 [toolchain]
-channel = "1.90.0"
-components = ["rustfmt", "clippy"]
+# We'd use `nightly-2025-10-01`, but that one doesn't seem to compile:
+#
+#     error: module has missing stability attribute
+#        --> /Users/lgarron/.local/share/rustup/toolchains/nightly-2025-10-01-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/io/mod.rs:338:1
+#         |
+#     338 | pub mod copy;
+#         | ^^^^^^^^^^^^
+#     
+#     error: function has missing stability attribute
+#        --> /Users/lgarron/.local/share/rustup/toolchains/nightly-2025-10-01-aarch64-apple-darwin/lib/rustlib/src/rust/library/std/src/io/copy.rs:272:1
+#         |
+#     272 | / pub fn stack_buffer_copy<R: Read + ?Sized, W: Write + ?Sized>(
+#     273 | |     reader: &mut R,
+#     274 | |     writer: &mut W,
+#     275 | | ) -> Result<u64> {
+#         | |________________^
+#     
+#     error: could not compile `std` (lib) due to 2 previous errors
+#     make: *** [build] Error 101
+#
+channel = "nightly-2025-12-01"
+components = ["rustfmt", "clippy", "rust-src"]

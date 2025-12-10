@@ -1,12 +1,19 @@
+.PHONY: build
+build:
+	cargo build --release
+
 .PHONY: setup
 setup: setup-js
+
+.PHONY: check
+check: lint test build
 
 .PHONY: setup-js
 setup-js:
 	bun install --frozen-lockfile
 
 .PHONY: test
-test: cargo-test cargo-test-help lint
+test: cargo-test cargo-test-help
 
 .PHONY: cargo-test
 cargo-test:

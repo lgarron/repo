@@ -22,9 +22,7 @@ static SHARED_CONFIG: LazyLock<Config> = LazyLock::new(|| {
     let file = match File::open(PathBuf::from(CONFIG_PATH)) {
         Ok(file) => file,
         Err(e) => {
-            dbg!(&e);
             if e.kind() == ErrorKind::NotFound {
-                dbg!("foo");
                 return Config {
                     scripts: HashMap::default(),
                 };

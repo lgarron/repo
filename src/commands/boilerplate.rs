@@ -1,13 +1,13 @@
 use std::path::PathBuf;
 
-use clap::{Args, Subcommand};
+use clap::{Args, Subcommand, ValueEnum};
 use printable_shell_command::PrintableShellCommand;
 
 use crate::common::{
     debug::DebugPrintable,
     ecosystem::Ecosystem,
     package_manager::PackageManager,
-    template_file::{TemplateFile, TemplateFileArgs},
+    template_file::{TemplateFile, TemplateFileArgs, TemplateFileCommand},
 };
 
 #[derive(Args, Debug)]
@@ -25,13 +25,28 @@ enum BoilerplateCommand {
     /// Set up linting using Biome
     Biome(TemplateFileArgs),
     /// Set up `tsconfig.json`
-    Tsconfig(TemplateFileArgs),
+    Tsconfig(TemplateFileArgs<TsconfigArgs>),
     /// Set up `readme-cli-help.json`
     ReadmeCliHelp(TemplateFileArgs),
     /// Set up `bunfig.toml`
     Bunfig(TemplateFileArgs),
     /// Set up `rust-toolchain.toml`
     RustToolchain(TemplateFileArgs),
+}
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct TsconfigArgs {
+    #[clap(long)]
+    no_dom: bool,
+    #[clap(long)]
+    module: Option<ESModule>,
+}
+
+#[derive(Debug, Clone, ValueEnum, Default)]
+enum ESModule {
+    #[default]
+    ES2022,
+    ES2024,
 }
 
 fn ci_template() -> TemplateFile<'static> {
@@ -58,8 +73,30 @@ fn biome_json_template() -> TemplateFile<'static> {
     }
 }
 
-fn tsconfig_template() -> TemplateFile<'static> {
-    let bytes = include_bytes!("../templates/tsconfig.json");
+fn tsconfig_template(
+    template_file_command: TemplateFileCommand<TsconfigArgs>,
+) -> TemplateFile<'static> {
+    let bytes: &[u8] = {
+        if let TemplateFileCommand::Add(template_file_create_args) = template_file_command {
+            match (
+                template_file_create_args.custom_args.no_dom,
+                template_file_create_args
+                    .custom_args
+                    .module
+                    .unwrap_or_default(),
+            ) {
+                (false, ESModule::ES2022) => include_bytes!("../templates/tsconfig.es2022.json"),
+                (false, ESModule::ES2024) => include_bytes!("../templates/tsconfig.es2024.json"),
+                (true, ESModule::ES2022) => include_bytes!("../templates/tsconfig.es2022.no-dom.json"),
+                (true, ESModule::ES2024) => {
+                    include_bytes!("../templates/tsconfig.es2024.no-dom.json")
+                }
+            }
+        } else {
+            // TODO: re-architect the need for this fallback.
+            include_bytes!("../templates/tsconfig.es2022.json")
+        }
+    };
     TemplateFile {
         relative_path: PathBuf::from("./tsconfig.json"),
         bytes,
@@ -166,7 +203,7 @@ format:
     )
 }
 
-fn add_tsconfig(template_file_args: TemplateFileArgs) {
+fn add_tsconfig(template_file_args: TemplateFileArgs<TsconfigArgs>) {
     // Note that we don't install the `typescript` package because
     // `tsconfig.json` is still needed to get VS Code's built-in TypeScript
     // annotations to accept some well-established features like top-level
@@ -190,7 +227,7 @@ fn add_tsconfig(template_file_args: TemplateFileArgs) {
         .expect("Could not add development dependency")
         .wait()
         .unwrap();
-    tsconfig_template().handle_command(template_file_args);
+    tsconfig_template(template_file_args.command.clone()).handle_command(template_file_args);
     // TODO: print `tsc` invocation (requires installation)
 }
 

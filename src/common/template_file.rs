@@ -5,30 +5,35 @@ use std::{
     process::exit,
 };
 
-use clap::{Args, Subcommand, ValueEnum};
+use clap::{Args, FromArgMatches, Subcommand, ValueEnum};
 use edit::edit_file_without_waiting;
 use opener::reveal;
 
 #[derive(Args, Debug)]
-pub(crate) struct TemplateFileArgs {
+pub(crate) struct TemplateFileArgs<CustomAddArgs: Args + FromArgMatches = BlankArgs> {
     #[command(subcommand)]
-    command: TemplateFileCommand,
+    pub(crate) command: TemplateFileCommand<CustomAddArgs>,
 }
 
-#[derive(Debug, Subcommand)]
-enum TemplateFileCommand {
-    Add(TemplateFileCreateArgs),
+#[derive(Clone, Debug, Subcommand)]
+pub(crate) enum TemplateFileCommand<CustomAddArgs: Args + FromArgMatches = BlankArgs> {
+    Add(TemplateFileCreateArgs<CustomAddArgs>),
     Edit,
     Reveal,
 }
 
 #[derive(Args, Clone, Debug)]
-pub(crate) struct TemplateFileCreateArgs {
+pub(crate) struct TemplateFileCreateArgs<CustomAddArgs: Args + FromArgMatches = BlankArgs> {
     #[clap(long)]
     followup: Option<TemplateFileCreateFollowup>,
     #[clap(long)]
     overwrite: bool,
+    #[clap(flatten)]
+    pub(crate) custom_args: CustomAddArgs,
 }
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct BlankArgs {}
 
 #[derive(Debug, Clone, ValueEnum)]
 enum TemplateFileCreateFollowup {
@@ -44,7 +49,10 @@ pub(crate) struct TemplateFile<'a> {
 }
 
 impl TemplateFile<'_> {
-    pub(crate) fn handle_command(&self, template_file_args: TemplateFileArgs) {
+    pub(crate) fn handle_command<CustomAddArgs: Args + FromArgMatches>(
+        &self,
+        template_file_args: TemplateFileArgs<CustomAddArgs>,
+    ) {
         match template_file_args.command {
             TemplateFileCommand::Add(template_file_create_args) => {
                 self.create(template_file_create_args);
@@ -55,7 +63,10 @@ impl TemplateFile<'_> {
     }
 
     /// Autoamtically performs the followup from the `template_file_write_args` argument.
-    fn create(&self, template_file_write_args: TemplateFileCreateArgs) {
+    fn create<CustomAddArgs: Args + FromArgMatches>(
+        &self,
+        template_file_write_args: TemplateFileCreateArgs<CustomAddArgs>,
+    ) {
         if exists(&self.relative_path).expect("Could not access file system.") {
             if template_file_write_args.overwrite {
                 eprintln!(

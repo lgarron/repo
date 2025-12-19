@@ -313,7 +313,8 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                                         )
                                     };
                                     println!("{}", command);
-                                    Ok(command)
+                                    // TODO: can this ever generate a command with missing escapes?
+                                    Ok(format!("`{}`", command))
                                 })
                                 .unwrap();
                             any_rolled = true;

@@ -312,6 +312,7 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                                             new_version,
                                         )
                                     };
+                                    // TODO: also include the old version in the printed message and commit message.
                                     println!("{}", command);
                                     // TODO: can this ever generate a command with missing escapes?
                                     Ok(format!("`{}` (roll)", command))

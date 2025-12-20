@@ -148,7 +148,7 @@ Get information about the current workspace
 Usage: repo workspace <COMMAND>
 
 Commands:
-  root  Get the workspace root folder based on VCS or other litmus files (e.g. `package.json`, `Cargo.toml`) If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand)
+  root  Get the workspace root folder based on VCS or other litmus files (e.g. `package.json`, `Cargo.toml`) If the folder is part of multiple repositories, at most one will be returned (consistent with the `repo vcs kind` subcommand)
   help  Print this message or the help of the given subcommand(s)
 
 Options:

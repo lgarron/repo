@@ -13,7 +13,7 @@ pub(crate) struct WorkspaceArgs {
 #[derive(Debug, Subcommand)]
 enum WorkspaceCommand {
     /// Get the workspace root folder based on VCS or other litmus files (e.g. `package.json`, `Cargo.toml`)
-    /// If the folder is part of multiple repositories, at most one will be returned (consistent with the `kind` subcommand).
+    /// If the folder is part of multiple repositories, at most one will be returned (consistent with the `repo vcs kind` subcommand).
     ///
     /// Also consider `repo vcs root` if you are only looking for VCS roots.
     Root(WorkspaceRootArgs),

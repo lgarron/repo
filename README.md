@@ -1,5 +1,37 @@
 # `repo`
 
+An opinionated tool for repo management.
+
+## Usage
+
+Run using:
+
+```shell
+# Global (from `crates.io`)
+cargo install repo
+repo help
+```
+
+```shell
+# Global (from `npm`)
+bun install --global @lgarron-bin/repo
+repo help
+
+# Local (from `npm`)
+bun add @lgarron-bin/repo
+bun x -- @lgarron-bin/repo help
+```
+
+```shell
+# Global (from `npm`)
+npm install --global @lgarron-bin/repo
+repo help
+
+# Local (from `npm`)
+bun add @lgarron-bin/repo
+bun x @lgarron-bin/repo help
+```
+
 ## `repo`
 
 ````text help

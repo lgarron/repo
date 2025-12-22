@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node -S --
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";

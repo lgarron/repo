@@ -66,7 +66,7 @@ fn publish_github_release_template() -> TemplateFile<'static> {
 }
 
 fn biome_json_template() -> TemplateFile<'static> {
-    let bytes = include_bytes!("../templates/workaround-indirection-folder/biome.json");
+    let bytes = include_bytes!("../templates/biome.json");
     TemplateFile {
         relative_path: PathBuf::from("./biome.json"),
         bytes,
@@ -87,7 +87,9 @@ fn tsconfig_template(
             ) {
                 (false, ESModule::ES2022) => include_bytes!("../templates/tsconfig.es2022.json"),
                 (false, ESModule::ES2024) => include_bytes!("../templates/tsconfig.es2024.json"),
-                (true, ESModule::ES2022) => include_bytes!("../templates/tsconfig.es2022.no-dom.json"),
+                (true, ESModule::ES2022) => {
+                    include_bytes!("../templates/tsconfig.es2022.no-dom.json")
+                }
                 (true, ESModule::ES2024) => {
                     include_bytes!("../templates/tsconfig.es2024.no-dom.json")
                 }

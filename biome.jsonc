@@ -6,8 +6,8 @@
       "**",
       "!dist",
       "!target",
-      // TODO: remove this line and change this back to `"!src/templates/biome.json",` (https://github.com/biomejs/biome/issues/7942)
-      "!src/templates/workaround-indirection-folder"
+      // This needs a double exclamation mark due to https://github.com/biomejs/biome/issues/7942#issuecomment-3749040744
+      "!!src/templates/biome.json"
     ]
   },
   "linter": {

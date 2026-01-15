@@ -6,6 +6,8 @@ edition = "2021"
 license = "MIT"
 exclude = [
   "src/templates/node_modules",
+  # TODO: The following is gone, but we're keeping it around for now in case it
+  # appears from an old checkout.
   "src/templates/workaround-indirection-folder/node_modules",
 ]
 build = "build.rs"

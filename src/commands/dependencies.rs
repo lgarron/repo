@@ -206,30 +206,48 @@ fn npm_install(
     command_string
 }
 
-fn try_bun_add(
+type CommandStringWithNote = (String, Option<String>);
+
+fn try_bun_add_for_roll(
     dependency_type: &NpmDependencyType,
     dependencies_roll_args: &DependenciesRollArgs,
     new_version: &Version,
-) -> Result<String, ()> {
-    let mut bun_command = PrintableShellCommand::new("bun");
-    bun_command.arg("add");
+) -> Result<CommandStringWithNote, ()> {
+    // TODO: https://github.com/oven-sh/bun/issues/1343
+    let mut rm_bun_lock_command = PrintableShellCommand::new("rm");
+    rm_bun_lock_command.args(["bun.lock"]);
+
+    let mut bun_add_command = PrintableShellCommand::new("bun");
+    bun_add_command.arg("add");
     if let Some(arg) = dependency_type.bun_add_arg() {
-        bun_command.arg(arg);
+        bun_add_command.arg(arg);
     }
     // `--` is needed because packages can start with `-` and we want to prevent any chance of argument injection.
-    bun_command.arg("--");
+    bun_add_command.arg("--");
     let dependency_arg = npm_package_contraint_arg(dependencies_roll_args, new_version);
-    bun_command.arg(&dependency_arg);
-    let command_string = bun_command
-        .printable_invocation_string_with_options(FormattingOptions {
-            argument_line_wrapping: Some(ArgumentLineWrapping::Inline),
-            ..Default::default()
+    bun_add_command.arg(&dependency_arg);
+
+    let command_string = [&rm_bun_lock_command, &bun_add_command]
+        .map(|v| {
+            v.printable_invocation_string_with_options(FormattingOptions {
+                argument_line_wrapping: Some(ArgumentLineWrapping::Inline),
+                ..Default::default()
+            })
+            .unwrap()
         })
-        .unwrap();
-    let Some(_) = get_stdout(bun_command) else {
+        .join(" && ");
+
+    let Some(_) = get_stdout(rm_bun_lock_command) else {
         return Err(());
     };
-    Ok(command_string)
+    let Some(_) = get_stdout(bun_add_command) else {
+        return Err(());
+    };
+
+    Ok((
+        command_string,
+        Some("Regenerating the entire lockfile is not desirable, but is a necessary workaround for: https://github.com/oven-sh/bun/issues/1343".to_owned()),
+    ))
 }
 
 fn bun_pm_cache_rm() -> Result<(), ()> {
@@ -241,20 +259,20 @@ fn bun_pm_cache_rm() -> Result<(), ()> {
     Ok(())
 }
 
-fn bun_add(
+fn bun_add_for_roll(
     dependency_type: &NpmDependencyType,
     dependencies_roll_args: &DependenciesRollArgs,
     new_version: &Version,
-) -> String {
+) -> CommandStringWithNote {
     // TODO: sniff for out-of-date-cache by inspecting `stdout`.
-    if let Ok(s) = try_bun_add(dependency_type, dependencies_roll_args, new_version) {
+    if let Ok(s) = try_bun_add_for_roll(dependency_type, dependencies_roll_args, new_version) {
         return s;
     };
     eprintln!(
         "Updating the dependency version failed. Clearing `bun`'s cache and trying one more time."
     );
     bun_pm_cache_rm().unwrap();
-    try_bun_add(dependency_type, dependencies_roll_args, new_version).unwrap()
+    try_bun_add_for_roll(dependency_type, dependencies_roll_args, new_version).unwrap()
 }
 
 pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Result<(), String> {
@@ -299,14 +317,18 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                             .unwrap();
                             commit_wrapped_operation
                                 .perform_operation(&|| {
-                                    let command = if package_manager == PackageManager::Npm {
-                                        npm_install(
-                                            npm_dependency_type,
-                                            &dependencies_command_args.roll_args,
-                                            new_version,
+                                    let (command, note) = if package_manager == PackageManager::Npm
+                                    {
+                                        (
+                                            npm_install(
+                                                npm_dependency_type,
+                                                &dependencies_command_args.roll_args,
+                                                new_version,
+                                            ),
+                                            None,
                                         )
                                     } else {
-                                        bun_add(
+                                        bun_add_for_roll(
                                             npm_dependency_type,
                                             &dependencies_command_args.roll_args,
                                             new_version,
@@ -315,7 +337,11 @@ pub(crate) fn dependencies_command(dependencies_args: DependenciesArgs) -> Resul
                                     // TODO: also include the old version in the printed message and commit message.
                                     println!("{}", command);
                                     // TODO: can this ever generate a command with missing escapes?
-                                    Ok(format!("`{}` (roll)", command))
+                                    Ok(format!(
+                                        "`{}` (roll){}",
+                                        command,
+                                        note.map(|s| format!("\n\n{}", s)).unwrap_or_default()
+                                    ))
                                 })
                                 .unwrap();
                             any_rolled = true;

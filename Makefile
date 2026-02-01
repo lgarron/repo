@@ -71,10 +71,12 @@ install:
 uninstall:
 	cargo uninstall repo
 
+RM_RF = bun -e 'process.argv.slice(1).map(p => process.getBuiltinModule("node:fs").rmSync(p, {recursive: true, force: true, maxRetries: 5}))' --
+
 .PHONY: clean
 clean:
-	rm -rf ./.temp/
-	rm -rf \
+	${RM_RF} ./.temp/
+	${RM_RF} \
 		./src/js/@lgarron-bin/repo/package.json \
 		./src/js/@lgarron-bin/repo/schemas/ \
 		./src/js/@lgarron-bin/repo/types/ \
@@ -82,8 +84,8 @@ clean:
 
 .PHONY: reset
 reset: clean
-	rm -rf ./node_modules/
-	rm -rf ./target/
+	${RM_RF} ./node_modules/
+	${RM_RF} ./target/
 
 .PHONY: build-release
 build-release:

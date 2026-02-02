@@ -213,10 +213,6 @@ fn try_bun_add_for_roll(
     dependencies_roll_args: &DependenciesRollArgs,
     new_version: &Version,
 ) -> Result<CommandStringWithNote, ()> {
-    // TODO: https://github.com/oven-sh/bun/issues/1343
-    let mut rm_bun_lock_command = PrintableShellCommand::new("rm");
-    rm_bun_lock_command.args(["bun.lock"]);
-
     let mut bun_add_command = PrintableShellCommand::new("bun");
     bun_add_command.arg("add");
     if let Some(arg) = dependency_type.bun_add_arg() {
@@ -227,7 +223,11 @@ fn try_bun_add_for_roll(
     let dependency_arg = npm_package_contraint_arg(dependencies_roll_args, new_version);
     bun_add_command.arg(&dependency_arg);
 
-    let command_string = [&rm_bun_lock_command, &bun_add_command]
+    // TODO: https://github.com/oven-sh/bun/issues/1343
+    let mut bun_dedupe_command = PrintableShellCommand::new("bun");
+    bun_dedupe_command.args(["x", "--package", "bun-dedupe@0.0.4", "dedupe", "--"]);
+
+    let command_string = [&bun_add_command, &bun_dedupe_command]
         .map(|v| {
             v.printable_invocation_string_with_options(FormattingOptions {
                 argument_line_wrapping: Some(ArgumentLineWrapping::Inline),
@@ -237,16 +237,16 @@ fn try_bun_add_for_roll(
         })
         .join(" && ");
 
-    let Some(_) = get_stdout(rm_bun_lock_command) else {
+    let Some(_) = get_stdout(bun_add_command) else {
         return Err(());
     };
-    let Some(_) = get_stdout(bun_add_command) else {
+    let Some(_) = get_stdout(bun_dedupe_command) else {
         return Err(());
     };
 
     Ok((
         command_string,
-        Some("Regenerating the entire lockfile is not desirable, but is a necessary workaround for: https://github.com/oven-sh/bun/issues/1343".to_owned()),
+        Some("Deduplicating deps like this is the current best workaround for: https://github.com/oven-sh/bun/issues/1343".to_owned()),
     ))
 }
 

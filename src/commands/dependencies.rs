@@ -225,7 +225,7 @@ fn try_bun_add_for_roll(
 
     // TODO: https://github.com/oven-sh/bun/issues/1343
     let mut bun_dedupe_command = PrintableShellCommand::new("bun");
-    bun_dedupe_command.args(["x", "--package", "bun-dedupe@0.0.4", "dedupe", "--"]);
+    bun_dedupe_command.args(["x", "--package", "bun-dedupe@0.0.5", "dedupe", "--"]);
 
     let command_string = [&bun_add_command, &bun_dedupe_command]
         .map(|v| {

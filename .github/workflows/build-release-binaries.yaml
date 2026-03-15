@@ -11,10 +11,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: Swatinem/rust-cache@v2
       - run: rustup target add x86_64-apple-darwin
       - run: cargo build --target x86_64-apple-darwin --release
@@ -32,10 +32,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
@@ -53,10 +53,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
@@ -74,10 +74,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
@@ -95,10 +95,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release
@@ -116,10 +116,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: Swatinem/rust-cache@v2
       - run: rustup toolchain list
       - run: make build-release

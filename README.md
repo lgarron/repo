@@ -95,7 +95,7 @@ Set up boilerplate for the repo
 Usage: repo boilerplate <COMMAND>
 
 Commands:
-  ci                           Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
+  ci                           Set up a CI template for GitHub or Codeberg and open for editing
   auto-publish-github-release  Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
   biome                        Set up linting using Biome
   tsconfig                     Set up `tsconfig.json`

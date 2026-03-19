@@ -18,7 +18,7 @@ pub(crate) struct BoilerplateArgs {
 
 #[derive(Debug, Subcommand)]
 enum BoilerplateCommand {
-    /// Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
+    /// Set up a CI template for GitHub or Codeberg and open for editing.
     CI(CIArgs),
     /// Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
     AutoPublishGithubRelease(TemplateFileArgs),

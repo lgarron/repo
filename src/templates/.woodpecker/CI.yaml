@@ -1,0 +1,12 @@
+when:
+  - event: push
+    branch: main
+
+steps:
+  - name: test
+    image: node:24
+    commands:
+      - npm install --global bun@1.3.2
+      # - make setup
+      - make lint
+      - make test

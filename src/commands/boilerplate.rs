@@ -19,7 +19,7 @@ pub(crate) struct BoilerplateArgs {
 #[derive(Debug, Subcommand)]
 enum BoilerplateCommand {
     /// Set up a CI template for GitHub and open for editing at: `.github/workflows/CI.yaml`
-    CI(TemplateFileArgs),
+    CI(CIArgs),
     /// Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
     AutoPublishGithubRelease(TemplateFileArgs),
     /// Set up linting using Biome
@@ -32,6 +32,23 @@ enum BoilerplateCommand {
     Bunfig(TemplateFileArgs),
     /// Set up `rust-toolchain.toml`
     RustToolchain(TemplateFileArgs),
+}
+
+#[derive(Debug, Clone, ValueEnum, Default)]
+enum VCSForge {
+    #[default]
+    #[clap(name = "github")]
+    GitHub,
+    Codeberg,
+}
+
+#[derive(Args, Debug)]
+pub(crate) struct CIArgs {
+    #[clap(long)]
+    forge: VCSForge,
+
+    #[command(flatten)]
+    template_file_args: TemplateFileArgs,
 }
 
 #[derive(Args, Clone, Debug)]
@@ -49,11 +66,22 @@ enum ESModule {
     ES2024,
 }
 
-fn ci_template() -> TemplateFile<'static> {
-    let bytes = include_bytes!("../templates/.github/workflows/CI.yaml");
-    TemplateFile {
-        relative_path: PathBuf::from("./.github/workflows/CI.yaml"),
-        bytes,
+fn ci_template(forge: &VCSForge) -> TemplateFile<'static> {
+    match forge {
+        VCSForge::GitHub => {
+            let bytes = include_bytes!("../templates/.github/workflows/CI.yaml");
+            TemplateFile {
+                relative_path: PathBuf::from("./.github/workflows/CI.yaml"),
+                bytes,
+            }
+        }
+        VCSForge::Codeberg => {
+            let bytes = include_bytes!("../templates/.woodpecker/CI.yaml");
+            TemplateFile {
+                relative_path: PathBuf::from("./.woodpecker/CI.yaml"),
+                bytes,
+            }
+        }
     }
 }
 
@@ -268,8 +296,8 @@ format-rust:
 // TODO: use traits to abstract across ecosystems
 pub(crate) fn boilerplate(boilerplate_args: BoilerplateArgs) {
     match boilerplate_args.command {
-        BoilerplateCommand::CI(template_file_args) => {
-            ci_template().handle_command(template_file_args);
+        BoilerplateCommand::CI(ci_args) => {
+            ci_template(&ci_args.forge).handle_command(ci_args.template_file_args);
         }
         BoilerplateCommand::AutoPublishGithubRelease(template_file_args) => {
             publish_github_release_template().handle_command(template_file_args);

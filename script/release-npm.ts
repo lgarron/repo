@@ -64,7 +64,7 @@ Push a tag to run the release flow.`,
     // seconds, so we hope it prints while we sleep for the next attempt. If the
     // `fetch(…)` takes more than 10 seconds, we don't do any special handling,
     // and just allow inappropriately interleaved output.
-    (async () => {
+    void (async () => {
       const jobs: {
         jobs: {
           name: string;

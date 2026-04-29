@@ -7,7 +7,7 @@
     "json-schema-to-typescript": "^15.0.4",
     "path-class": ">=0.10.3",
     "printable-shell-command": "^2.7.4",
-    "readme-cli-help": ">=0.4.9",
+    "readme-cli-help": ">=0.4.11",
     "temporal-ponyfill": "^0.1.0"
   }
 }

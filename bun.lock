@@ -10,7 +10,7 @@
         "json-schema-to-typescript": "^15.0.4",
         "path-class": ">=0.10.3",
         "printable-shell-command": "^2.7.4",
-        "readme-cli-help": ">=0.4.9",
+        "readme-cli-help": ">=0.4.11",
         "temporal-ponyfill": "^0.1.0",
       },
     },
@@ -142,7 +142,7 @@
 
     "printable-shell-command": ["printable-shell-command@2.7.4", "", { "dependencies": { "path-class": ">=0.10.3", "type-fest": ">=5.1.0" }, "optionalDependencies": { "@types/bun": "^1.2.20", "@types/node": "^24.2.0" } }, "sha512-J5yL44IhDKrFXkdkH2mdNE+weTuiZum8fQDeIc83/Zju+Vpy64paS8RemC5gVhxu0A0j5SWsZZymXh6CTDzybA=="],
 
-    "readme-cli-help": ["readme-cli-help@0.4.9", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "ajv": "^8.17.1", "path-class": ">=0.10.3", "plural-chain": ">=0.2.3", "printable-shell-command": "^2.7.4" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-6XQtRKioWAbfR8r0cIVtLj5LPmjQ5b3vg0+LRs1/URjTArWxIvoJGp8EJjtcFnsfd+93xIRPRIyVDrJsDXAVoQ=="],
+    "readme-cli-help": ["readme-cli-help@0.4.11", "", { "dependencies": { "@optique/core": ">=0.7.2", "@optique/run": ">=0.7.2", "ajv": "^8.17.1", "path-class": ">=0.10.3", "plural-chain": ">=0.2.3", "printable-shell-command": "^3.0.3" }, "bin": { "readme-cli-help": "src/main.ts" } }, "sha512-KvR97DQyfifyu6VN/fYx0q/qlskOplkGnHQ7S6OZ7NdDKvAUyW0hbIcea8FeFOFij9rdylUdSST8dOCDKDHQhw=="],
 
     "require-from-string": ["require-from-string@2.0.2", "", {}, "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw=="],
 
@@ -161,5 +161,7 @@
     "undici-types": ["undici-types@7.16.0", "", {}, "sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw=="],
 
     "xdg-basedir": ["xdg-basedir@5.1.0", "", {}, "sha512-GCPAHLvrIH13+c0SuacwvRYj2SxJXQ4kaVTT5xgL3kPrz56XxkF21IGhjSE1+W0aw7gpBWRGXLCPnPby6lSpmQ=="],
+
+    "readme-cli-help/printable-shell-command": ["printable-shell-command@3.0.3", "", { "dependencies": { "path-class": ">=0.10.3", "type-fest": ">=5.1.0" }, "peerDependencies": { "@types/bun": "^1.2.20", "@types/node": ">=24.2.0" } }, "sha512-YPHNc4rEopjtVQzUyOZ4n9y6s+MQ6HjwmlrrEotRBgGSs92WtTxfPYHNiuPP9uzHnXbZxAfSWTsNOmxFECs40g=="],
   }
 }

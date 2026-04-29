@@ -35,33 +35,39 @@ publish-rust:
 publish-js: setup-js
 	bun run -- 'script/release-npm.ts'
 
-.PHONY: readme-cli-update
-readme-cli-update: ./target/debug/repo
-	bun x readme-cli-help update
-
-.PHONY: readme-cli-check
-readme-cli-check: setup-js ./target/debug/repo
-	bun x readme-cli-help check
-
 .PHONY: build-debug
-build-debug: ./target/debug/repo
+build-debug: ./target/debug/repo/
 
-.PHONY: ./target/debug/repo
-./target/debug/repo:
+.PHONY: ./target/debug/repo/
+./target/debug/repo/:
 	cargo build
 
 .PHONY: lint
-lint: lint-js readme-cli-check
+lint: lint-biome lint-typescript lint-readme-cli-check lint-clippy
+
+.PHONY: lint-biome
+lint-biome: setup-js
+	bun x -- bun-dx --package @biomejs/biome biome -- check
+
+.PHONY: lint-typescript
+lint-typescript: setup-js
+	bun x -- bun-dx --package @typescript/native-preview tsgo -- --project .
+
+.PHONY: lint-clippy
+lint-clippy:
 	cargo clippy
 
-.PHONY: lint-js
-lint-js: setup-js
-	bun x @biomejs/biome check
-	bun x tsc --noEmit --project .
+.PHONY: lint-readme-cli-check
+lint-readme-cli-check: setup-js ./target/debug/repo/
+	bun x -- bun-dx --package readme-cli-help readme-cli-help -- check
 
 .PHONY: format
-format: setup-js readme-cli-update
-	bun x @biomejs/biome check --write
+format: setup-js format-readme-cli-update
+	bun x -- bun-dx --package @biomejs/biome biome -- check --write
+
+.PHONY: format-readme-cli-update
+format-readme-cli-update: ./target/debug/repo/
+	bun x -- bun-dx --package readme-cli-help readme-cli-help -- update
 
 .PHONY: install
 install:

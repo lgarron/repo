@@ -227,7 +227,12 @@ fn try_bun_add_for_roll(
     let mut bun_dedupe_command = PrintableShellCommand::new("bun");
     bun_dedupe_command.args(["x", "--package", "bun-dedupe@0.0.5", "dedupe", "--"]);
 
-    let command_string = [&bun_add_command, &bun_dedupe_command]
+    // TODO: https://github.com/oven-sh/bun/issues/1343
+    // Needed to remove transitive dependencies that have become unused.
+    let mut bun_install_command = PrintableShellCommand::new("bun");
+    bun_install_command.args(["install"]);
+
+    let command_string = [&bun_add_command, &bun_dedupe_command, &bun_install_command]
         .map(|v| {
             v.printable_invocation_string_with_options(FormattingOptions {
                 argument_line_wrapping: Some(ArgumentLineWrapping::Inline),
@@ -241,6 +246,9 @@ fn try_bun_add_for_roll(
         return Err(());
     };
     let Some(_) = get_stdout(bun_dedupe_command) else {
+        return Err(());
+    };
+    let Some(_) = get_stdout(bun_install_command) else {
         return Err(());
     };
 

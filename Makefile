@@ -33,7 +33,7 @@ publish-rust:
 
 .PHONY: publish-js
 publish-js: setup-js
-	bun run -- 'script/release-npm.ts'
+	bun run -- ./script/publish-npm.ts
 
 .PHONY: build-debug
 build-debug: ./target/debug/repo/

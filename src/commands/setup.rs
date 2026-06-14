@@ -45,7 +45,7 @@ fn npm_install() {
 fn bun_install() {
     println!("Installing dependencies using: `bun`");
     PrintableShellCommand::new("bun")
-        .arg_each(["install", "--no-save"])
+        .arg_each(["install", "--frozen-lockfile"])
         .debug_print()
         .status()
         .expect("Could not install dependencies using `bun`");

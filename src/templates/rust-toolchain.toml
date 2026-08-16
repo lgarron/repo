@@ -1,3 +1,4 @@
 [toolchain]
 channel = "1.90.0"
-components = ["rustfmt", "clippy"]
+# `rust-analyzer` is needed for e.g. the LSP to work in VS Code with older channels.
+components = ["rustfmt", "clippy", "rust-analyzer"]

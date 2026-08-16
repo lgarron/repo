@@ -29,7 +29,8 @@ publish: test clean publish-rust publish-js
 .PHONY: publish-rust
 publish-rust:
 	# TODO: Remove `--no-verify`: https://github.com/rust-lang/cargo/issues/15951
-	cargo publish --no-verify # Dogfood our own `publish` command
+	# cargo run -- publish # Dogfood our own `publish` command
+	cargo publish --no-verify
 
 .PHONY: publish-js
 publish-js: setup-js

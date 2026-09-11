@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{fs::exists, path::PathBuf};
 
 use clap::{Args, Subcommand, ValueEnum};
 use printable_shell_command::PrintableShellCommand;
@@ -230,7 +230,10 @@ format:
 ⇥{} check --write
 ",
         biome_command_prefix, biome_command_prefix, biome_command_prefix, biome_command_prefix,
-    )
+    );
+    if !exists(PathBuf::from(".gitignore")).unwrap() {
+        eprintln!("⚠️ Warning: the `biome.json` boilerplate requires a `.gitignore` in the same folder, but there does not appear to be one.")
+    }
 }
 
 fn add_tsconfig(template_file_args: TemplateFileArgs<TsconfigArgs>) {

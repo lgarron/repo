@@ -144,7 +144,7 @@ async function publish(cwd: Path) {
     await new PrintableShellCommand("npm", [
       "publish",
       ["--access", "public"],
-    ]).shellOut({ cwd: cwd.toString() });
+    ]).spawnPassthrough({ cwd: cwd.toString() }).success;
   } catch (e) {
     console.error(e);
     console.error("Already published? Skipping…");

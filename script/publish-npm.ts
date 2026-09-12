@@ -142,7 +142,7 @@ await TEMP_DIR.rm_rf();
 async function publish(cwd: Path) {
   try {
     await new PrintableShellCommand("npm", [
-      ["stage", "publish"],
+      "publish",
       ["--access", "public"],
     ]).shellOut({ cwd: cwd.toString() });
   } catch (e) {

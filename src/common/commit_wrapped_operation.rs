@@ -49,7 +49,7 @@ impl CommitWrappedOperation {
                 let Some(stdout) = get_stdout(command) else {
                     return Err("Could not get `jj log` output.".to_owned());
                 };
-                if stdout.trim() != "." {
+                if stdout.trim() != "1" {
                     let mut command = PrintableShellCommand::new("jj");
                     command.args(["new"]);
                     command_must_succeed(command)?;

@@ -27,6 +27,9 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
 
 impl CommitWrappedOperation {
     pub fn prep_commit(&self) -> Result<(), String> {
+        if !self.perform_commit {
+            return Ok(());
+        }
         match self.commit_using {
             VcsKind::Git => {
                 let mut command = PrintableShellCommand::new("git");

@@ -52,8 +52,13 @@ impl CommitWrappedOperation {
                 let Some(stdout) = get_stdout(command) else {
                     return Err("Could not get `jj log` output.".to_owned());
                 };
-                if stdout.trim() != "1" {
-                    let mut command = PrintableShellCommand::new("jj");
+                if stdout
+                    .trim()
+                    .parse::<u32>()
+                    .expect("Could not get revisions count from `jj`.")
+                    != 1
+                {
+                    let mut command: PrintableShellCommand = PrintableShellCommand::new("jj");
                     command.args(["new"]);
                     command_must_succeed(command)?;
                 }

@@ -215,6 +215,7 @@ fn try_bun_add_for_roll(
 ) -> Result<CommandStringWithNote, ()> {
     let mut bun_add_command = PrintableShellCommand::new("bun");
     bun_add_command.arg("add");
+    bun_add_command.arg("--no-cache");
     if let Some(arg) = dependency_type.bun_add_arg() {
         bun_add_command.arg(arg);
     }
@@ -225,7 +226,7 @@ fn try_bun_add_for_roll(
 
     // TODO: https://github.com/oven-sh/bun/issues/1343
     let mut bun_dedupe_command = PrintableShellCommand::new("bun");
-    bun_dedupe_command.args(["x", "--package", "bun-dedupe@0.0.5", "dedupe", "--"]);
+    bun_dedupe_command.args(["dedupe"]);
 
     // TODO: https://github.com/oven-sh/bun/issues/1343
     // Needed to remove transitive dependencies that have become unused.
@@ -254,7 +255,7 @@ fn try_bun_add_for_roll(
 
     Ok((
         command_string,
-        Some("Deduplicating deps like this is the current best workaround for: https://github.com/oven-sh/bun/issues/1343".to_owned()),
+        Some("Deduplicating deps like this is the current best workaround for: https://github.com/oven-sh/bun/issues/1343#issuecomment-3708448009".to_owned()),
     ))
 }
 

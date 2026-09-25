@@ -47,7 +47,7 @@ for (const architectureTriple of [
     }
     throw e;
   }
-  if (await existsSync(path)) {
+  if (existsSync(path)) {
     if (DEBUG) {
       console.error(`[${architectureTriple}] Path exists: `, path);
     }

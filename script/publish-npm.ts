@@ -141,6 +141,12 @@ await TEMP_DIR.rm_rf();
 
 async function publish(cwd: Path) {
   try {
+    await new PrintableShellCommand("npm", ["whoami"]).shellOut();
+  } catch {
+    await new PrintableShellCommand("npm", ["login"]).spawnPassthrough()
+      .success;
+  }
+  try {
     await new PrintableShellCommand("npm", [
       "publish",
       ["--access", "public"],

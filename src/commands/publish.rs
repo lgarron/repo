@@ -19,6 +19,23 @@ pub(crate) struct PublishArgs {
 pub(crate) fn publish_command(publish_args: PublishArgs) {
     match must_detect_ecosystem_by_getting_version(&publish_args.ecosystem_args) {
         (Ecosystem::JavaScript, _) => {
+            if !PrintableShellCommand::new("npm")
+                .arg("whoami")
+                .spawn()
+                .expect("Could not call `npm whoami`.")
+                .wait()
+                .unwrap()
+                .success()
+            {
+                assert!(PrintableShellCommand::new("npm")
+                    .arg("login")
+                    .spawn()
+                    .expect("Could not call `npm login`.")
+                    .wait()
+                    .unwrap()
+                    .success());
+            }
+
             PrintableShellCommand::new("npm")
                 .arg("publish")
                 .debug_print()

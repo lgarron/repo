@@ -186,10 +186,23 @@ pub(crate) struct CommitOperationArgs {
     /// Same as `--commit`, but uses a specified VCS.
     #[clap(long, group = "commit-group")]
     pub commit_using: Option<VcsKind>,
+    /// By default:
+    ///
+    /// - In `git`, an empty `HEAD` commit is required.
+    ///
+    /// - In `jj`, new changeset is created if `@` is not blank.
+    ///
+    /// This reuses the current commit instead.
+    #[clap(long)]
+    reuse_current_commit: bool,
 }
 
 impl CommitOperationArgs {
-    pub fn perform_commit(&self) -> bool {
+    pub fn reuse_current_commit(&self) -> bool {
+        self.reuse_current_commit
+    }
+
+    pub fn commit(&self) -> bool {
         self.commit || self.commit_using.is_some()
     }
 }

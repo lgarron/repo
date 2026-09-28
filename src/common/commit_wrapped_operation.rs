@@ -11,6 +11,7 @@ use crate::{
 
 pub struct CommitWrappedOperation {
     perform_commit: bool,
+    reuse_current_commit: bool,
     commit_using: VcsKind,
 }
 
@@ -19,7 +20,8 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
 
     fn try_from(commit_args: &CommitOperationArgs) -> Result<Self, Self::Error> {
         Ok(Self {
-            perform_commit: commit_args.perform_commit(),
+            perform_commit: commit_args.commit(),
+            reuse_current_commit: commit_args.reuse_current_commit(),
             commit_using: vcs_or_infer(commit_args.commit_using)?,
         })
     }
@@ -27,7 +29,7 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
 
 impl CommitWrappedOperation {
     pub fn prep_commit(&self) -> Result<(), String> {
-        if !self.perform_commit {
+        if !self.perform_commit || self.reuse_current_commit {
             return Ok(());
         }
         match self.commit_using {
@@ -83,7 +85,11 @@ impl CommitWrappedOperation {
             }
             VcsKind::Jj => {
                 let mut command = PrintableShellCommand::new("jj");
-                command.arg("commit");
+                if self.reuse_current_commit {
+                    command.arg("describe");
+                } else {
+                    command.arg("commit");
+                }
                 command.args(["--message", message]);
                 command_must_succeed(command)?;
                 Ok(())

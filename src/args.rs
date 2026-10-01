@@ -54,10 +54,22 @@ pub(crate) struct CompletionsArgs {
     ///  source <(repo completions zsh) # zsh
     #[clap(verbatim_doc_comment, id = "SHELL")]
     shell: Shell,
+
+    #[clap(long)]
+    bin_name: Option<String>,
 }
 
-fn completions_for_shell(cmd: &mut clap::Command, generator: impl Generator) {
-    generate(generator, cmd, "repo", &mut stdout());
+fn completions_for_shell(
+    cmd: &mut clap::Command,
+    generator: impl Generator,
+    bin_name: Option<String>,
+) {
+    generate(
+        generator,
+        cmd,
+        bin_name.unwrap_or_else(|| cmd.get_name().to_owned()),
+        &mut stdout(),
+    );
 }
 
 pub(crate) fn get_args() -> RepoArgs {
@@ -65,7 +77,11 @@ pub(crate) fn get_args() -> RepoArgs {
 
     let args = RepoArgs::parse();
     if let RepoCommand::Completions(completions_args) = args.command {
-        completions_for_shell(&mut command, completions_args.shell);
+        completions_for_shell(
+            &mut command,
+            completions_args.shell,
+            completions_args.bin_name,
+        );
         exit(0);
     };
 

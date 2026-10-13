@@ -22,17 +22,14 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
         Ok(Self {
             perform_commit: commit_args.commit(),
             reuse_current_commit: commit_args.reuse_current_commit(),
-            commit_using: match commit_args.commit() || commit_args.commit_using.is_some() {
-                true => Some(vcs_or_infer(commit_args.commit_using)?),
-                false => None,
-            },
+            commit_using: vcs_or_infer(commit_args.commit_using),
         })
     }
 }
 
 impl CommitWrappedOperation {
     pub fn prep_commit(&self) -> Result<(), String> {
-        if !self.perform_commit || self.reuse_current_commit {
+        if self.reuse_current_commit {
             return Ok(());
         }
         match self.commit_using {

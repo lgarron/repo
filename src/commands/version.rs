@@ -393,7 +393,7 @@ fn version_get_and_print(ecosystem_args: &EcosystemArgs, version_get_args: &Vers
 }
 
 fn version_describe_and_print(version_describe_args: &VersionDescribeArgs) {
-    let Ok(vcs) = vcs_or_infer(version_describe_args.use_vcs) else {
+    let Some(vcs) = vcs_or_infer(version_describe_args.use_vcs) else {
         eprintln!("Could not determine VCS to use.");
         exit(1);
     };

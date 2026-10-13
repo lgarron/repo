@@ -65,16 +65,12 @@ pub(crate) fn auto_detect_preferred_vcs_and_repo_root(
     None
 }
 
-pub fn vcs_or_infer(vcs: Option<VcsKind>) -> Result<VcsKind, String> {
-    Ok(match vcs {
-        Some(vcs_kind) => vcs_kind,
+pub fn vcs_or_infer(vcs: Option<VcsKind>) -> Option<VcsKind> {
+    match vcs {
+        Some(vcs_kind) => Some(vcs_kind),
         None => {
-            let Some((vcs_kind, _)) =
-                auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap())
-            else {
-                return Err("No VCS specified or found.".to_owned());
-            };
-            vcs_kind
+            let (vcs_kind, _) = auto_detect_preferred_vcs_and_repo_root(&current_dir().unwrap())?;
+            Some(vcs_kind)
         }
-    })
+    }
 }

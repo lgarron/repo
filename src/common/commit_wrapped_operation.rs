@@ -12,7 +12,7 @@ use crate::{
 pub struct CommitWrappedOperation {
     perform_commit: bool,
     reuse_current_commit: bool,
-    commit_using: VcsKind,
+    commit_using: Option<VcsKind>,
 }
 
 impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
@@ -22,7 +22,10 @@ impl TryFrom<&CommitOperationArgs> for CommitWrappedOperation {
         Ok(Self {
             perform_commit: commit_args.commit(),
             reuse_current_commit: commit_args.reuse_current_commit(),
-            commit_using: vcs_or_infer(commit_args.commit_using)?,
+            commit_using: match commit_args.commit() || commit_args.commit_using.is_some() {
+                true => Some(vcs_or_infer(commit_args.commit_using)?),
+                false => None,
+            },
         })
     }
 }
@@ -33,7 +36,8 @@ impl CommitWrappedOperation {
             return Ok(());
         }
         match self.commit_using {
-            VcsKind::Git => {
+            None => Ok(()),
+            Some(VcsKind::Git) => {
                 let mut command = PrintableShellCommand::new("git");
                 command.args(["status", "--porcelain"]);
                 let Some(stdout) = get_stdout(command) else {
@@ -44,7 +48,7 @@ impl CommitWrappedOperation {
                 }
                 Ok(())
             }
-            VcsKind::Jj => {
+            Some(VcsKind::Jj) => {
                 let mut command = PrintableShellCommand::new("jj");
                 command.args(["log", "--count"]);
                 command.args([
@@ -66,7 +70,7 @@ impl CommitWrappedOperation {
                 }
                 Ok(())
             }
-            VcsKind::Mercurial => Err("Mercurial is unsupported for this operation.".into()),
+            Some(VcsKind::Mercurial) => Err("Mercurial is unsupported for this operation.".into()),
         }
     }
 
@@ -76,14 +80,15 @@ impl CommitWrappedOperation {
             return Ok(());
         }
         match self.commit_using {
-            VcsKind::Git => {
+            None => Ok(()),
+            Some(VcsKind::Git) => {
                 let mut command = PrintableShellCommand::new("git");
                 command.arg_each(["commit", "--all"]);
                 command.args(["--message", message]);
                 command_must_succeed(command)?;
                 Ok(())
             }
-            VcsKind::Jj => {
+            Some(VcsKind::Jj) => {
                 let mut command = PrintableShellCommand::new("jj");
                 if self.reuse_current_commit {
                     command.arg("describe");
@@ -94,7 +99,7 @@ impl CommitWrappedOperation {
                 command_must_succeed(command)?;
                 Ok(())
             }
-            VcsKind::Mercurial => Err("Mercurial is unsupported for this operation.".into()),
+            Some(VcsKind::Mercurial) => Err("Mercurial is unsupported for this operation.".into()),
         }
     }
 

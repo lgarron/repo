@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { compile, type JSONSchema } from "json-schema-to-typescript";
 import { PrintableShellCommand } from "printable-shell-command";
-import { MAIN_PACKAGE_FOLDER } from "./common";
+import { MAIN_PACKAGE_FOLDER } from "./common.ts";
 
 await MAIN_PACKAGE_FOLDER.join("schemas/repo.json").write(
   new PrintableShellCommand("cargo", [

@@ -52,7 +52,7 @@ lint-biome: setup-js
 
 .PHONY: lint-typescript
 lint-typescript: setup-js
-	bun x -- bun-dx --package @typescript/native-preview tsgo -- --project .
+	bun x -- bun-dx --package typescript tsc -- --project ./tsconfig.json
 
 .PHONY: lint-clippy
 lint-clippy:

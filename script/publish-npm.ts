@@ -2,7 +2,7 @@ import { exit } from "node:process";
 import { Path } from "path-class";
 import { PrintableShellCommand } from "printable-shell-command";
 import { Temporal } from "temporal-ponyfill";
-import { MAIN_PACKAGE_FOLDER, version } from "./common";
+import { MAIN_PACKAGE_FOLDER, version } from "./common.ts";
 
 const WORKFLOW_NAME = "Build release binaries";
 
@@ -244,7 +244,7 @@ await MAIN_PACKAGE_FOLDER.join("package.json").writeJSON({
     node: ">=20.6.0",
   },
 });
-await import("./write-schemas-and-types");
+await import("./write-schemas-and-types.ts");
 
 await new Path("./README.md").cp(MAIN_PACKAGE_FOLDER.join("README.md"));
 await publish(MAIN_PACKAGE_FOLDER);

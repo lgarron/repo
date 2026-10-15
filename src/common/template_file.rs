@@ -9,6 +9,8 @@ use clap::{Args, FromArgMatches, Subcommand, ValueEnum};
 use edit::edit_file_without_waiting;
 use opener::reveal;
 
+use crate::commands::boilerplate::TsconfigArgs;
+
 #[derive(Args, Debug)]
 pub(crate) struct TemplateFileArgs<CustomAddArgs: Args + FromArgMatches = BlankArgs> {
     #[command(subcommand)]
@@ -20,6 +22,26 @@ pub(crate) enum TemplateFileCommand<CustomAddArgs: Args + FromArgMatches = Blank
     Add(TemplateFileCreateArgs<CustomAddArgs>),
     Edit,
     Reveal,
+}
+
+impl TemplateFileCommand<ErasableSyntaxArgs> {
+    pub(crate) fn erasable(&self) -> ErasableSyntax {
+        if let TemplateFileCommand::Add(args) = &self {
+            args.custom_args.erasable_syntax()
+        } else {
+            ErasableSyntax::NonErasable
+        }
+    }
+}
+
+impl TemplateFileCommand<TsconfigArgs> {
+    pub(crate) fn erasable(&self) -> ErasableSyntax {
+        if let TemplateFileCommand::Add(args) = &self {
+            args.custom_args.erasable_syntax_args.erasable_syntax()
+        } else {
+            ErasableSyntax::NonErasable
+        }
+    }
 }
 
 #[derive(Args, Clone, Debug)]
@@ -34,6 +56,27 @@ pub(crate) struct TemplateFileCreateArgs<CustomAddArgs: Args + FromArgMatches = 
 
 #[derive(Args, Clone, Debug)]
 pub(crate) struct BlankArgs {}
+
+#[derive(Clone, Debug)]
+pub(crate) enum ErasableSyntax {
+    NonErasable,
+    Erasable,
+}
+#[derive(Args, Clone, Debug)]
+pub(crate) struct ErasableSyntaxArgs {
+    #[clap(long = "erasable")]
+    erasable_flag: bool,
+}
+
+impl ErasableSyntaxArgs {
+    pub fn erasable_syntax(&self) -> ErasableSyntax {
+        if self.erasable_flag {
+            ErasableSyntax::Erasable
+        } else {
+            ErasableSyntax::NonErasable
+        }
+    }
+}
 
 #[derive(Debug, Clone, ValueEnum)]
 enum TemplateFileCreateFollowup {

@@ -2,25 +2,14 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["./node_modules/@cubing/dev-config/biome/biome.json"],
   "files": {
-    // 1. Change `!!dist` to `!dist` if any files (e.g. sources or tests) import
-    //    from it.
-    // 2. Add e.g. `!!target` if the project has Rust.
-    // 3. Delete this comment, or rename to `biome.jsonc` if there are remaining
-    //    comments in this file.
-    //
-    // Note that:
-    // - This config excludes files from `.gitignore`, so those paths do not
-    //   need to be duplicated here except for force-includes (double
-    //   exclamation marks: https://biomejs.dev/reference/configuration/#filesincludes ).
-    //   - The `.gitignore` file must exist in the same folder, or Biome will
-    //     error.
-    // - `package.json` is excluded because package managers often change the
-    //   formatting and enforcing Biome's formatting can conflict with some
-    //   scripts/automations.
     "includes": [
       "**",
+      "!package.json",
+
+
+
       "!!dist",
-      "!package.json"
+      "!!target"
     ]
   }
 }

@@ -10,7 +10,8 @@
       "!dist",
       "!target",
       // This needs a double exclamation mark due to https://github.com/biomejs/biome/issues/7942#issuecomment-3749040744
-      "!!src/templates/biome.json"
+      "!!src/templates/biome.json",
+      "!!src/templates/erasable/biome.json"
     ]
   },
   "linter": {

@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "./node_modules/@cubing/dev-config/ts/es2024-types/no-dom/tsconfig.json",
+    "./node_modules/@cubing/dev-config/erasable/ts/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "exclude": ["./dist/"]
+}

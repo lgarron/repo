@@ -7,7 +7,9 @@ use crate::common::{
     debug::DebugPrintable,
     ecosystem::Ecosystem,
     package_manager::PackageManager,
-    template_file::{TemplateFile, TemplateFileArgs, TemplateFileCommand},
+    template_file::{
+        ErasableSyntax, ErasableSyntaxArgs, TemplateFile, TemplateFileArgs, TemplateFileCommand,
+    },
 };
 
 #[derive(Args, Debug)]
@@ -23,7 +25,7 @@ enum BoilerplateCommand {
     /// Set up a CI template for auto-publishing releases from tags pushed to GitHub, at: .github/workflows/publish-github-release.yaml
     AutoPublishGithubRelease(TemplateFileArgs),
     /// Set up linting using Biome
-    Biome(TemplateFileArgs),
+    Biome(TemplateFileArgs<ErasableSyntaxArgs>),
     /// Set up `tsconfig.json`
     Tsconfig(TemplateFileArgs<TsconfigArgs>),
     /// Set up `readme-cli-help.json`
@@ -57,6 +59,8 @@ pub(crate) struct TsconfigArgs {
     no_dom: bool,
     #[clap(long)]
     module: Option<ESModule>,
+    #[clap(flatten)]
+    pub(crate) erasable_syntax_args: ErasableSyntaxArgs,
 }
 
 #[derive(Debug, Clone, ValueEnum, Default)]
@@ -93,8 +97,14 @@ fn publish_github_release_template() -> TemplateFile<'static> {
     }
 }
 
-fn biome_json_template() -> TemplateFile<'static> {
-    let bytes = include_bytes!("../templates/biome.json");
+fn biome_json_template(erasable: &ErasableSyntax) -> TemplateFile<'static> {
+    dbg!(erasable);
+    // TODO: Restructure `TemplateFile` for variants at the same location.
+    let bytes: &[u8] = match erasable {
+        ErasableSyntax::NonErasable => include_bytes!("../templates/biome.json"),
+        ErasableSyntax::Erasable => include_bytes!("../templates/erasable/biome.json"),
+    };
+
     TemplateFile {
         relative_path: PathBuf::from("./biome.json"),
         bytes,
@@ -103,6 +113,7 @@ fn biome_json_template() -> TemplateFile<'static> {
 
 fn tsconfig_template(
     template_file_command: TemplateFileCommand<TsconfigArgs>,
+    erasable: ErasableSyntax,
 ) -> TemplateFile<'static> {
     let bytes: &[u8] = {
         if let TemplateFileCommand::Add(template_file_create_args) = template_file_command {
@@ -112,14 +123,31 @@ fn tsconfig_template(
                     .custom_args
                     .module
                     .unwrap_or_default(),
+                erasable,
             ) {
-                (false, ESModule::ES2022) => include_bytes!("../templates/tsconfig.es2022.json"),
-                (false, ESModule::ES2024) => include_bytes!("../templates/tsconfig.es2024.json"),
-                (true, ESModule::ES2022) => {
+                (false, ESModule::ES2022, ErasableSyntax::NonErasable) => {
+                    include_bytes!("../templates/tsconfig.es2022.json")
+                }
+                (false, ESModule::ES2022, ErasableSyntax::Erasable) => {
+                    include_bytes!("../templates/erasable/tsconfig.es2022.json")
+                }
+                (false, ESModule::ES2024, ErasableSyntax::NonErasable) => {
+                    include_bytes!("../templates/tsconfig.es2024.json")
+                }
+                (false, ESModule::ES2024, ErasableSyntax::Erasable) => {
+                    include_bytes!("../templates/erasable/tsconfig.es2024.json")
+                }
+                (true, ESModule::ES2022, ErasableSyntax::NonErasable) => {
                     include_bytes!("../templates/tsconfig.es2022.no-dom.json")
                 }
-                (true, ESModule::ES2024) => {
+                (true, ESModule::ES2022, ErasableSyntax::Erasable) => {
+                    include_bytes!("../templates/erasable/tsconfig.es2022.no-dom.json")
+                }
+                (true, ESModule::ES2024, ErasableSyntax::NonErasable) => {
                     include_bytes!("../templates/tsconfig.es2024.no-dom.json")
+                }
+                (true, ESModule::ES2024, ErasableSyntax::Erasable) => {
+                    include_bytes!("../templates/erasable/tsconfig.es2024.no-dom.json")
                 }
             }
         } else {
@@ -157,7 +185,7 @@ fn rust_toolchain_template() -> TemplateFile<'static> {
     }
 }
 
-fn add_biome(template_file_args: TemplateFileArgs) {
+fn add_biome(template_file_args: TemplateFileArgs<ErasableSyntaxArgs>) {
     let (binary, args, biome_command_prefix) =
         match PackageManager::auto_detect_preferred_package_manager_for_ecosystem(
             Ecosystem::JavaScript,
@@ -210,7 +238,7 @@ fn add_biome(template_file_args: TemplateFileArgs) {
         .expect("Could not add development dependency")
         .wait()
         .unwrap();
-    biome_json_template().handle_command(template_file_args);
+    biome_json_template(&template_file_args.command.erasable()).handle_command(template_file_args);
     println!(
         "Use the following commands:
 
@@ -260,7 +288,11 @@ fn add_tsconfig(template_file_args: TemplateFileArgs<TsconfigArgs>) {
         .expect("Could not add development dependency")
         .wait()
         .unwrap();
-    tsconfig_template(template_file_args.command.clone()).handle_command(template_file_args);
+    tsconfig_template(
+        template_file_args.command.clone(),
+        template_file_args.command.erasable(),
+    )
+    .handle_command(template_file_args);
     // TODO: print `tsc` invocation (requires installation)
 }
 

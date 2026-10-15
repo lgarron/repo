@@ -5,7 +5,7 @@
     "": {
       "devDependencies": {
         "@biomejs/biome": "^2.5.0",
-        "@cubing/dev-config": ">=0.11.3",
+        "@cubing/dev-config": ">=0.11.5",
         "@types/bun": "^1.4.3",
         "@types/node": "^25.6.0",
         "bun-dx": "^0.1.4",
@@ -39,7 +39,7 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.0", "", { "os": "win32", "cpu": "x64" }, "sha512-VT/lF+GId+67j8aDfLkxdxNoVApsPSTbyAtB3jJq0IWTrY77WXfbPfpngxq0bA6JCEv/7k8C9qWjDRKRznDlyw=="],
 
-    "@cubing/dev-config": ["@cubing/dev-config@0.11.3", "", { "dependencies": { "@optique/core": "^1.2.6", "@optique/run": "^1.2.6", "esbuild": ">=0.28.1 && <1.0.0", "path-class": ">=0.15.1", "printable-shell-command": ">=4.0.3" }, "bin": { "package.json": "bin/package.json/index.js" } }, "sha512-qFev+eYwjQMMXvk2WihZTMP21sQWMrO9p3/TiP8f5nPaeutJLMby9uIh9j5wbnLNEoZMFWeYrupP4twnhCjxZw=="],
+    "@cubing/dev-config": ["@cubing/dev-config@0.11.5", "", { "dependencies": { "@optique/core": "^1.2.6", "@optique/run": "^1.2.6", "esbuild": ">=0.28.1 && <1.0.0", "path-class": ">=0.15.1", "printable-shell-command": ">=4.0.3" }, "bin": { "package.json": "bin/package.json/index.js" } }, "sha512-jhxlR4sjtKzuNnw++q04OmBmxK93IMvHTVyjTBXBh/MDZsh5sXRC47ZBhh2jUDxpJC9hY9cp5ndRtCcDDrMEVA=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.28.1", "", { "os": "aix", "cpu": "ppc64" }, "sha512-Svl7tq8k/08+p6CXPpRjQ1fKX+1odH/BQbb48fV6fj3CWHhsoIOoY87w1oHXm0qEpkIK3ZfVgp0hed3XBXzXMQ=="],
 

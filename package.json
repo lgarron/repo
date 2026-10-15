@@ -2,7 +2,7 @@
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",
-    "@cubing/dev-config": ">=0.11.3",
+    "@cubing/dev-config": ">=0.11.5",
     "@types/bun": "^1.4.3",
     "@types/node": "^25.6.0",
     "bun-dx": "^0.1.4",

@@ -31,7 +31,7 @@ enum BoilerplateCommand {
     /// Set up `readme-cli-help.json`
     ReadmeCliHelp(TemplateFileArgs),
     /// Set up `bunfig.toml`
-    Bunfig(TemplateFileArgs),
+    Bunfig(TemplateFileArgs<BunfigArgs>),
     /// Set up `rust-toolchain.toml`
     RustToolchain(TemplateFileArgs),
 }
@@ -61,6 +61,12 @@ pub(crate) struct TsconfigArgs {
     module: Option<ESModule>,
     #[clap(flatten)]
     pub(crate) erasable_syntax_args: ErasableSyntaxArgs,
+}
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct BunfigArgs {
+    #[clap(long)]
+    local_node_modules: bool,
 }
 
 #[derive(Debug, Clone, ValueEnum, Default)]
@@ -112,7 +118,7 @@ fn biome_json_template(erasable: &ErasableSyntax) -> TemplateFile<'static> {
 }
 
 fn tsconfig_template(
-    template_file_command: TemplateFileCommand<TsconfigArgs>,
+    template_file_command: &TemplateFileCommand<TsconfigArgs>,
     erasable: ErasableSyntax,
 ) -> TemplateFile<'static> {
     let bytes: &[u8] = {
@@ -122,6 +128,7 @@ fn tsconfig_template(
                 template_file_create_args
                     .custom_args
                     .module
+                    .clone()
                     .unwrap_or_default(),
                 erasable,
             ) {
@@ -161,8 +168,24 @@ fn tsconfig_template(
     }
 }
 
-fn bunfig_template() -> TemplateFile<'static> {
-    let bytes = include_bytes!("../templates/bunfig.toml");
+fn bunfig_template(
+    template_file_command: &TemplateFileCommand<BunfigArgs>,
+) -> TemplateFile<'static> {
+    let bytes: &[u8] = {
+        if let TemplateFileCommand::Add(template_file_create_args) = template_file_command {
+            match template_file_create_args.custom_args.local_node_modules {
+                false => {
+                    include_bytes!("../templates/bunfig.toml")
+                }
+                true => {
+                    include_bytes!("../templates/bunfig.local_node_modules.toml")
+                }
+            }
+        } else {
+            // TODO: re-architect the need for this fallback.
+            include_bytes!("../templates/bunfig.toml")
+        }
+    };
     TemplateFile {
         relative_path: PathBuf::from("./bunfig.toml"),
         bytes,
@@ -289,16 +312,15 @@ fn add_tsconfig(template_file_args: TemplateFileArgs<TsconfigArgs>) {
         .wait()
         .unwrap();
     tsconfig_template(
-        template_file_args.command.clone(),
+        &template_file_args.command,
         template_file_args.command.erasable(),
     )
     .handle_command(template_file_args);
     // TODO: print `tsc` invocation (requires installation)
 }
 
-fn add_bunfig(template_file_args: TemplateFileArgs) {
-    bunfig_template().handle_command(template_file_args);
-    // TODO: print `tsc` invocation (requires installation)
+fn add_bunfig(template_file_args: TemplateFileArgs<BunfigArgs>) {
+    bunfig_template(&template_file_args.command).handle_command(template_file_args);
 }
 
 fn add_readme_cli_help(template_file_args: TemplateFileArgs) {

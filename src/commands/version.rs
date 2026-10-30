@@ -291,7 +291,7 @@ fn dev_bump(version: Version, bump_component: Option<NumberedVersionComponent>) 
         }
         NumberedVersionComponent::Minor => {
             version.minor += 1;
-            version.patch += 0;
+            version.patch = 0;
         }
         NumberedVersionComponent::Patch => {
             version.patch += 1;

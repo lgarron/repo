@@ -80,6 +80,15 @@ fn cargo_install() {
         .expect("Could not install dependencies using `cargo`");
 }
 
+fn uv_sync() {
+    println!("Installing dependencies using: `uv`");
+    PrintableShellCommand::new("uv")
+        .arg("sync")
+        .debug_print()
+        .status()
+        .expect("Could not install dependencies using `uv`");
+}
+
 // TODO: multiple package managers in a single repo
 fn setup_dependencies(package_manager_args: PackageManagerArgs) {
     // TODO: multiple ecosystems
@@ -90,6 +99,7 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
         Some(PackageManager::Yarn) => yarn_install(),
         Some(PackageManager::Pnpm) => pnpm_install(),
         Some(PackageManager::Cargo) => cargo_install(),
+        Some(PackageManager::Uv) => uv_sync(),
         None => {
             if let Some(package_manager) =
                 PackageManager::auto_detect_preferred_package_manager_for_ecosystem(
@@ -103,6 +113,7 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
                     PackageManager::Yarn => yarn_install(),
                     PackageManager::Pnpm => pnpm_install(),
                     PackageManager::Cargo => panic!("unrechachable"),
+                    PackageManager::Uv => panic!("unrechachable"),
                 }
             }
             if let Some(package_manager) =
@@ -115,6 +126,22 @@ fn setup_dependencies(package_manager_args: PackageManagerArgs) {
                     PackageManager::Yarn => panic!("unrechachable"),
                     PackageManager::Pnpm => panic!("unrechachable"),
                     PackageManager::Cargo => cargo_install(),
+                    PackageManager::Uv => panic!("unrechachable"),
+                }
+            }
+            if let Some(package_manager) =
+                PackageManager::auto_detect_preferred_package_manager_for_ecosystem(
+                    Ecosystem::Python,
+                )
+            {
+                // TODO: encode this in the type system
+                match package_manager {
+                    PackageManager::Npm => panic!("unrechachable"),
+                    PackageManager::Bun => panic!("unrechachable"),
+                    PackageManager::Yarn => panic!("unrechachable"),
+                    PackageManager::Pnpm => panic!("unrechachable"),
+                    PackageManager::Cargo => panic!("unrechachable"),
+                    PackageManager::Uv => uv_sync(),
                 }
             }
         }

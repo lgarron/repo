@@ -13,7 +13,7 @@ pub(crate) enum Ecosystem {
     #[clap(name = "javascript")]
     JavaScript,
     Rust,
-    // Python,
+    Python,
 }
 
 impl Display for Ecosystem {
@@ -24,7 +24,7 @@ impl Display for Ecosystem {
             match self {
                 Ecosystem::JavaScript => "javascript",
                 Ecosystem::Rust => "rust",
-                // Ecosystem::Python => "python",
+                Ecosystem::Python => "python",
             }
         )
     }

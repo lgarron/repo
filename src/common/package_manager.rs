@@ -19,6 +19,7 @@ pub(crate) enum PackageManager {
     Yarn,
     Pnpm,
     Cargo,
+    Uv,
 }
 
 impl Display for PackageManager {
@@ -32,6 +33,7 @@ impl Display for PackageManager {
                 Self::Yarn => "yarn",
                 Self::Pnpm => "pnpm",
                 Self::Cargo => "cargo",
+                Self::Uv => "uv",
             }
         )
     }
@@ -41,6 +43,7 @@ pub(crate) const PACKAGE_JSON_PATH: &str = "./package.json";
 pub(crate) const PACKAGE_LOCK_JSON_PATH: &str = "./package-lock.json";
 pub(crate) const YARN_LOCK_PATH: &str = "./yarn.lock";
 pub(crate) const YARN_PNPM_LOCK_YAML_PATH: &str = "./pnpm-lock.yaml";
+pub(crate) const PYPROJECT_TOML_PATH: &str = "./pyproject.toml";
 const BUN_LOCK_PATH: &str = "./bun.lock";
 const BUN_LOCKB_PATH: &str = "./bun.lockb";
 const CARGO_TOML: &str = "./Cargo.toml";
@@ -66,6 +69,13 @@ impl PackageManager {
             Ecosystem::Rust => {
                 if exists(CARGO_TOML).unwrap() {
                     Some(Self::Cargo)
+                } else {
+                    None
+                }
+            }
+            Ecosystem::Python => {
+                if exists(PYPROJECT_TOML_PATH).unwrap() {
+                    Some(Self::Uv)
                 } else {
                     None
                 }

@@ -250,6 +250,7 @@ fn add_biome(template_file_args: TemplateFileArgs<ErasableSyntaxArgs>) {
                 "npx pnpm exec biome",
             ),
             Some(PackageManager::Cargo) => panic!("unrechachable"),
+            Some(PackageManager::Uv) => panic!("unrechachable"),
             None => {
                 panic!("No JS package detected.")
             }
@@ -301,6 +302,7 @@ fn add_tsconfig(template_file_args: TemplateFileArgs<TsconfigArgs>) {
         Some(PackageManager::Yarn) => ("yarn", ["add", "--dev", "@cubing/dev-config"]),
         Some(PackageManager::Pnpm) => ("pnpm", ["install", "--save-dev", "@cubing/dev-config"]),
         Some(PackageManager::Cargo) => panic!("unrechachable"),
+        Some(PackageManager::Uv) => panic!("unrechachable"),
         None => {
             panic!("No JS package detected.")
         }

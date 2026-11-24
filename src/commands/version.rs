@@ -275,6 +275,18 @@ pub(crate) fn cargo_get_version() -> Result<String, String> {
     Err("Could not get version.".to_owned())
 }
 
+pub(crate) fn uv_get_version() -> Result<String, String> {
+    let mut uv_command = PrintableShellCommand::new("uv");
+    uv_command.arg("version");
+    uv_command.args(["--output-format", "text"]);
+    uv_command.arg("--short");
+    let Some(description) = get_stdout(uv_command) else {
+        eprintln!("Could not get description using `uv`.");
+        return Err("Could not get version.".to_owned());
+    };
+    Ok(description)
+}
+
 fn print_version(version: &str, version_get_args: &VersionGetArgs) {
     let prefix = if version_get_args.no_prefix { "" } else { "v" };
     print!("{}{}", prefix, version);
@@ -351,6 +363,33 @@ fn cargo_bump_version(version_bump_magnitude: &VersionBumpMagnitude) {
         .expect("Could not bump version using `cargo-bump`");
 }
 
+fn uv_bump_version(version_bump_magnitude: &VersionBumpMagnitude) {
+    if matches!(version_bump_magnitude, VersionBumpMagnitude::Dev(_)) {
+        panic!("`uv` uses an incompatible version tag, so we cannot automatically bump dev in a compatible way.")
+        // let version = uv_get_version().expect("Could not get current version.");
+        // let version = Version::parse(&version).expect("Could not parse current version.");
+        // uv_set_version(dev_bump(version, version_bump_magnitude.bump_component()));
+        // return;
+    }
+
+    // // Match `npm`: Bumping a `patch` of a pre-release removes the pre-release label but keeps the same patch.
+    // if matches!(version_bump_magnitude, VersionBumpMagnitude::Patch) {
+    //     let version = cargo_get_version().expect("Could not get current version.");
+    //     let version = Version::parse(&version).expect("Could not parse current version.");
+    //     if !version.pre.is_empty() {
+    //         uv_set_version(remove_prerelease(version));
+    //         return;
+    //     }
+    // }
+
+    eprintln!("Assuming `uv` is installed…");
+    PrintableShellCommand::new("uv")
+        .args(["version", "--bump", &version_bump_magnitude.to_string()])
+        .debug_print()
+        .status()
+        .expect("Could not bump version using `uv`");
+}
+
 pub(crate) fn detect_ecosystem_by_getting_version(
     ecosystem_args: &EcosystemArgs,
 ) -> Option<(Ecosystem, String)> {
@@ -362,6 +401,10 @@ pub(crate) fn detect_ecosystem_by_getting_version(
         (
             Ecosystem::Rust,
             cargo_get_version as fn() -> Result<String, String>,
+        ),
+        (
+            Ecosystem::Python,
+            uv_get_version as fn() -> Result<String, String>,
         ),
     ] {
         if let Some(required_ecosystem) = ecosystem_args.ecosystem {
@@ -466,6 +509,11 @@ fn version_bump(
             auto_print_version(Ecosystem::Rust);
             cargo_get_version()
         }
+        (Ecosystem::Python, _) => {
+            uv_bump_version(version_bump_magnitude);
+            auto_print_version(Ecosystem::Python);
+            uv_get_version()
+        }
     }
 }
 
@@ -511,6 +559,21 @@ fn cargo_set_version(version: Version) {
     panic!("Could not use `cargo-bump` or `cargo-workspaces` to set the version.");
 }
 
+fn uv_set_version(version: Version) {
+    eprintln!("Assuming `uv` is installed…");
+    if matches!(
+        PrintableShellCommand::new("uv")
+            .arg_each(["version", "--", &version.to_string()])
+            .debug_print()
+            .status()
+            .map(|status| status.success()),
+        Ok(true)
+    ) {
+        return;
+    };
+    panic!("Could not use `uv` to set the version.");
+}
+
 fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {
     eprintln!("Setting version to: v{}", version);
 
@@ -520,6 +583,9 @@ fn version_set(ecosystem_args: &EcosystemArgs, version: Version) {
         }
         (Ecosystem::Rust, _) => {
             cargo_set_version(version);
+        }
+        (Ecosystem::Python, _) => {
+            uv_set_version(version);
         }
     }
 }

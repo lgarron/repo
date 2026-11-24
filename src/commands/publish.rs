@@ -53,5 +53,14 @@ pub(crate) fn publish_command(publish_args: PublishArgs) {
                 .wait()
                 .unwrap();
         }
+        (Ecosystem::Python, _) => {
+            PrintableShellCommand::new("uv")
+                .arg("publish")
+                .debug_print()
+                .spawn()
+                .expect("Could not publish using `uv`")
+                .wait()
+                .unwrap();
+        }
     }
 }
